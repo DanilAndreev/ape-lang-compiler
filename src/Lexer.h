@@ -34,15 +34,22 @@ using namespace std;
 class Lexer {
 protected:
     static wregex SkippableCharacters;
-    istream* stream;
+    static wregex Symbols;
+    wistream *stream;
 public:
-    Lexer(istream* const stream);
+    Lexer(wistream *const stream);
+
     ~Lexer();
+
     Token nextToken();
+
 protected:
     Token readNumber();
-    Token readIdentfier();
+
+    Token readIdentifier();
+
     Token readSymbol();
+
 protected:
     bool isCharacterSkippable(const wchar_t character);
 };

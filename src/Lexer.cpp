@@ -23,12 +23,15 @@ SOFTWARE.
 */
 
 #include "Lexer.h"
+#include <iostream>
 
 using namespace std;
 
-wregex Lexer::SkippableCharacters = wregex(L"abc");
+wregex Lexer::SkippableCharacters = wregex(L"[ \\t]+");
+wregex Lexer::Symbols = wregex(L"[\\+\\-\\=\\/\\*\\(\\)\\\"\\'\\;]");
 
-Lexer::Lexer(istream* const stream) {
+
+Lexer::Lexer(wistream *const stream) {
     this->stream = stream;
 }
 
@@ -37,33 +40,50 @@ Lexer::~Lexer() {
 }
 
 Token Lexer::nextToken() {
-    wstring buffer;
     wchar_t character;
 
     if (stream->eof()) return Token(Token::TYPE::EOFILE);
 
-    // Skipping skipable characters.
+    // Skipping skippable characters.
     do {
-        character = this->stream->get();
+        this->stream->get(character);
     } while (!stream->eof() && this->isCharacterSkippable(character));
 
     if (stream->eof()) return Token(Token::TYPE::EOFILE);
+    this->stream->unget();
 
-
-
-    return Token(Token::TYPE::NUMBER, buffer);
+    // Determining token type
+    if (iswdigit(character)) {
+        return this->readNumber();
+    } else if (regex_search(&character, this->Symbols)) {
+        return this->readSymbol();
+    } else if (iswalpha(character)) {
+        return this->readIdentifier();
+    } else {
+        throw exception();
+    }
 }
 
 Token Lexer::readNumber() {
     wstring buffer = L"";
+    wchar_t character = this->stream->get();
 
+    while (!this->stream->eof() && iswdigit(character)) {
+        buffer += character;
+        this->stream->get(character);
+    }
 
     return Token(Token::TYPE::NUMBER, buffer);
 }
 
-Token Lexer::readIdentfier() {
+Token Lexer::readIdentifier() {
     wstring buffer = L"";
+    wchar_t character = this->stream->get();
 
+    while (!this->stream->eof() && iswalnum(character)) {
+        buffer += character;
+        this->stream->get(character);
+    }
 
     return Token(Token::TYPE::IDENTIFIER, buffer);
 }
@@ -71,10 +91,12 @@ Token Lexer::readIdentfier() {
 Token Lexer::readSymbol() {
     wstring buffer = L"";
 
+    wchar_t character = this->stream->get();
+    buffer += character;
 
     return Token(Token::TYPE::SYMBOL, buffer);
 }
 
 bool Lexer::isCharacterSkippable(const wchar_t character) {
-    return regex_match(&character, this->SkippableCharacters);
+    return regex_search(&character, this->SkippableCharacters);
 }

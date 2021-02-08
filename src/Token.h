@@ -44,9 +44,13 @@ protected:
     wstring payload;
 public:
     Token(const TYPE type, const wstring payload);
+
     Token(const TYPE type);
-    Token(const Token& origin);
+
+    Token(const Token &origin);
+
     TYPE getType();
+
     wstring getPayload();
 };
 

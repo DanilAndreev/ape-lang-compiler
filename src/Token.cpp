@@ -29,9 +29,9 @@ Token::Token(const Token::TYPE type, const wstring payload) {
     this->payload = payload;
 }
 
-Token::Token(const TYPE type): Token(type, L"") {}
+Token::Token(const TYPE type) : Token(type, L"") {}
 
-Token::Token(const Token& origin) {
+Token::Token(const Token &origin) {
     this->type = origin.type;
     this->payload = origin.payload;
 }
