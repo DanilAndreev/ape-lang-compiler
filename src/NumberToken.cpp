@@ -22,41 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_LEXER_H
-#define APE_LANG_COMPILER_LEXER_H
-
-#include <istream>
-#include <regex>
-#include <set>
-#include <string>
-#include "Token.h"
+#include <cmath>
 #include "NumberToken.h"
+#include <iostream>
 
-using namespace std;
+wregex NumberToken::NumberRegExp = wregex(L"[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
-class Lexer {
-protected:
-    static wregex SkippableCharacters;
-    static set<wchar_t> Symbols;
-    static set<wstring> Keywords;
-    wistream *stream;
-public:
-    Lexer(wistream *const stream);
+NumberToken::NumberToken(const wstring payload): Token(Token::TYPE::NUMBER, payload) {
+    wcout << payload << endl;
+    if (!regex_match(payload, this->NumberRegExp)) {
+        throw exception();
+    }
 
-    ~Lexer();
+    try {
+        this->value = stold(payload);
+        wcout << this->value << endl;
+    } catch (exception e) {
+        throw exception();
+    }
+}
 
-    Token nextToken();
+long double NumberToken::getDouble() {
+    return this->value;
+}
 
-protected:
-    NumberToken readNumber();
+bool NumberToken::isInteger() {
+    return trunc(this->value) == this->value;
+}
 
-    Token readIdentifier();
-
-    Token readSymbol();
-
-protected:
-    bool isCharacterSkippable(const wchar_t character);
-};
-
-
-#endif //APE_LANG_COMPILER_LEXER_H
+long long NumberToken::getLong() {
+    if (!this->isInteger())
+        throw exception(); // TODO: add normal exceptions system;
+    return static_cast<long long>(this->value);
+}

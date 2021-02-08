@@ -28,8 +28,40 @@ SOFTWARE.
 using namespace std;
 
 wregex Lexer::SkippableCharacters = wregex(L"[ \\t]+");
-wregex Lexer::Symbols = wregex(L"[\\+\\-\\=\\/\\*\\(\\)\\\"\\'\\;]");
 
+set<wchar_t> Lexer::Symbols = set<wchar_t>{
+        L'+',
+        L'-',
+        L'=',
+        L'*',
+        L'/',
+        L'(',
+        L')',
+        L'"',
+        L'\'',
+        L';',
+        L'!',
+        L'<',
+        L'>',
+        L'{',
+        L'}',
+        L'[',
+        L']',
+};
+
+set<wstring> Lexer::Keywords = set<wstring>{
+        L"if",
+        L"else",
+        L"for",
+        L"while",
+        L"goto",
+
+        L"switch",
+        L"case",
+
+        L"true",
+        L"false"
+};
 
 Lexer::Lexer(wistream *const stream) {
     this->stream = stream;
@@ -55,7 +87,7 @@ Token Lexer::nextToken() {
     // Determining token type
     if (iswdigit(character)) {
         return this->readNumber();
-    } else if (regex_search(&character, this->Symbols)) {
+    } else if (this->Symbols.find(character) != this->Symbols.end()) {
         return this->readSymbol();
     } else if (iswalpha(character)) {
         return this->readIdentifier();
@@ -64,17 +96,61 @@ Token Lexer::nextToken() {
     }
 }
 
-Token Lexer::readNumber() {
-    wstring buffer = L"";
-    wchar_t character = this->stream->get();
+//NumberToken Lexer::readNumber() {
+//    const wregex rx(L"[0-9\\-\\+\\e\\.]");
+//
+//    bool hasDot = false;
+//    bool hasE = false;
+//    bool hasESign = false;
+//    wstring buffer = L"";
+//
+//    wchar_t previous = this->stream->get();
+//    buffer += previous;
+//    if (this->stream->eof()) return NumberToken(buffer);
+//    wchar_t current = previous;
+//
+//    while (!this->stream->eof() && regex_search(&current, rx)) {
+//        current = this->stream->get();
+//        if (current == L'.' && !hasDot && !hasE) {
+//            hasDot = true;
+//        } else if (current == L'e' && !hasE) {
+//            hasE = true;
+//        } else if ((current == L'+' || current == L'-') && previous == L'e' && !hasESign && hasE) {
+//            hasESign = true;
+//        } else if (iswdigit(current)) {
+//        } else {
+//            if (previous == L'+' || previous == L'-') {
+//                this->stream->unget();
+//                buffer.erase(buffer.length() - 1, 1);
+//                wcout << "erased" << buffer << endl;
+//            }
+//            break;
+//        }
+//        buffer += current;
+//        wcout << buffer << endl;
+//        previous = current;
+//    }
+//
+//    this->stream->unget();
+//    buffer.erase(buffer.length() - 1, 1);
+//    wcout << "erased" << buffer << endl;
+//
+//    return NumberToken(buffer);
+//}
 
-    while (!this->stream->eof() && iswdigit(character)) {
-        buffer += character;
-        this->stream->get(character);
-    }
-
-    return Token(Token::TYPE::NUMBER, buffer);
-}
+//NumberToken Lexer::readNumber() {
+//    wstring buffer = L"";
+//    wchar_t character = this->stream->get();
+//
+//    while (!this->stream->eof() && (iswdigit(character) || character == L'.' || character == L'-' || character == L'e')) {
+//        buffer += character;
+//        this->stream->get(character);
+//    }
+//
+//    if (!this->stream->eof()) this->stream->unget();
+//
+//    return NumberToken(buffer);
+//}
 
 Token Lexer::readIdentifier() {
     wstring buffer = L"";
@@ -84,6 +160,10 @@ Token Lexer::readIdentifier() {
         buffer += character;
         this->stream->get(character);
     }
+    if (!this->stream->eof()) this->stream->unget();
+
+    if (this->Keywords.find(buffer) != this->Keywords.end())
+        return Token(Token::TYPE::KEYWORD, buffer);
 
     return Token(Token::TYPE::IDENTIFIER, buffer);
 }
@@ -93,6 +173,9 @@ Token Lexer::readSymbol() {
 
     wchar_t character = this->stream->get();
     buffer += character;
+
+    if (character == L'\n')
+        return Token(Token::TYPE::LINEBREAK, buffer);
 
     return Token(Token::TYPE::SYMBOL, buffer);
 }

@@ -22,41 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_LEXER_H
-#define APE_LANG_COMPILER_LEXER_H
+#ifndef APE_LANG_COMPILER_NUMBERTOKEN_H
+#define APE_LANG_COMPILER_NUMBERTOKEN_H
 
-#include <istream>
 #include <regex>
-#include <set>
-#include <string>
 #include "Token.h"
-#include "NumberToken.h"
 
 using namespace std;
 
-class Lexer {
+class NumberToken: public Token {
 protected:
-    static wregex SkippableCharacters;
-    static set<wchar_t> Symbols;
-    static set<wstring> Keywords;
-    wistream *stream;
+    static wregex NumberRegExp;
+    long double value;
 public:
-    Lexer(wistream *const stream);
-
-    ~Lexer();
-
-    Token nextToken();
-
-protected:
-    NumberToken readNumber();
-
-    Token readIdentifier();
-
-    Token readSymbol();
-
-protected:
-    bool isCharacterSkippable(const wchar_t character);
+    NumberToken(const wstring payload);
+    bool isInteger();
+    long double getDouble();
+    long long getLong();
 };
 
 
-#endif //APE_LANG_COMPILER_LEXER_H
+#endif //APE_LANG_COMPILER_NUMBERTOKEN_H
