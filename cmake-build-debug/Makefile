@@ -142,32 +142,86 @@ ape_lang_compiler/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/build
 .PHONY : ape_lang_compiler/fast
 
-main.obj: main.cpp.obj
+src/Lexer.obj: src/Lexer.cpp.obj
 
-.PHONY : main.obj
+.PHONY : src/Lexer.obj
 
 # target to build an object file
-main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/main.cpp.obj
-.PHONY : main.cpp.obj
+src/Lexer.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/Lexer.cpp.obj
+.PHONY : src/Lexer.cpp.obj
 
-main.i: main.cpp.i
+src/Lexer.i: src/Lexer.cpp.i
 
-.PHONY : main.i
+.PHONY : src/Lexer.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/Lexer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/Lexer.cpp.i
+.PHONY : src/Lexer.cpp.i
 
-main.s: main.cpp.s
+src/Lexer.s: src/Lexer.cpp.s
 
-.PHONY : main.s
+.PHONY : src/Lexer.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/Lexer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/Lexer.cpp.s
+.PHONY : src/Lexer.cpp.s
+
+src/Token.obj: src/Token.cpp.obj
+
+.PHONY : src/Token.obj
+
+# target to build an object file
+src/Token.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/Token.cpp.obj
+.PHONY : src/Token.cpp.obj
+
+src/Token.i: src/Token.cpp.i
+
+.PHONY : src/Token.i
+
+# target to preprocess a source file
+src/Token.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/Token.cpp.i
+.PHONY : src/Token.cpp.i
+
+src/Token.s: src/Token.cpp.s
+
+.PHONY : src/Token.s
+
+# target to generate assembly for a file
+src/Token.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/Token.cpp.s
+.PHONY : src/Token.cpp.s
+
+src/main.obj: src/main.cpp.obj
+
+.PHONY : src/main.obj
+
+# target to build an object file
+src/main.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/main.cpp.obj
+.PHONY : src/main.cpp.obj
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ape_lang_compiler.dir\build.make CMakeFiles/ape_lang_compiler.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -178,9 +232,15 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... ape_lang_compiler
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
+	@echo ... src/Lexer.obj
+	@echo ... src/Lexer.i
+	@echo ... src/Lexer.s
+	@echo ... src/Token.obj
+	@echo ... src/Token.i
+	@echo ... src/Token.s
+	@echo ... src/main.obj
+	@echo ... src/main.i
+	@echo ... src/main.s
 .PHONY : help
 
 

@@ -82,7 +82,19 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/main.cpp">
+		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/src/Lexer.cpp">
+			<Option target="ape_lang_compiler"/>
+		</Unit>
+		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/src/Lexer.h">
+			<Option target="ape_lang_compiler"/>
+		</Unit>
+		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/src/Token.cpp">
+			<Option target="ape_lang_compiler"/>
+		</Unit>
+		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/src/Token.h">
+			<Option target="ape_lang_compiler"/>
+		</Unit>
+		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/src/main.cpp">
 			<Option target="ape_lang_compiler"/>
 		</Unit>
 		<Unit filename="C:/Users/onepl/CLionProjects/ape-lang-compiler/CMakeLists.txt">
