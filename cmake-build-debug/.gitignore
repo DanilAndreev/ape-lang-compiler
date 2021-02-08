@@ -1,0 +1,10 @@
+# Compiled files
+*.exe
+*.o
+
+# CMake files
+/CMakeFiles
+/Testing
+
+CMakeCache.txt
+CMakeLists.txt.user
