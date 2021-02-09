@@ -29,14 +29,12 @@ SOFTWARE.
 wregex NumberToken::NumberRegExp = wregex(L"[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
 NumberToken::NumberToken(const wstring payload): Token(Token::TYPE::NUMBER, payload) {
-    wcout << payload << endl;
     if (!regex_match(payload, this->NumberRegExp)) {
         throw exception();
     }
 
     try {
         this->value = stold(payload);
-        wcout << this->value << endl;
     } catch (exception e) {
         throw exception();
     }

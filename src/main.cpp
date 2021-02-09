@@ -28,7 +28,8 @@ int main(int _argc, char *_argv[]) {
     do {
         Token result = lexer->nextToken();
         token = &result;
-        wcout << token->getType() << " \"" << token->getPayload() << "\"" << endl;
+        wstring payload = token->getPayload() == L"\n" ? L"\\n" : token->getPayload();
+        wcout << token->getType() << " \"" << payload << "\"" << endl;
     } while (token->getType() != Token::TYPE::EOFILE);
 
 
