@@ -29,25 +29,40 @@ using namespace std;
 
 wregex Lexer::SkippableCharacters = wregex(L"[ \\t]+");
 
-set<wchar_t> Lexer::Symbols = set<wchar_t>{
-        L'+',
-        L'-',
-        L'=',
-        L'*',
-        L'/',
-        L'(',
-        L')',
-        L'"',
-        L'\'',
-        L';',
-        L'!',
-        L'<',
-        L'>',
-        L'{',
-        L'}',
-        L'[',
-        L']',
-        L'\n',
+vector<wstring> Lexer::Symbols = vector<wstring>{
+        L"+",
+        L"-",
+        L"*",
+        L"/",
+        L"^",
+
+        L"=",
+        L"==",
+        L"!=",
+        L">=",
+        L"<=",
+        L"<",
+        L">",
+        L"!",
+
+        L"<<",
+        L">>",
+
+        L"++",
+        L"--",
+
+        L"(",
+        L")",
+        L"{",
+        L"}",
+        L"[",
+        L"]",
+
+        L";",
+
+        L"\"",
+        L"'",
+        L"\n",
 };
 
 set<wstring> Lexer::Keywords = set<wstring>{
@@ -66,10 +81,23 @@ set<wstring> Lexer::Keywords = set<wstring>{
 
 Lexer::Lexer(wistream *const stream) {
     this->stream = stream;
+
+    this->symbols = new set<wstring, bool (*)(const wstring &, const wstring &)>(
+            [](const wstring &lower, const wstring &higher) {
+                if (lower.length() == higher.length()) return lower < higher;
+                return lower.length() > higher.length();
+            });
+    this->symbols->insert(this->Symbols.begin(), this->Symbols.end());
+
+    this->symbolsStartCharacters = new set<wchar_t>();
+    for (const wstring &item : *this->symbols) {
+        this->symbolsStartCharacters->insert(item.front());
+    }
 }
 
 Lexer::~Lexer() {
-    //delete this->stream;
+    delete this->symbols;
+    delete this->symbolsStartCharacters;
 }
 
 Token Lexer::nextToken() {
@@ -88,7 +116,7 @@ Token Lexer::nextToken() {
     // Determining token type
     if (iswdigit(character)) {
         return this->readNumber();
-    } else if (this->Symbols.find(character) != this->Symbols.end()) {
+    } else if (this->symbolsStartCharacters->find(character) != this->symbolsStartCharacters->end()) {
         return this->readSymbol();
     } else if (iswalpha(character)) {
         return this->readIdentifier();
@@ -156,17 +184,69 @@ Token Lexer::readIdentifier() {
 }
 
 Token Lexer::readSymbol() {
-    wstring buffer = L"";
+    wstring buffer;
+    size_t length = 0;
+    for (const wstring &item : *this->symbols) {
+        if (length != item.length()) {
+            for (size_t i = 0; i < buffer.length(); i++) {
+                wcout << "ungetting" << endl;
+                this->stream->unget();
+            }
+//            this->stream->seekg(-length, ios::cur);
+            length = item.length();
+            buffer = this->getFromStream(length);
+        }
+        wcout << "comparing: '" << buffer << "' with '" << item << "'" << endl;
+        if (item == buffer) {
+            if (buffer == L"\n")
+                return Token(Token::TYPE::LINEBREAK, buffer);
+            return Token(Token::TYPE::SYMBOL, buffer);
+        }
+    }
+    for (size_t i = 0; i < length; i++)
+        this->stream->unget();
 
     wchar_t character = this->stream->get();
-    buffer += character;
-
-    if (character == L'\n')
-        return Token(Token::TYPE::LINEBREAK, buffer);
-
-    return Token(Token::TYPE::SYMBOL, buffer);
+    wcout << "is eof?: " << this->stream->eof() << " unsupported: '" << (char)character << "'" << endl;
+    return Token(Token::TYPE::UNSUPPORTED, L"" + character);
 }
+
+//Token Lexer::readSymbol() {
+//    wstring buffer = L"";
+//
+//    wchar_t character = this->stream->get();
+//    buffer += character;
+//
+//    if (character == L'\n')
+//        return Token(Token::TYPE::LINEBREAK, buffer);
+//
+//    return Token(Token::TYPE::SYMBOL, buffer);
+//}
 
 bool Lexer::isCharacterSkippable(const wchar_t character) {
     return regex_search(&character, this->SkippableCharacters);
+}
+
+wstring Lexer::getFromStream(size_t length) {
+    wstring buffer;
+    for (size_t i = 0; i < length; i++) {
+        if (this->stream->eof()) break;
+        wchar_t character = this->stream->get();
+//        wcout << "read character[iswascii=" << iswascii(character) << "]: '" << character << "'" << endl;
+        if (iswascii(character)) {
+            buffer += character;
+        } else {
+            wcout << "ungetting" << endl;
+            this->stream->unget();
+        }
+//        wcout << "got from stream[" << buffer.length() << "]: '" << buffer << "'" << endl;
+    }
+    return buffer;
+
+
+//    wchar_t array[length + 1];
+//    wcout << "got array: '" << array << "'" << endl;
+//    this->stream->get(array, length);
+//    array[length + 1] = L'\0';
+//    return wstring(array);
 }

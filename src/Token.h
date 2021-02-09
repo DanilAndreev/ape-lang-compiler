@@ -37,7 +37,8 @@ public:
         KEYWORD,
         SYMBOL,
         LINEBREAK,
-        EOFILE
+        EOFILE,
+        UNSUPPORTED,
     };
 protected:
     TYPE type;
