@@ -24,73 +24,74 @@ SOFTWARE.
 
 #include "Lexer.h"
 #include <iostream>
+#include <locale>
 
 using namespace std;
 
-wregex Lexer::SkippableCharacters = wregex(L"[ \\t]+");
+regex Lexer::SkippableCharacters = regex("[ \\t]+");
 
-vector<wstring> Lexer::Symbols = vector<wstring>{
-        L"+",
-        L"-",
-        L"*",
-        L"/",
-        L"^",
+vector<string> Lexer::Symbols = vector<string>{
+        "+",
+        "-",
+        "*",
+        "/",
+        "^",
 
-        L"=",
-        L"==",
-        L"!=",
-        L">=",
-        L"<=",
-        L"<",
-        L">",
-        L"!",
+        "=",
+        "==",
+        "!=",
+        ">=",
+        "<=",
+        "<",
+        ">",
+        "!",
 
-        L"<<",
-        L">>",
+        "<<",
+        ">>",
 
-        L"++",
-        L"--",
+        "++",
+        "--",
 
-        L"(",
-        L")",
-        L"{",
-        L"}",
-        L"[",
-        L"]",
+        "(",
+        ")",
+        "{",
+        "}",
+        "[",
+        "]",
 
-        L";",
+        ";",
 
-        L"\"",
-        L"'",
-        L"\n",
+        "\"",
+        "'",
+        "\n",
 };
 
-set<wstring> Lexer::Keywords = set<wstring>{
-        L"if",
-        L"else",
-        L"for",
-        L"while",
-        L"goto",
+set<string> Lexer::Keywords = set<string>{
+        "if",
+        "else",
+        "for",
+        "while",
+        "goto",
 
-        L"switch",
-        L"case",
+        "switch",
+        "case",
 
-        L"true",
-        L"false"
+        "true",
+        "false"
 };
 
-Lexer::Lexer(wistream *const stream) {
+Lexer::Lexer(istream *const stream) {
     this->stream = stream;
 
-    this->symbols = new set<wstring, bool (*)(const wstring &, const wstring &)>(
-            [](const wstring &lower, const wstring &higher) {
+    this->symbols = new set<string, bool (*)(const string &, const string &)>(
+            [](const string &lower, const string &higher) {
                 if (lower.length() == higher.length()) return lower < higher;
                 return lower.length() > higher.length();
             });
     this->symbols->insert(this->Symbols.begin(), this->Symbols.end());
 
-    this->symbolsStartCharacters = new set<wchar_t>();
-    for (const wstring &item : *this->symbols) {
+    this->symbolsStartCharacters = new set<char>();
+    for (const string &item : *this->symbols) {
         this->symbolsStartCharacters->insert(item.front());
     }
 }
@@ -101,7 +102,7 @@ Lexer::~Lexer() {
 }
 
 Token Lexer::nextToken() {
-    wchar_t character;
+    char character;
 
     if (stream->eof()) return Token(Token::TYPE::EOFILE);
 
@@ -114,11 +115,11 @@ Token Lexer::nextToken() {
     this->stream->unget();
 
     // Determining token type
-    if (iswdigit(character)) {
+    if (isdigit(character)) {
         return this->readNumber();
     } else if (this->symbolsStartCharacters->find(character) != this->symbolsStartCharacters->end()) {
         return this->readSymbol();
-    } else if (iswalpha(character)) {
+    } else if (isalpha(character)) {
         return this->readIdentifier();
     } else {
         throw exception();
@@ -129,8 +130,8 @@ NumberToken Lexer::readNumber() {
     bool hasDot = false;
     bool hasE = false;
 
-    wstring buffer = L"";
-    wchar_t character = this->stream->get();
+    string buffer = "";
+    char character = this->stream->get();
 
     while (!this->stream->eof()) {
         bool error = false;
@@ -140,7 +141,7 @@ NumberToken Lexer::readNumber() {
         } else if (character == L'e' && !hasE) {
             hasE = true;
         } else if ((character == L'+' || character == L'-') && buffer.back() == L'e') {
-        } else if (iswdigit(character)) {
+        } else if (isdigit(character)) {
         } else {
             error = true;
         }
@@ -153,7 +154,7 @@ NumberToken Lexer::readNumber() {
             // Rolling back to last correct number
             bool cleared = false;
             while (!cleared) {
-                if (!iswdigit(buffer.back())) {
+                if (!isdigit(buffer.back())) {
                     buffer.erase(buffer.length() - 1, 1);
                     this->stream->unget();
                 } else {
@@ -168,8 +169,8 @@ NumberToken Lexer::readNumber() {
 }
 
 Token Lexer::readIdentifier() {
-    wstring buffer = L"";
-    wchar_t character = this->stream->get();
+    string buffer = "";
+    char character = this->stream->get();
 
     while (!this->stream->eof() && iswalnum(character)) {
         buffer += character;
@@ -184,21 +185,17 @@ Token Lexer::readIdentifier() {
 }
 
 Token Lexer::readSymbol() {
-    wstring buffer;
+    string buffer;
     size_t length = 0;
-    for (const wstring &item : *this->symbols) {
+    for (const string &item : *this->symbols) {
         if (length != item.length()) {
-            for (size_t i = 0; i < buffer.length(); i++) {
-                wcout << "ungetting" << endl;
-                this->stream->unget();
-            }
-//            this->stream->seekg(-length, ios::cur);
+            long shift = (long) (buffer.length() * sizeof(char)) * -1;
+            this->stream->seekg(shift, ios::cur);
             length = item.length();
             buffer = this->getFromStream(length);
         }
-        wcout << "comparing: '" << buffer << "' with '" << item << "'" << endl;
         if (item == buffer) {
-            if (buffer == L"\n")
+            if (buffer == "\n")
                 return Token(Token::TYPE::LINEBREAK, buffer);
             return Token(Token::TYPE::SYMBOL, buffer);
         }
@@ -207,46 +204,19 @@ Token Lexer::readSymbol() {
         this->stream->unget();
 
     wchar_t character = this->stream->get();
-    wcout << "is eof?: " << this->stream->eof() << " unsupported: '" << (char)character << "'" << endl;
-    return Token(Token::TYPE::UNSUPPORTED, L"" + character);
+    return Token(Token::TYPE::UNSUPPORTED, "" + character);
 }
 
-//Token Lexer::readSymbol() {
-//    wstring buffer = L"";
-//
-//    wchar_t character = this->stream->get();
-//    buffer += character;
-//
-//    if (character == L'\n')
-//        return Token(Token::TYPE::LINEBREAK, buffer);
-//
-//    return Token(Token::TYPE::SYMBOL, buffer);
-//}
-
-bool Lexer::isCharacterSkippable(const wchar_t character) {
-    return regex_search(&character, this->SkippableCharacters);
+bool Lexer::isCharacterSkippable(const char character) {
+    return iscntrl(character) || regex_search(&character, this->SkippableCharacters);
 }
 
-wstring Lexer::getFromStream(size_t length) {
-    wstring buffer;
+string Lexer::getFromStream(size_t length) {
+    string buffer;
     for (size_t i = 0; i < length; i++) {
-        if (this->stream->eof()) break;
-        wchar_t character = this->stream->get();
-//        wcout << "read character[iswascii=" << iswascii(character) << "]: '" << character << "'" << endl;
-        if (iswascii(character)) {
-            buffer += character;
-        } else {
-            wcout << "ungetting" << endl;
-            this->stream->unget();
-        }
-//        wcout << "got from stream[" << buffer.length() << "]: '" << buffer << "'" << endl;
+        if (this->stream->peek() == EOF)
+            break;
+        buffer += this->stream->get();
     }
     return buffer;
-
-
-//    wchar_t array[length + 1];
-//    wcout << "got array: '" << array << "'" << endl;
-//    this->stream->get(array, length);
-//    array[length + 1] = L'\0';
-//    return wstring(array);
 }

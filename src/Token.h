@@ -42,9 +42,9 @@ public:
     };
 protected:
     TYPE type;
-    wstring payload;
+    string payload;
 public:
-    Token(const TYPE type, const wstring payload);
+    Token(const TYPE type, const string payload);
 
     Token(const TYPE type);
 
@@ -52,7 +52,7 @@ public:
 
     TYPE getType();
 
-    wstring getPayload();
+    string getPayload();
 };
 
 #endif //APE_LANG_COMPILER_TOKEN_H

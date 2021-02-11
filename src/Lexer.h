@@ -37,14 +37,14 @@ using namespace std;
 
 class Lexer {
 protected:
-    static wregex SkippableCharacters;
-    static vector<wstring> Symbols;
-    static set<wstring> Keywords;
-    wistream *stream;
-    set<wstring, bool(*)(const wstring&, const wstring&)>* symbols;
-    set<wchar_t>* symbolsStartCharacters;
+    static regex SkippableCharacters;
+    static vector<string> Symbols;
+    static set<string> Keywords;
+    istream *stream;
+    set<string, bool(*)(const string&, const string&)>* symbols;
+    set<char>* symbolsStartCharacters;
 public:
-    Lexer(wistream *const stream);
+    Lexer(istream *const stream);
 
     ~Lexer();
 
@@ -58,9 +58,9 @@ protected:
     Token readSymbol();
 
 protected:
-    bool isCharacterSkippable(const wchar_t character);
+    bool isCharacterSkippable(const char character);
 
-    wstring getFromStream(size_t length);
+    string getFromStream(size_t length);
 };
 
 
