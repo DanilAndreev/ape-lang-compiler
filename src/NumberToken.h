@@ -30,14 +30,38 @@ SOFTWARE.
 
 using namespace std;
 
+/**
+ * NumberToken - class designed to store numeric values from Lexer.
+ * @author Danil Andreev
+ */
 class NumberToken: public Token {
 protected:
+    /**
+     * NumberRegExp - RegExp for number correctness check.
+     */
     static regex NumberRegExp;
+    /**
+     * value - stored numeric value.
+     */
     long double value;
 public:
     NumberToken(const string payload);
+    /**
+     * isInteger - method designed to check if the stored number is integer.
+     * @return true if number is integer and false if not.
+     */
     bool isInteger();
+    /**
+     * getDouble - getter for value.
+     * @return value in float format.
+     * @author Danil Andreev
+     */
     long double getDouble();
+    /**
+     * getDouble - getter for value.
+     * @return value in integer format.
+     * @author Danil Andreev
+     */
     long long getLong();
 };
 

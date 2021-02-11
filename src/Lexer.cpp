@@ -195,6 +195,10 @@ Token Lexer::readSymbol() {
             buffer = this->getFromStream(length);
         }
         if (item == buffer) {
+            if (buffer == "\"" || buffer == "'") {
+                this->stream->unget();
+                return this->readString();
+            }
             if (buffer == "\n")
                 return Token(Token::TYPE::LINEBREAK, buffer);
             return Token(Token::TYPE::SYMBOL, buffer);
@@ -205,6 +209,44 @@ Token Lexer::readSymbol() {
 
     wchar_t character = this->stream->get();
     return Token(Token::TYPE::UNSUPPORTED, "" + character);
+}
+
+Token Lexer::readString() {
+    string buffer;
+    const char brace = this->stream->get();
+    char character;
+    while (!this->stream->eof()) {
+        this->stream->get(character);
+        if (character == brace)
+            break;
+
+        if (character == '\n') {
+            this->stream->unget();
+            return Token(Token::TYPE::STRING, buffer);
+        }
+        if (character == '\\') {
+            char next = this->stream->get();
+            if (next == EOF)
+                throw new exception();
+
+            switch (next) {
+                case 'n':
+                    buffer += '\n';
+                    break;
+                case 'r':
+                    buffer += '\r';
+                    break;
+                case 't':
+                    buffer += '\t';
+                    break;
+                default:
+                    buffer += next;
+            }
+        } else {
+            buffer += character;
+        }
+    }
+    return Token(Token::TYPE::STRING, buffer);
 }
 
 bool Lexer::isCharacterSkippable(const char character) {

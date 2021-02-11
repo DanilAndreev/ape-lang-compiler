@@ -29,8 +29,15 @@ SOFTWARE.
 
 using namespace std;
 
+/**
+ * Token - class designed to store lexemes from Lexer.
+ * @author Danil Andreev
+ */
 class Token {
 public:
+    /**
+     * TYPE - lexeme types enumeration.
+     */
     enum TYPE {
         NUMBER,
         IDENTIFIER,
@@ -38,20 +45,35 @@ public:
         SYMBOL,
         LINEBREAK,
         EOFILE,
+        STRING,
         UNSUPPORTED,
     };
 protected:
+    /**
+     * type - lexeme type.
+     */
     TYPE type;
+    /**
+     * payload - lexeme payload. Got from input text.
+     */
     string payload;
 public:
     Token(const TYPE type, const string payload);
 
-    Token(const TYPE type);
+    explicit Token(const TYPE type);
 
     Token(const Token &origin);
 
+    /**
+     * getType - getter for token type.
+     * @author Danil Andreev
+     */
     TYPE getType();
 
+    /**
+     * getType - getter for token payload.
+     * @author Danil Andreev
+     */
     string getPayload();
 };
 
