@@ -2,20 +2,10 @@
 #include <fstream>
 #include "Lexer.h"
 
-#include <regex>
-
-
 using namespace std;
 
 int main(int _argc, char *_argv[]) {
-//    wregex rx(L"\\+\\-");
-//    wchar_t ch = L's';
-//    cout << regex_search(&ch, rx) << endl;
-//
-//    system("pause");
-
-
-    wifstream *fin = new wifstream("test.txt");
+    ifstream *fin = new ifstream("test.txt", std::ios::binary);
 
     if (!fin->is_open()) {
         cerr << "Failed to open file";
@@ -28,8 +18,8 @@ int main(int _argc, char *_argv[]) {
     do {
         Token result = lexer->nextToken();
         token = &result;
-        wstring payload = token->getPayload() == L"\n" ? L"\\n" : token->getPayload();
-        wcout << token->getType() << " \"" << payload << "\"" << endl;
+        string payload = token->getPayload() == "\n" ? "\\n" : token->getPayload();
+        cout << token->getType() << " \"" << payload << "\"" << endl;
     } while (token->getType() != Token::TYPE::EOFILE);
 
 

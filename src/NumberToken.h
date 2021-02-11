@@ -32,10 +32,10 @@ using namespace std;
 
 class NumberToken: public Token {
 protected:
-    static wregex NumberRegExp;
+    static regex NumberRegExp;
     long double value;
 public:
-    NumberToken(const wstring payload);
+    NumberToken(const string payload);
     bool isInteger();
     long double getDouble();
     long long getLong();

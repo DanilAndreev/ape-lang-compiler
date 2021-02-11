@@ -26,9 +26,9 @@ SOFTWARE.
 #include "NumberToken.h"
 #include <iostream>
 
-wregex NumberToken::NumberRegExp = wregex(L"[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+regex NumberToken::NumberRegExp = regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
-NumberToken::NumberToken(const wstring payload): Token(Token::TYPE::NUMBER, payload) {
+NumberToken::NumberToken(const string payload): Token(Token::TYPE::NUMBER, payload) {
     if (!regex_match(payload, this->NumberRegExp)) {
         throw exception();
     }

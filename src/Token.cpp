@@ -24,12 +24,12 @@ SOFTWARE.
 
 #include "Token.h"
 
-Token::Token(const Token::TYPE type, const wstring payload) {
+Token::Token(const Token::TYPE type, const string payload) {
     this->type = type;
     this->payload = payload;
 }
 
-Token::Token(const TYPE type) : Token(type, L"") {}
+Token::Token(const TYPE type) : Token(type, "") {}
 
 Token::Token(const Token &origin) {
     this->type = origin.type;
@@ -40,6 +40,6 @@ Token::TYPE Token::getType() {
     return this->type;
 }
 
-wstring Token::getPayload() {
+string Token::getPayload() {
     return this->payload;
 }
