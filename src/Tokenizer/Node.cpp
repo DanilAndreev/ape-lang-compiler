@@ -22,34 +22,49 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <cmath>
-#include "NumberToken.h"
-#include <iostream>
+#include "Node.h"
 
-regex NumberToken::NumberRegExp = regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
+Node::Node(Node::TYPE type, Node *op1 = nullptr, Node *op2 = nullptr, Node *op3 = nullptr) {
+    this->type = type;
+    this->operand1 = op1;
+    this->operand2 = op2;
+    this->operand3 = op3;
+}
 
-NumberToken::NumberToken(const string payload): Token(Token::TYPE::NUMBER, payload) {
-    if (!regex_match(payload, this->NumberRegExp)) {
-        throw exception();
+Node::~Node() {
+    this->operand1 = nullptr;
+    this->operand2 = nullptr;
+    this->operand3 = nullptr;
+}
+
+void Node::destructTree() {
+    if (this->operand1) {
+        this->operand1->destructTree();
+        delete this->operand1;
+        this->operand1 = nullptr;
     }
-
-    try {
-        this->value = stold(payload);
-    } catch (exception e) {
-        throw exception();
+    if (this->operand2) {
+        this->operand2->destructTree();
+        delete this->operand2;
+        this->operand2 = nullptr;
+    }
+    if (this->operand3) {
+        this->operand3->destructTree();
+        delete this->operand3;
+        this->operand3 = nullptr;
     }
 }
 
-long double NumberToken::getDouble() const {
-    return this->value;
+Node::TYPE Node::getType() const {
+    return this->type;
 }
 
-bool NumberToken::isInteger() const {
-    return trunc(this->value) == this->value;
+Node const *Node::getOperand1() const {
+    return this->operand1;
 }
-
-long long NumberToken::getLong() const {
-    if (!this->isInteger())
-        throw exception(); // TODO: add normal exceptions system;
-    return static_cast<long long>(this->value);
+Node const *Node::getOperand2() const {
+    return this->operand2;
+}
+Node const *Node::getOperand3() const {
+    return this->operand3;
 }

@@ -71,7 +71,7 @@ protected:
 public:
     explicit Lexer(istream *const stream);
 
-    Lexer(const Lexer &reference)¶;
+    Lexer(const Lexer &reference);
 
     ~Lexer();
 

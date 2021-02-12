@@ -22,59 +22,76 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_TOKEN_H
-#define APE_LANG_COMPILER_TOKEN_H
-
-#include <string>
-
-using namespace std;
+#ifndef APE_LANG_COMPILER_NODE_H
+#define APE_LANG_COMPILER_NODE_H
 
 /**
- * Token - class designed to store lexemes from Lexer.
+ * Node - class for storing Syntax tree node.
+ * @see https://en.wikipedia.org/wiki/Abstract_syntax_tree
  * @author Danil Andreev
  */
-class Token {
+class Node {
 public:
     /**
-     * TYPE - lexeme types enumeration.
+     * TYPE - Node types enumeration.
      */
     enum TYPE {
-        NUMBER,
-        IDENTIFIER,
-        KEYWORD,
-        SYMBOL,
-        LINEBREAK,
-        EOFILE,
-        STRING,
-        UNSUPPORTED,
+        IF,
+        WHILE,
+        FOR,
+
+        ADD,
+        SUB,
     };
 protected:
     /**
-     * type - lexeme type.
+     * type - node type.
      */
     TYPE type;
     /**
-     * payload - lexeme payload. Got from input text.
+     * operand1 - first nested operand of the node.
      */
-    string payload;
+    Node *operand1;
+    /**
+     * operand2 - second nested operand of the node.
+     */
+    Node *operand2;
+    /**
+     * operand3 - first nested operand of the node.
+     */
+    Node *operand3;
 public:
-    Token(const TYPE type, const string payload);
+    Node(TYPE type, Node *operand1, Node *operand2, Node *operand3);
 
-    explicit Token(const TYPE type);
-
-    Token(const Token &reference);
+    ~Node();
 
     /**
-     * getType - getter for token type.
+     * destructTree - calls destructTree methods for all nested operands and deletes them.
+     * After deleting operand will be assigned nullptr.
      * @author Danil Andreev
+     */
+    void destructTree();
+
+    /**
+     * getType - getter for node type.
      */
     TYPE getType() const;
 
     /**
-     * getType - getter for token payload.
-     * @author Danil Andreev
+     * getOperand1 - getter for node first operand.
      */
-    string getPayload() const;
+    Node const *getOperand1() const;
+
+    /**
+     * getOperand2 - getter for node second operand.
+     */
+    Node const *getOperand2() const;
+
+    /**
+     * getOperand3 - getter for node third operand.
+     */
+    Node const *getOperand3() const;
 };
 
-#endif //APE_LANG_COMPILER_TOKEN_H
+
+#endif //APE_LANG_COMPILER_NODE_H

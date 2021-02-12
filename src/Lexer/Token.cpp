@@ -36,10 +36,10 @@ Token::Token(const Token &reference) {
     this->payload = reference.payload;
 }
 
-Token::TYPE Token::getType() {
+Token::TYPE Token::getType() const {
     return this->type;
 }
 
-string Token::getPayload() {
+string Token::getPayload() const {
     return this->payload;
 }

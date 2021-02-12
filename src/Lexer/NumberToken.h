@@ -50,19 +50,19 @@ public:
      * isInteger - method designed to check if the stored number is integer.
      * @return true if number is integer and false if not.
      */
-    bool isInteger();
+    bool isInteger() const;
     /**
      * getDouble - getter for value.
      * @return value in float format.
      * @author Danil Andreev
      */
-    long double getDouble();
+    long double getDouble() const;
     /**
      * getDouble - getter for value.
      * @return value in integer format.
      * @author Danil Andreev
      */
-    long long getLong();
+    long long getLong() const;
 };
 
 
