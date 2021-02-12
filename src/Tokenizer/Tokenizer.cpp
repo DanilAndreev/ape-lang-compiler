@@ -22,24 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include "Tokenizer.h"
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
+Tokenizer::Tokenizer(Lexer *lexer) {
+    this->lexer = lexer;
 }
 
-Token::Token(const TYPE type) : Token(type, "") {}
+Tokenizer::Tokenizer(Lexer &lexer): Tokenizer(&lexer) {}
 
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
+Tokenizer::Tokenizer(const Tokenizer &reference) {
+    this->lexer = reference.lexer;
 }
 
-Token::TYPE Token::getType() {
-    return this->type;
-}
+void Tokenizer::buildTree() {
 
-string Token::getPayload() {
-    return this->payload;
 }

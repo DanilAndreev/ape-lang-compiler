@@ -22,24 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_TOKENIZER_H
+#define APE_LANG_COMPILER_TOKENIZER_H
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-}
+#include "../Lexer/Lexer.h"
 
-Token::Token(const TYPE type) : Token(type, "") {}
+class Tokenizer {
+protected:
+    Lexer *lexer;
+public:
+    explicit Tokenizer(Lexer* lexer);
 
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-}
+    explicit Tokenizer(Lexer& lexer);
 
-Token::TYPE Token::getType() {
-    return this->type;
-}
+    Tokenizer(const Tokenizer &reference);
 
-string Token::getPayload() {
-    return this->payload;
-}
+    ~Tokenizer();
+
+protected:
+    void buildTree();
+};
+
+
+#endif //APE_LANG_COMPILER_TOKENIZER_H

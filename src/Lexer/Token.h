@@ -62,7 +62,7 @@ public:
 
     explicit Token(const TYPE type);
 
-    Token(const Token &origin);
+    Token(const Token &reference);
 
     /**
      * getType - getter for token type.

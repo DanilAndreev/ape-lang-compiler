@@ -262,3 +262,5 @@ string Lexer::getFromStream(size_t length) {
     }
     return buffer;
 }
+
+Lexer::Lexer(const Lexer &reference): Lexer(reference.stream) {}
