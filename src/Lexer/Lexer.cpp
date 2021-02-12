@@ -284,3 +284,7 @@ string Lexer::getFromStream(size_t length) {
 Token Lexer::getCurrentToken() const {
     return *this->currentToken;
 }
+
+bool Lexer::isEof() const {
+    return this->eof;
+}

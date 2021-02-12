@@ -86,14 +86,17 @@ public:
      * @author Danil Andreev
      */
     Token nextToken();
-
 public:
     /**
      * getCurrentToken - getter for Lexer current token.
      * @author Danil Andreev
      */
     Token getCurrentToken() const;
-
+    /**
+     * isEof - returns true if eof flag has been set.
+     * Else returns false.
+     */
+    bool isEof() const;
 protected:
     /**
      * getNextToken - method, designed to get next token from input stream.

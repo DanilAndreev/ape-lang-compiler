@@ -40,6 +40,8 @@ public:
      * TYPE - Node types enumeration.
      */
     enum TYPE {
+        PROGRAM,
+
         IF,
         IFELSE,
         WHILE,

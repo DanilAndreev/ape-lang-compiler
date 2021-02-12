@@ -28,12 +28,25 @@ Tokenizer::Tokenizer(Lexer *lexer) {
     this->lexer = lexer;
 }
 
-Tokenizer::Tokenizer(Lexer &lexer): Tokenizer(&lexer) {}
+Tokenizer::Tokenizer(Lexer &lexer) : Tokenizer(&lexer) {}
 
 Tokenizer::Tokenizer(const Tokenizer &reference) {
     this->lexer = reference.lexer;
 }
 
-void Tokenizer::buildTree() {
+Node *Tokenizer::buildTree() {
+    this->lexer->nextToken();
+    Node *node = new Node(Node::PROGRAM, this->statement());
+    if (!this->lexer->isEof())
+        throw new exception();
+    return node;
+}
 
+Node *Tokenizer::statement() const {
+    if (this->lexer->getCurrentToken().getType() == Token::KEYWORD) {
+        //TODO: add enum types to operators and keywords.
+        Node* node = new Node(Node::IF);
+    }
+
+    return nullptr;
 }

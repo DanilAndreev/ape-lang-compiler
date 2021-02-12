@@ -26,21 +26,23 @@ SOFTWARE.
 #define APE_LANG_COMPILER_TOKENIZER_H
 
 #include "../Lexer/Lexer.h"
+#include "Node.h"
 
 class Tokenizer {
 protected:
     Lexer *lexer;
 public:
-    explicit Tokenizer(Lexer* lexer);
+    explicit Tokenizer(Lexer *lexer);
 
-    explicit Tokenizer(Lexer& lexer);
+    explicit Tokenizer(Lexer &lexer);
 
     Tokenizer(const Tokenizer &reference);
 
     ~Tokenizer();
 
 protected:
-    void buildTree();
+    Node *buildTree();
+    Node* statement() const;
 };
 
 
