@@ -86,12 +86,21 @@ Node *Node::setOperand3(Node *operand) {
     return this;
 }
 
-void Node::print(ostream &stream, int shift, string message) const {
+ostream &Node::print(ostream &stream, int shift, string message) const {
     string shiftString(shift, ' ');
-    shiftString += (char)192;
-    shiftString += (char)196;
-    stream << shiftString << this->type << ": " << message << " val" << endl;
+    shiftString += (char) 192;
+    shiftString += (char) 196;
+    stream << shiftString << this->type << ": ";
+    if (message.length())
+        stream << "[" << message << "] ";
+    stream << *this << endl;
     if (this->operand1) this->operand1->print(stream, shift + 2, "op1");
     if (this->operand2) this->operand2->print(stream, shift + 2, "op2");
     if (this->operand3) this->operand3->print(stream, shift + 2, "op3");
+    return stream;
+}
+
+ostream &operator<<(ostream &stream, const Node &node) {
+    stream << "Node";
+    return stream;
 }

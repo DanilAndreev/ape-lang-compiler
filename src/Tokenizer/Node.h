@@ -128,7 +128,10 @@ public:
      * print - method designed for printing tree structure to stream.
      * @param stream - stream object for printing.
      */
-    void print(ostream &stream = cout, int shift = 0, string message = "") const;
+    ostream &print(ostream &stream = cout, int shift = 0, string message = "") const;
+
+public:
+    friend ostream &operator<<(ostream &stream, const Node &node);
 };
 
 
