@@ -37,7 +37,7 @@ int main(int _argc, char *_argv[]) {
     root->setOperand2(new Node(Node::TYPE::SUB));
     root->setOperand3(new Node(Node::TYPE::ADD));
 
-    root->print();
+    root->print(cout, 0, "root");
 
     root->destructTree();
     delete root;

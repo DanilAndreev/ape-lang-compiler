@@ -82,6 +82,8 @@ set<string> Lexer::Keywords = set<string>{
 
 Lexer::Lexer(istream *const stream) {
     this->stream = stream;
+    this->currentToken = new Token(Token::TYPE::EMPTY);
+    this->eof = false;
 
     this->symbols = new set<string, bool (*)(const string &, const string &)>(
             [](const string &lower, const string &higher) {
@@ -96,12 +98,18 @@ Lexer::Lexer(istream *const stream) {
     }
 }
 
+Lexer::Lexer(const Lexer &reference): Lexer(reference.stream) {
+    this->currentToken = reference.currentToken;
+    this->eof = reference.eof;
+}
+
 Lexer::~Lexer() {
     delete this->symbols;
     delete this->symbolsStartCharacters;
+    delete this->currentToken;
 }
 
-Token Lexer::nextToken() {
+Token Lexer::getNextToken() {
     char character;
 
     if (stream->eof()) return Token(Token::TYPE::EOFILE);
@@ -124,6 +132,16 @@ Token Lexer::nextToken() {
     } else {
         throw exception();
     }
+}
+
+
+Token Lexer::nextToken() {
+    Token result = this->getNextToken();
+    delete this->currentToken;
+    this->currentToken = new Token(result);
+    if (this->currentToken->getType() == Token::TYPE::EOFILE)
+        this->eof = true;
+    return result;
 }
 
 NumberToken Lexer::readNumber() {
@@ -263,4 +281,6 @@ string Lexer::getFromStream(size_t length) {
     return buffer;
 }
 
-Lexer::Lexer(const Lexer &reference): Lexer(reference.stream) {}
+Token Lexer::getCurrentToken() const {
+    return *this->currentToken;
+}

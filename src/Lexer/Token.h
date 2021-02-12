@@ -47,6 +47,7 @@ public:
         EOFILE,
         STRING,
         UNSUPPORTED,
+        EMPTY,
     };
 protected:
     /**

@@ -41,6 +41,7 @@ public:
      */
     enum TYPE {
         IF,
+        IFELSE,
         WHILE,
         FOR,
 

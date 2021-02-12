@@ -68,6 +68,9 @@ protected:
      * symbolsStartCharacters - a set of first characters from symbols set for lexer.
      */
     set<char> *symbolsStartCharacters;
+
+    Token *currentToken;
+    bool eof;
 public:
     explicit Lexer(istream *const stream);
 
@@ -75,14 +78,30 @@ public:
 
     ~Lexer();
 
+public:
     /**
      * nextToken - method, designed to get next token from input stream.
+     * Also sets got token to lexer current token.
      * @return next token.
      * @author Danil Andreev
      */
     Token nextToken();
 
+public:
+    /**
+     * getCurrentToken - getter for Lexer current token.
+     * @author Danil Andreev
+     */
+    Token getCurrentToken() const;
+
 protected:
+    /**
+     * getNextToken - method, designed to get next token from input stream.
+     * @return next token.
+     * @author Danil Andreev
+     */
+    Token getNextToken();
+
     /**
      * readNumber - method, designed to read number from the stream.
      * @author Danil Andreev
