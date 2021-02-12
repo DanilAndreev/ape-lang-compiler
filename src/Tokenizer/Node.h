@@ -25,6 +25,10 @@ SOFTWARE.
 #ifndef APE_LANG_COMPILER_NODE_H
 #define APE_LANG_COMPILER_NODE_H
 
+#include <iostream>
+
+using namespace std;
+
 /**
  * Node - class for storing Syntax tree node.
  * @see https://en.wikipedia.org/wiki/Abstract_syntax_tree
@@ -61,10 +65,58 @@ protected:
      */
     Node *operand3;
 public:
-    Node(TYPE type, Node *operand1, Node *operand2, Node *operand3);
+    Node(TYPE type, Node *operand1 = nullptr, Node *operand2 = nullptr, Node *operand3 = nullptr);
 
     ~Node();
 
+public:
+    /**
+     * getType - getter for node type.
+     * @author Danil Andreev
+     */
+    TYPE getType() const;
+
+    /**
+     * getOperand1 - getter for node first operand.
+     * @author Danil Andreev
+     */
+    Node const *getOperand1() const;
+
+    /**
+     * getOperand2 - getter for node second operand.
+     * @author Danil Andreev
+     */
+    Node const *getOperand2() const;
+
+    /**
+     * getOperand3 - getter for node third operand.
+     * @author Danil Andreev
+     */
+    Node const *getOperand3() const;
+
+public:
+    /**
+     * setOperand1 - setter for node first operand.
+     * @paran operand - Target node for nesting.
+     * @author Danil Andreev
+     */
+    Node *setOperand1(Node *operand);
+
+    /**
+     * setOperand2 - setter for node second operand.
+     * @paran operand - Target node for nesting.
+     * @author Danil Andreev
+     */
+    Node *setOperand2(Node *operand);
+
+    /**
+     * setOperand3 - setter for node third operand.
+     * @paran operand - Target node for nesting.
+     * @author Danil Andreev
+     */
+    Node *setOperand3(Node *operand);
+
+public:
     /**
      * destructTree - calls destructTree methods for all nested operands and deletes them.
      * After deleting operand will be assigned nullptr.
@@ -73,24 +125,10 @@ public:
     void destructTree();
 
     /**
-     * getType - getter for node type.
+     * print - method designed for printing tree structure to stream.
+     * @param stream - stream object for printing.
      */
-    TYPE getType() const;
-
-    /**
-     * getOperand1 - getter for node first operand.
-     */
-    Node const *getOperand1() const;
-
-    /**
-     * getOperand2 - getter for node second operand.
-     */
-    Node const *getOperand2() const;
-
-    /**
-     * getOperand3 - getter for node third operand.
-     */
-    Node const *getOperand3() const;
+    void print(ostream &stream = cout, int shift = 0, string message = "") const;
 };
 
 

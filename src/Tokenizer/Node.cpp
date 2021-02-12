@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "Node.h"
 
-Node::Node(Node::TYPE type, Node *op1 = nullptr, Node *op2 = nullptr, Node *op3 = nullptr) {
+Node::Node(Node::TYPE type, Node *op1, Node *op2, Node *op3) {
     this->type = type;
     this->operand1 = op1;
     this->operand2 = op2;
@@ -62,9 +62,36 @@ Node::TYPE Node::getType() const {
 Node const *Node::getOperand1() const {
     return this->operand1;
 }
+
 Node const *Node::getOperand2() const {
     return this->operand2;
 }
+
 Node const *Node::getOperand3() const {
     return this->operand3;
+}
+
+Node *Node::setOperand1(Node *operand) {
+    this->operand1 = operand;
+    return this;
+}
+
+Node *Node::setOperand2(Node *operand) {
+    this->operand2 = operand;
+    return this;
+}
+
+Node *Node::setOperand3(Node *operand) {
+    this->operand3 = operand;
+    return this;
+}
+
+void Node::print(ostream &stream, int shift, string message) const {
+    string shiftString(shift, ' ');
+    shiftString += (char)192;
+    shiftString += (char)196;
+    stream << shiftString << this->type << ": " << message << " val" << endl;
+    if (this->operand1) this->operand1->print(stream, shift + 2, "op1");
+    if (this->operand2) this->operand2->print(stream, shift + 2, "op2");
+    if (this->operand3) this->operand3->print(stream, shift + 2, "op3");
 }
