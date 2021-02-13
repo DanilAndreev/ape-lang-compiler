@@ -60,6 +60,7 @@ vector<string> Lexer::Symbols = vector<string>{
         "]",
 
         ";",
+        ".",
 
         "\"",
         "'",

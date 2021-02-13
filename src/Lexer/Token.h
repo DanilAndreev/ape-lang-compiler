@@ -49,6 +49,54 @@ public:
         UNSUPPORTED,
         EMPTY,
     };
+    enum OPERATORS {
+        /// <
+        LESS,
+        /// <=
+        LESS_EQUAL,
+        /// >
+        GREATER,
+        /// >=
+        GREATER_EQUAL,
+        /// ==
+        EQUAL,
+        /// !=
+        NOTEQUAL,
+        /// =
+        ASSIGN,
+        /// (
+        ROUND_BRACE_OPEN,
+        /// )
+        ROUND_BRACE_CLOSE,
+        /// [
+        SQUARE_BRACE_OPEN,
+        /// ]
+        SQUARE_BRACE_CLOSE,
+        /// {
+        CURLY_BRACE_OPEN,
+        /// }
+        CURLY_BRACE_CLOSE,
+        /// +
+        ADD,
+        /// -
+        SUBTRACT,
+        /// *
+        MULTIPLY,
+        /// /
+        DIVIDE,
+        /// !
+        NOT,
+        /// ++
+        INCREMENT,
+        /// --
+        DECREMENT,
+        /// .
+        DOT,
+        /// ;
+        SEMICOLON,
+        /// \n
+        LINEBREAK,
+    };
 protected:
     /**
      * type - lexeme type.
