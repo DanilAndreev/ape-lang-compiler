@@ -27,6 +27,7 @@ SOFTWARE.
 Token::Token(const Token::TYPE type, const string payload) {
     this->type = type;
     this->payload = payload;
+    this->classname = "Token";
 }
 
 Token::Token(const TYPE type) : Token(type, "") {}
@@ -34,6 +35,7 @@ Token::Token(const TYPE type) : Token(type, "") {}
 Token::Token(const Token &reference) {
     this->type = reference.type;
     this->payload = reference.payload;
+    this->classname = reference.classname;
 }
 
 Token::TYPE Token::getType() const {

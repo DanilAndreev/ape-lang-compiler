@@ -26,6 +26,7 @@ SOFTWARE.
 
 KeywordToken::KeywordToken(KEYWORDS type, string payload): Token(Token::KEYWORD, payload) {
     this->keywordType = type;
+    this->classname = "KeywordToken";
 }
 
 KEYWORDS KeywordToken::getKeywordType() const {

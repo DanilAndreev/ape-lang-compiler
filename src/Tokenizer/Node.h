@@ -41,6 +41,8 @@ public:
      */
     enum TYPE {
         PROGRAM,
+        VAR,
+        CONST,
 
         IF,
         IFELSE,
@@ -49,6 +51,8 @@ public:
 
         ADD,
         SUB,
+
+        LESS,
     };
 protected:
     /**

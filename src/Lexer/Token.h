@@ -50,6 +50,7 @@ public:
         EMPTY,
     };
 protected:
+    string classname;
     /**
      * type - lexeme type.
      */

@@ -40,11 +40,15 @@ public:
 
     ~Tokenizer();
 
+public:
+    Node *parse();
 protected:
-    Node *buildTree();
     Node* statement() const;
     Node* parenExpr() const;
     Node* expression() const;
+    Node* test() const;
+    Node* summa() const;
+    Node* term() const;
 };
 
 

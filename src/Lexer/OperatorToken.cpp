@@ -26,6 +26,7 @@ SOFTWARE.
 
 OperatorToken::OperatorToken(OPERATORS type, string payload) : Token(Token::SYMBOL, payload) {
     this->operatorType = type;
+    this->classname = "OperatorToken";
 }
 
 OperatorToken::OperatorToken(OperatorToken &reference) : Token(reference) {

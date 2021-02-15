@@ -135,6 +135,7 @@ Token Lexer::nextToken() {
     Token result = this->getNextToken();
     delete this->currentToken;
     this->currentToken = new Token(result);
+    this->eof = false;
     if (this->currentToken->getType() == Token::TYPE::EOFILE)
         this->eof = true;
     return result;
@@ -270,7 +271,7 @@ Token Lexer::readString() {
 }
 
 bool Lexer::isCharacterSkippable(const char character) {
-    return iscntrl(character) || regex_search(&character, this->SkippableCharacters);
+    return static_cast<bool>(iscntrl(character)) || regex_search(&character, this->SkippableCharacters);
 }
 
 string Lexer::getFromStream(size_t length) {

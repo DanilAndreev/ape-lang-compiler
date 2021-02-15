@@ -38,6 +38,7 @@ NumberToken::NumberToken(const string payload): Token(Token::TYPE::NUMBER, paylo
     } catch (exception e) {
         throw exception();
     }
+    this->classname = "NumberToken";
 }
 
 long double NumberToken::getDouble() const {
