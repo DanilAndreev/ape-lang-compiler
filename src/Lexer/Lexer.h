@@ -29,9 +29,12 @@ SOFTWARE.
 #include <regex>
 #include <set>
 #include <vector>
+#include <utility>
 #include <string>
 #include "Token.h"
 #include "NumberToken.h"
+#include "OperatorToken.h"
+#include "KeywordToken.h"
 
 using namespace std;
 
@@ -51,11 +54,11 @@ protected:
      * Symbols - an array of lang symbols/operators.
      * Will be added to set.
      */
-    static vector<string> Symbols;
+    static vector<pair<string, OPERATORS>> Symbols;
     /**
      * Keywords - set of lang keywords.
      */
-    static set<string> Keywords;
+    static set<pair<string, KEYWORDS>> Keywords;
     /**
      * stream - input data stream with program code.
      */
@@ -63,13 +66,18 @@ protected:
     /**
      * symbols - set of lang symbols and operators, ordered by length DESC.
      */
-    set<string, bool (*)(const string &, const string &)> *symbols;
+    set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &, const pair<string, OPERATORS> &)> *symbols;
     /**
      * symbolsStartCharacters - a set of first characters from symbols set for lexer.
      */
     set<char> *symbolsStartCharacters;
-
+    /**
+     * currentToken - last token got from the input stream.
+     */
     Token *currentToken;
+    /**
+     * eof - that flag sets when last got token is EOF.
+     */
     bool eof;
 public:
     explicit Lexer(istream *const stream);
@@ -86,17 +94,20 @@ public:
      * @author Danil Andreev
      */
     Token nextToken();
+
 public:
     /**
      * getCurrentToken - getter for Lexer current token.
      * @author Danil Andreev
      */
     Token getCurrentToken() const;
+
     /**
      * isEof - returns true if eof flag has been set.
      * Else returns false.
      */
     bool isEof() const;
+
 protected:
     /**
      * getNextToken - method, designed to get next token from input stream.

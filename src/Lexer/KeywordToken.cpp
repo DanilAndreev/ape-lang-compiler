@@ -22,60 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_TOKEN_H
-#define APE_LANG_COMPILER_TOKEN_H
+#include "KeywordToken.h"
 
-#include <string>
+KeywordToken::KeywordToken(KEYWORDS type, string payload): Token(Token::KEYWORD, payload) {
+    this->keywordType = type;
+}
 
-using namespace std;
+KEYWORDS KeywordToken::getKeywordType() const {
+    return this->keywordType;
+}
 
-/**
- * Token - class designed to store lexemes from Lexer.
- * @author Danil Andreev
- */
-class Token {
-public:
-    /**
-     * TYPE - lexeme types enumeration.
-     */
-    enum TYPE {
-        NUMBER,
-        IDENTIFIER,
-        KEYWORD,
-        SYMBOL,
-        LINEBREAK,
-        EOFILE,
-        STRING,
-        UNSUPPORTED,
-        EMPTY,
-    };
-protected:
-    /**
-     * type - lexeme type.
-     */
-    TYPE type;
-    /**
-     * payload - lexeme payload. Got from input text.
-     */
-    string payload;
-public:
-    Token(const TYPE type, const string payload);
-
-    explicit Token(const TYPE type);
-
-    Token(const Token &reference);
-
-    /**
-     * getType - getter for token type.
-     * @author Danil Andreev
-     */
-    TYPE getType() const;
-
-    /**
-     * getType - getter for token payload.
-     * @author Danil Andreev
-     */
-    string getPayload() const;
-};
-
-#endif //APE_LANG_COMPILER_TOKEN_H
+KeywordToken::KeywordToken(KeywordToken &reference): Token(reference) {
+    this->keywordType = reference.keywordType;
+}

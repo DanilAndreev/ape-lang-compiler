@@ -22,60 +22,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_TOKEN_H
-#define APE_LANG_COMPILER_TOKEN_H
+#ifndef APE_LANG_COMPILER_KEYWORDTOKEN_H
+#define APE_LANG_COMPILER_KEYWORDTOKEN_H
 
-#include <string>
 
-using namespace std;
+#include "Token.h"
 
 /**
- * Token - class designed to store lexemes from Lexer.
+ * KEYWORDS - enumeration of keyword types.
  * @author Danil Andreev
  */
-class Token {
-public:
-    /**
-     * TYPE - lexeme types enumeration.
-     */
-    enum TYPE {
-        NUMBER,
-        IDENTIFIER,
-        KEYWORD,
-        SYMBOL,
-        LINEBREAK,
-        EOFILE,
-        STRING,
-        UNSUPPORTED,
-        EMPTY,
-    };
-protected:
-    /**
-     * type - lexeme type.
-     */
-    TYPE type;
-    /**
-     * payload - lexeme payload. Got from input text.
-     */
-    string payload;
-public:
-    Token(const TYPE type, const string payload);
-
-    explicit Token(const TYPE type);
-
-    Token(const Token &reference);
-
-    /**
-     * getType - getter for token type.
-     * @author Danil Andreev
-     */
-    TYPE getType() const;
-
-    /**
-     * getType - getter for token payload.
-     * @author Danil Andreev
-     */
-    string getPayload() const;
+enum KEYWORDS {
+    DO,
+    WHILE,
+    FOR,
+    IF,
+    ELSE,
+    CONST,
+    TRUE,
+    FALSE,
+    SWITCH,
+    CASE,
+    GOTO,
 };
 
-#endif //APE_LANG_COMPILER_TOKEN_H
+/**
+ * KeywordToken - class for storing keyword tokens.
+ * Contains enum keyword type.
+ * @author Danil Andreev
+ */
+class KeywordToken : public Token {
+protected:
+    /**
+     * keywordType - enum keyword type.
+     */
+    KEYWORDS keywordType;
+public:
+    explicit KeywordToken(KEYWORDS type, string payload = "");
+
+    KeywordToken(KeywordToken &reference);
+
+public:
+    /**
+     * getKeywordType - getter for keyword type.
+     * @author Danil Andreev
+     */
+    KEYWORDS getKeywordType() const;
+};
+
+
+#endif //APE_LANG_COMPILER_KEYWORDTOKEN_H

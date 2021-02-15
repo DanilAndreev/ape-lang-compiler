@@ -22,60 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_TOKEN_H
-#define APE_LANG_COMPILER_TOKEN_H
+#include "OperatorToken.h"
 
-#include <string>
+OperatorToken::OperatorToken(OPERATORS type, string payload) : Token(Token::SYMBOL, payload) {
+    this->operatorType = type;
+}
 
-using namespace std;
+OperatorToken::OperatorToken(OperatorToken &reference) : Token(reference) {
+    this->operatorType = reference.operatorType;
+}
 
-/**
- * Token - class designed to store lexemes from Lexer.
- * @author Danil Andreev
- */
-class Token {
-public:
-    /**
-     * TYPE - lexeme types enumeration.
-     */
-    enum TYPE {
-        NUMBER,
-        IDENTIFIER,
-        KEYWORD,
-        SYMBOL,
-        LINEBREAK,
-        EOFILE,
-        STRING,
-        UNSUPPORTED,
-        EMPTY,
-    };
-protected:
-    /**
-     * type - lexeme type.
-     */
-    TYPE type;
-    /**
-     * payload - lexeme payload. Got from input text.
-     */
-    string payload;
-public:
-    Token(const TYPE type, const string payload);
-
-    explicit Token(const TYPE type);
-
-    Token(const Token &reference);
-
-    /**
-     * getType - getter for token type.
-     * @author Danil Andreev
-     */
-    TYPE getType() const;
-
-    /**
-     * getType - getter for token payload.
-     * @author Danil Andreev
-     */
-    string getPayload() const;
-};
-
-#endif //APE_LANG_COMPILER_TOKEN_H
+OPERATORS OperatorToken::getOperatorType() const {
+    return this->operatorType;
+}
