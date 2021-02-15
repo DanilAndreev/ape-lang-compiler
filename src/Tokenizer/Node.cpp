@@ -104,3 +104,8 @@ ostream &operator<<(ostream &stream, const Node &node) {
     stream << "Node";
     return stream;
 }
+
+Node *Node::setType(Node::TYPE newType) {
+    this->type = newType;
+    return this;
+}

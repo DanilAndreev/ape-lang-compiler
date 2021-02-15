@@ -99,6 +99,13 @@ public:
 
 public:
     /**
+     * setType - setter for node type.
+     * @param type - New node type.
+     * @author Danil Andreev
+     */
+    Node *setType(Node::TYPE type);
+
+    /**
      * setOperand1 - setter for node first operand.
      * @paran operand - Target node for nesting.
      * @author Danil Andreev

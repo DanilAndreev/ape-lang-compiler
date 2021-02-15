@@ -43,10 +43,65 @@ Node *Tokenizer::buildTree() {
 }
 
 Node *Tokenizer::statement() const {
-    if (this->lexer->getCurrentToken().getType() == Token::KEYWORD) {
-        //TODO: add enum types to operators and keywords.
-        Node* node = new Node(Node::IF);
+    Token entry = this->lexer->getCurrentToken();
+    Node* node = nullptr;
+
+    /// KEYWORDS
+    if (entry.getType() == Token::KEYWORD) {
+        KeywordToken& token = dynamic_cast<KeywordToken&>(entry);
+
+        /// IF
+        if (token.getKeywordType() == KEYWORDS::IF) {
+            node = new Node(Node::IF);
+            this->lexer->nextToken();
+            node->setOperand1(this->parenExpr());
+            node->setOperand2(this->statement());
+            if (this->lexer->getCurrentToken().getType() == Token::KEYWORD) {
+                entry = this->lexer->getCurrentToken();
+                KeywordToken& elseToken = dynamic_cast<KeywordToken&>(entry);
+                /// ELSE
+                if (elseToken.getKeywordType() == KEYWORDS::ELSE) {
+                    node->setType(Node::IFELSE);
+                    this->lexer->nextToken();
+                    node->setOperand3(this->statement());
+                }
+            }
+        }
+
+
     }
+
+    return node;
+}
+
+Node *Tokenizer::parenExpr() const {
+    Node* node = nullptr;
+
+    Token token = this->lexer->getCurrentToken();
+    if (token.getType() != Token::SYMBOL)
+        throw exception();
+    OperatorToken& keyword = dynamic_cast<OperatorToken&>(token);
+    if (keyword.getOperatorType() != OPERATORS::ROUND_BRACE_OPEN)
+        throw exception();
+
+    this->lexer->nextToken();
+    node = this->expression();
+
+    token = this->lexer->getCurrentToken();
+    if (token.getType() != Token::SYMBOL)
+        throw exception();
+    keyword = dynamic_cast<OperatorToken&>(token);
+    if (keyword.getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
+        throw exception();
+
+    this->lexer->nextToken();
+    return node;
+}
+
+Node *Tokenizer::expression() const {
+    Node* node = nullptr;
+
+
 
     return nullptr;
 }

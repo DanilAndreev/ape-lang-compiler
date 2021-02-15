@@ -75,7 +75,7 @@ public:
      * getType - getter for token payload.
      * @author Danil Andreev
      */
-    string getPayload() const;
+    virtual string getPayload() const;
 };
 
 #endif //APE_LANG_COMPILER_TOKEN_H

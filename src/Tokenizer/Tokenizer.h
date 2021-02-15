@@ -43,6 +43,8 @@ public:
 protected:
     Node *buildTree();
     Node* statement() const;
+    Node* parenExpr() const;
+    Node* expression() const;
 };
 
 
