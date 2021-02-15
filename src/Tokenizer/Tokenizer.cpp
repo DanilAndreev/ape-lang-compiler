@@ -48,19 +48,19 @@ Node *Tokenizer::statement() const {
 
     /// KEYWORDS
     if (entry.getType() == Token::KEYWORD) {
-        KeywordToken &token = dynamic_cast<KeywordToken &>(entry);
+        KeywordToken *token = dynamic_cast<KeywordToken*>(&entry);
 
         /// IF
-        if (token.getKeywordType() == KEYWORDS::IF) {
+        if (token->getKeywordType() == KEYWORDS::IF) {
             node = new Node(Node::IF);
             this->lexer->nextToken();
             node->setOperand1(this->parenExpr());
             node->setOperand2(this->statement());
             if (this->lexer->getCurrentToken().getType() == Token::KEYWORD) {
                 entry = this->lexer->getCurrentToken();
-                KeywordToken &elseToken = dynamic_cast<KeywordToken &>(entry);
+                KeywordToken* elseToken = dynamic_cast<KeywordToken*>(&entry);
                 /// ELSE
-                if (elseToken.getKeywordType() == KEYWORDS::ELSE) {
+                if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
                     node->setType(Node::IFELSE);
                     this->lexer->nextToken();
                     node->setOperand3(this->statement());
@@ -80,8 +80,8 @@ Node *Tokenizer::parenExpr() const {
     Token token = this->lexer->getCurrentToken();
     if (token.getType() != Token::SYMBOL)
         throw exception();
-    OperatorToken &keyword = dynamic_cast<OperatorToken &>(token);
-    if (keyword.getOperatorType() != OPERATORS::ROUND_BRACE_OPEN)
+    OperatorToken *keyword = dynamic_cast<OperatorToken *>(&token);
+    if (keyword->getOperatorType() != OPERATORS::ROUND_BRACE_OPEN)
         throw exception();
 
     this->lexer->nextToken();
@@ -90,8 +90,8 @@ Node *Tokenizer::parenExpr() const {
     token = this->lexer->getCurrentToken();
     if (token.getType() != Token::SYMBOL)
         throw exception();
-    keyword = dynamic_cast<OperatorToken &>(token);
-    if (keyword.getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
+    keyword = dynamic_cast<OperatorToken *>(&token);
+    if (keyword->getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
         throw exception();
 
     this->lexer->nextToken();
@@ -114,8 +114,8 @@ Node *Tokenizer::test() const {
 
     Token token = this->lexer->getCurrentToken();
     if (token.getType() == Token::SYMBOL) {
-        OperatorToken &operatorToken = dynamic_cast<OperatorToken &>(token);
-        if (operatorToken.getOperatorType() == OPERATORS::LESS) {
+        OperatorToken *operatorToken = dynamic_cast<OperatorToken *>(&token);
+        if (operatorToken->getOperatorType() == OPERATORS::LESS) {
             this->lexer->nextToken();
             node = new Node(Node::LESS, node, this->summa());
         }
