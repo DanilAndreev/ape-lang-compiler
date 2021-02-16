@@ -74,7 +74,7 @@ protected:
     /**
      * currentToken - last token got from the input stream.
      */
-    Token *currentToken;
+    shared_ptr<Token> currentToken;
     /**
      * eof - that flag sets when last got token is EOF.
      */
@@ -93,14 +93,14 @@ public:
      * @return next token.
      * @author Danil Andreev
      */
-    Token nextToken();
+    shared_ptr<Token> nextToken();
 
 public:
     /**
      * getCurrentToken - getter for Lexer current token.
      * @author Danil Andreev
      */
-    Token getCurrentToken() const;
+    shared_ptr<Token> getCurrentToken() const;
 
     /**
      * isEof - returns true if eof flag has been set.
@@ -114,31 +114,31 @@ protected:
      * @return next token.
      * @author Danil Andreev
      */
-    Token getNextToken();
+    Token* getNextToken();
 
     /**
      * readNumber - method, designed to read number from the stream.
      * @author Danil Andreev
      */
-    NumberToken readNumber();
+    NumberToken* readNumber();
 
     /**
      * readNumber - method, designed to read identifier from the stream.
      * @author Danil Andreev
      */
-    Token readIdentifier();
+    Token* readIdentifier();
 
     /**
      * readNumber - method, designed to read symbol/operator from the stream.
      * @author Danil Andreev
      */
-    Token readSymbol();
+    Token* readSymbol();
 
     /**
      * readNumber - method, designed to read braced string from the stream.
      * @author Danil Andreev
      */
-    Token readString();
+    Token* readString();
 
 protected:
     /**

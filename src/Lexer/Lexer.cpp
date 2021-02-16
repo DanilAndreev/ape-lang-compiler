@@ -77,7 +77,7 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
 
 Lexer::Lexer(istream *const stream) {
     this->stream = stream;
-    this->currentToken = new Token(Token::TYPE::EMPTY);
+    this->currentToken = shared_ptr<Token>(new Token(Token::TYPE::EMPTY));
     this->eof = false;
 
     this->symbols = new set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &,
@@ -102,20 +102,20 @@ Lexer::Lexer(const Lexer &reference) : Lexer(reference.stream) {
 Lexer::~Lexer() {
     delete this->symbols;
     delete this->symbolsStartCharacters;
-    delete this->currentToken;
+    this->currentToken.reset();
 }
 
-Token Lexer::getNextToken() {
+Token* Lexer::getNextToken() {
     char character;
 
-    if (stream->eof()) return Token(Token::TYPE::EOFILE);
+    if (stream->eof()) return new Token(Token::TYPE::EOFILE);
 
     // Skipping skippable characters.
     do {
         this->stream->get(character);
     } while (!stream->eof() && this->isCharacterSkippable(character));
 
-    if (stream->eof()) return Token(Token::TYPE::EOFILE);
+    if (stream->eof()) return new Token(Token::TYPE::EOFILE);
     this->stream->unget();
 
     // Determining token type
@@ -131,8 +131,8 @@ Token Lexer::getNextToken() {
 }
 
 
-Token Lexer::nextToken() {
-    Token result = this->getNextToken();
+shared_ptr<Token> Lexer::nextToken() {
+    Token* result = this->getNextToken();
     delete this->currentToken;
     this->currentToken = new Token(result);
     this->eof = false;
@@ -141,7 +141,7 @@ Token Lexer::nextToken() {
     return result;
 }
 
-NumberToken Lexer::readNumber() {
+NumberToken* Lexer::readNumber() {
     bool hasDot = false;
     bool hasE = false;
 
@@ -180,10 +180,10 @@ NumberToken Lexer::readNumber() {
         }
     }
 
-    return NumberToken(buffer);
+    return new NumberToken(buffer);
 }
 
-Token Lexer::readIdentifier() {
+Token* Lexer::readIdentifier() {
     string buffer = "";
     char character = this->stream->get();
 
@@ -195,16 +195,16 @@ Token Lexer::readIdentifier() {
 
     for (const pair<string, KEYWORDS> item : this->Keywords) {
         if (item.first == buffer)
-            return KeywordToken(item.second, buffer);
+            return new KeywordToken(item.second, buffer);
     }
 
 //    if (this->Keywords.find(buffer) != this->Keywords.end())
 //        return Token(Token::TYPE::KEYWORD, buffer);
 
-    return Token(Token::TYPE::IDENTIFIER, buffer);
+    return new Token(Token::TYPE::IDENTIFIER, buffer);
 }
 
-Token Lexer::readSymbol() {
+Token* Lexer::readSymbol() {
     string buffer;
     size_t length = 0;
     for (const pair<string, OPERATORS> &item : *this->symbols) {
@@ -221,18 +221,18 @@ Token Lexer::readSymbol() {
                 return this->readString();
             }
             if (buffer == "\n")
-                return Token(Token::TYPE::LINEBREAK, buffer);
-            return OperatorToken(item.second, buffer);
+                return new Token(Token::TYPE::LINEBREAK, buffer);
+            return new OperatorToken(item.second, buffer);
         }
     }
     for (size_t i = 0; i < length; i++)
         this->stream->unget();
 
     wchar_t character = this->stream->get();
-    return Token(Token::TYPE::UNSUPPORTED, "" + character);
+    return new Token(Token::TYPE::UNSUPPORTED, "" + character);
 }
 
-Token Lexer::readString() {
+Token* Lexer::readString() {
     string buffer;
     const char brace = this->stream->get();
     char character;
@@ -243,7 +243,7 @@ Token Lexer::readString() {
 
         if (character == '\n') {
             this->stream->unget();
-            return Token(Token::TYPE::STRING, buffer);
+            return new Token(Token::TYPE::STRING, buffer);
         }
         if (character == '\\') {
             char next = this->stream->get();
@@ -267,7 +267,7 @@ Token Lexer::readString() {
             buffer += character;
         }
     }
-    return Token(Token::TYPE::STRING, buffer);
+    return new Token(Token::TYPE::STRING, buffer);
 }
 
 bool Lexer::isCharacterSkippable(const char character) {
@@ -284,8 +284,8 @@ string Lexer::getFromStream(size_t length) {
     return buffer;
 }
 
-Token Lexer::getCurrentToken() const {
-    return *this->currentToken;
+shared_ptr<Token> Lexer::getCurrentToken() const {
+    return shared_ptr<Token>(this->currentToken);
 }
 
 bool Lexer::isEof() const {
