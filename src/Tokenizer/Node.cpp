@@ -90,10 +90,10 @@ ostream &Node::print(ostream &stream, int shift, string message) const {
     string shiftString(shift, ' ');
     shiftString += (char) 192;
     shiftString += (char) 196;
-    stream << shiftString << this->getNodeTypeStr() << ": ";
+    stream << shiftString;
     if (message.length())
         stream << "[" << message << "] ";
-    stream << *this << endl;
+    stream << this->getNodeTypeStr() << ": " << *this << endl;
     if (this->operand1) this->operand1->print(stream, shift + 2, "op1");
     if (this->operand2) this->operand2->print(stream, shift + 2, "op2");
     if (this->operand3) this->operand3->print(stream, shift + 2, "op3");
@@ -114,10 +114,18 @@ string Node::getNodeTypeStr() const {
     switch (this->type) {
         case Node::PROGRAM:
             return "PROGRAM";
+        case Node::EMPTY:
+            return "EMPTY";
+        case Node::SEQUENCE:
+            return "SEQUENCE";
+        case Node::EXPRESSION:
+            return "EXPRESSION";
         case Node::VAR:
             return "VAR";
         case Node::CONST:
             return "CONST";
+        case Node::SET:
+            return "SET";
         case Node::IF:
             return "IF";
         case Node::IFELSE:
@@ -128,9 +136,19 @@ string Node::getNodeTypeStr() const {
             return "FOR";
         case Node::ADD:
             return "ADD";
-        case Node::SUB:
-            return "SUB";
+        case Node::SUBTRACT:
+            return "SUBTRACT";
         case Node::LESS:
             return "LESS";
+        case Node::GREATER:
+            return "GREATER";
+        case Node::LESS_EQUAL:
+            return "LESS_EQUAL";
+        case Node::GREATER_EQUAL:
+            return "GREATER_EQUAL";
+        case Node::EQUAL:
+            return "EQUAL";
+        case Node::NOT_EQUAL:
+            return "NOT_EQUAL";
     }
 }

@@ -41,8 +41,14 @@ public:
      */
     enum TYPE {
         PROGRAM,
+        EMPTY,
+        SEQUENCE,
+        EXPRESSION,
+
         VAR,
         CONST,
+
+        SET,
 
         IF,
         IFELSE,
@@ -50,9 +56,14 @@ public:
         FOR,
 
         ADD,
-        SUB,
+        SUBTRACT,
 
         LESS,
+        GREATER,
+        LESS_EQUAL,
+        GREATER_EQUAL,
+        EQUAL,
+        NOT_EQUAL,
     };
 protected:
     /**

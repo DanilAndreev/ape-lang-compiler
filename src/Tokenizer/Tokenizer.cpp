@@ -37,9 +37,8 @@ Tokenizer::Tokenizer(const Tokenizer &reference) {
 Node *Tokenizer::parse() {
     this->lexer->nextToken();
     Node *node = new Node(Node::PROGRAM, this->statement());
-    //TODO: uncomment
-//    if (!this->lexer->isEof())
-//        throw exception();
+    if (!this->lexer->isEof())
+        throw exception();
     return node;
 }
 
@@ -47,29 +46,69 @@ Node *Tokenizer::statement() const {
     shared_ptr<Token> entry = this->lexer->getCurrentToken();
     Node *node = nullptr;
 
-    /// KEYWORDS
-    if (entry->getType() == Token::KEYWORD) {
-        shared_ptr<KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
+    switch (entry->getType()) {
+        /// KEYWORDS
+        case Token::KEYWORD: {
+            shared_ptr<KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
 
-        /// IF
-        if (token->getKeywordType() == KEYWORDS::IF) {
-            node = new Node(Node::IF);
-            this->lexer->nextToken();
-            node->setOperand1(this->parenExpr());
-            node->setOperand2(this->statement());
-            entry = this->lexer->getCurrentToken();
-            if (entry->getType() == Token::KEYWORD) {
-                shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
-                /// ELSE
-                if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
-                    node->setType(Node::IFELSE);
-                    this->lexer->nextToken();
-                    node->setOperand3(this->statement());
+            /// IF
+            if (token->getKeywordType() == KEYWORDS::IF) {
+                node = new Node(Node::IF);
+                this->lexer->nextToken();
+                node->setOperand1(this->parenExpr());
+                node->setOperand2(this->statement());
+                entry = this->lexer->getCurrentToken();
+                if (entry->getType() == Token::KEYWORD) {
+                    shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
+                    /// ELSE
+                    if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
+                        node->setType(Node::IFELSE);
+                        this->lexer->nextToken();
+                        node->setOperand3(this->statement());
+                    }
                 }
             }
+
         }
+            break;
+            /// SYMBOLS
+        case Token::SYMBOL: {
+            shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(entry);
 
+            switch (token->getOperatorType()) {
+                /// SEMICOLON
+                case OPERATORS::SEMICOLON: {
+                    node = new Node(Node::EMPTY);
+                    this->lexer->nextToken();
 
+                }
+                    break;
+                    /// CURLY_BRACE_OPEN
+                case OPERATORS::CURLY_BRACE_OPEN: {
+                    node = new Node(Node::EMPTY);
+                    this->lexer->nextToken();
+
+                    while (!(
+                            this->lexer->getCurrentToken()->getType() == Token::SYMBOL &&
+                            dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())
+                                    ->getOperatorType() == OPERATORS::CURLY_BRACE_CLOSE
+                    )) {
+                        node = new Node(Node::SEQUENCE, node, this->statement());
+                    }
+                    this->lexer->nextToken();
+                }
+                    break;
+            }
+        }
+            break;
+        default:
+            node = new Node(Node::EXPRESSION, this->expression());
+            if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                throw exception();
+            shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
+            if (token->getOperatorType() != OPERATORS::SEMICOLON)
+                throw exception();
+            this->lexer->nextToken();
     }
 
     return node;
@@ -105,7 +144,13 @@ Node *Tokenizer::expression() const {
     if (this->lexer->getCurrentToken()->getType() == Token::IDENTIFIER)
         return node;
 
-//    if () //TODO: finish
+    if (node->getType() == Node::VAR && this->lexer->getCurrentToken()->getType() == Token::SYMBOL) {
+        shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
+        if (token->getOperatorType() == OPERATORS::ASSIGN) {
+            this->lexer->nextToken();
+            node = new Node(Node::SET, node, this->expression());
+        }
+    }
 
     return node;
 }
@@ -116,9 +161,31 @@ Node *Tokenizer::test() const {
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() == Token::SYMBOL) {
         shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(token);
-        if (operatorToken->getOperatorType() == OPERATORS::LESS) {
-            this->lexer->nextToken();
-            node = new Node(Node::LESS, node, this->summa());
+        switch (operatorToken->getOperatorType()) {
+            case OPERATORS::LESS:
+                this->lexer->nextToken();
+                node = new Node(Node::LESS, node, this->summa());
+                break;
+            case OPERATORS::GREATER:
+                this->lexer->nextToken();
+                node = new Node(Node::GREATER, node, this->summa());
+                break;
+            case OPERATORS::LESS_EQUAL:
+                this->lexer->nextToken();
+                node = new Node(Node::LESS_EQUAL, node, this->summa());
+                break;
+            case OPERATORS::GREATER_EQUAL:
+                this->lexer->nextToken();
+                node = new Node(Node::GREATER_EQUAL, node, this->summa());
+                break;
+            case OPERATORS::EQUAL:
+                this->lexer->nextToken();
+                node = new Node(Node::EQUAL, node, this->summa());
+                break;
+            case OPERATORS::NOTEQUAL:
+                this->lexer->nextToken();
+                node = new Node(Node::NOT_EQUAL, node, this->summa());
+                break;
         }
     }
 
@@ -128,7 +195,27 @@ Node *Tokenizer::test() const {
 Node *Tokenizer::summa() const {
     Node *node = this->term();
 
-    // TODO: finish summa;
+    shared_ptr<OperatorToken> token;
+    while (
+            (token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())) != nullptr &&
+            (
+                    token->getOperatorType() == OPERATORS::ADD ||
+                    token->getOperatorType() == OPERATORS::SUBTRACT
+            )
+            ) {
+        Node::TYPE type;
+        switch (token->getOperatorType()) {
+            case OPERATORS::ADD:
+                type = Node::ADD;
+                break;
+            case OPERATORS::SUBTRACT:
+                type = Node::SUBTRACT;
+                break;
+        }
+        this->lexer->nextToken();
+        node = new Node(type, node, this->term());
+
+    }
 
     return node;
 }
