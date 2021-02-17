@@ -37,6 +37,12 @@ Node::~Node() {
     this->operand3 = nullptr;
 }
 
+Node::Node(const Node& reference): Node(reference.type) {
+    if (reference.operand1) this->operand1 = new Node(*reference.operand1);
+    if (reference.operand2) this->operand2 = new Node(*reference.operand2);
+    if (reference.operand3) this->operand3 = new Node(*reference.operand3);
+}
+
 void Node::destructTree() {
     if (this->operand1) {
         this->operand1->destructTree();

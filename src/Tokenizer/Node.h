@@ -85,6 +85,8 @@ protected:
 public:
     Node(TYPE type, Node *operand1 = nullptr, Node *operand2 = nullptr, Node *operand3 = nullptr);
 
+    Node(const Node& reference);
+
     ~Node();
 
 public:
