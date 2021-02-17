@@ -103,7 +103,9 @@ protected:
 public:
     explicit OperatorToken(OPERATORS type, string payload = "");
 
-    OperatorToken(OperatorToken &reference);
+    OperatorToken(const OperatorToken &reference);
+
+    virtual shared_ptr<Token> clone() const;
 
 public:
     /**

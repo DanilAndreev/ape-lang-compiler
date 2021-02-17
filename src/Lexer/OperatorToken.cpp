@@ -29,10 +29,14 @@ OperatorToken::OperatorToken(OPERATORS type, string payload) : Token(Token::SYMB
     this->classname = "OperatorToken";
 }
 
-OperatorToken::OperatorToken(OperatorToken &reference) : Token(reference) {
+OperatorToken::OperatorToken(const OperatorToken &reference) : Token(reference) {
     this->operatorType = reference.operatorType;
 }
 
 OPERATORS OperatorToken::getOperatorType() const {
     return this->operatorType;
+}
+
+shared_ptr<Token> OperatorToken::clone() const {
+    return make_shared<OperatorToken>(*this);
 }

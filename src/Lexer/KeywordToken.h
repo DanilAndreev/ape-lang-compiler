@@ -60,7 +60,9 @@ protected:
 public:
     explicit KeywordToken(KEYWORDS type, string payload = "");
 
-    KeywordToken(KeywordToken &reference);
+    KeywordToken(const KeywordToken &reference);
+
+    virtual shared_ptr<Token> clone() const;
 
 public:
     /**

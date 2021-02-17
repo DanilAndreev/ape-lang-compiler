@@ -16,16 +16,15 @@ int main(int _argc, char *_argv[]) {
 
     Lexer *lexer = new Lexer(fin);
 
-//    Token *token = nullptr;
+//    shared_ptr<Token> token = nullptr;
 //    do {
-//        Token result = lexer->nextToken();
-//        token = &result;
+//        token = lexer->nextToken();
 //        string payload = token->getPayload() == "\n" ? "\\n" : token->getPayload();
 //        cout << token->getType() << " \"" << payload << "\"" << endl;
 //    } while (token->getType() != Token::TYPE::EOFILE);
 
-    Tokenizer* tokenizer = new Tokenizer(lexer);
-    Node* tree = tokenizer->parse();
+    Tokenizer *tokenizer = new Tokenizer(lexer);
+    Node *tree = tokenizer->parse();
     tree->print(cout, 0, "root");
     tree->destructTree();
     delete tree;

@@ -34,7 +34,7 @@ using namespace std;
  * NumberToken - class designed to store numeric values from Lexer.
  * @author Danil Andreev
  */
-class NumberToken: public Token {
+class NumberToken : public Token {
 protected:
     /**
      * NumberRegExp - RegExp for number correctness check.
@@ -45,18 +45,26 @@ protected:
      */
     long double value;
 public:
-    NumberToken(const string payload);
+    explicit NumberToken(const string payload);
+
+    NumberToken(const NumberToken &reference);
+
+    virtual shared_ptr<Token> clone() const;
+
+public:
     /**
      * isInteger - method designed to check if the stored number is integer.
      * @return true if number is integer and false if not.
      */
     bool isInteger() const;
+
     /**
      * getDouble - getter for value.
      * @return value in float format.
      * @author Danil Andreev
      */
     long double getDouble() const;
+
     /**
      * getDouble - getter for value.
      * @return value in integer format.

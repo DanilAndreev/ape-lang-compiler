@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "KeywordToken.h"
 
-KeywordToken::KeywordToken(KEYWORDS type, string payload): Token(Token::KEYWORD, payload) {
+KeywordToken::KeywordToken(KEYWORDS type, string payload) : Token(Token::KEYWORD, payload) {
     this->keywordType = type;
     this->classname = "KeywordToken";
 }
@@ -33,6 +33,10 @@ KEYWORDS KeywordToken::getKeywordType() const {
     return this->keywordType;
 }
 
-KeywordToken::KeywordToken(KeywordToken &reference): Token(reference) {
+KeywordToken::KeywordToken(const KeywordToken &reference) : Token(reference) {
     this->keywordType = reference.keywordType;
+}
+
+shared_ptr<Token> KeywordToken::clone() const {
+    return make_shared<KeywordToken>(*this);
 }

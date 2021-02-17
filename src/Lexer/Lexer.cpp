@@ -77,7 +77,7 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
 
 Lexer::Lexer(istream *const stream) {
     this->stream = stream;
-    this->currentToken = shared_ptr<Token>(new Token(Token::TYPE::EMPTY));
+    this->currentToken = nullptr;
     this->eof = false;
 
     this->symbols = new set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &,
@@ -105,7 +105,7 @@ Lexer::~Lexer() {
     this->currentToken.reset();
 }
 
-Token* Lexer::getNextToken() {
+Token *Lexer::getNextToken() {
     char character;
 
     if (stream->eof()) return new Token(Token::TYPE::EOFILE);
@@ -132,16 +132,16 @@ Token* Lexer::getNextToken() {
 
 
 shared_ptr<Token> Lexer::nextToken() {
-    Token* result = this->getNextToken();
-    delete this->currentToken;
-    this->currentToken = new Token(result);
+    Token *result = this->getNextToken();
+    this->currentToken.reset();
+    this->currentToken = result->clone();
     this->eof = false;
     if (this->currentToken->getType() == Token::TYPE::EOFILE)
         this->eof = true;
-    return result;
+    return shared_ptr<Token>(result);
 }
 
-NumberToken* Lexer::readNumber() {
+NumberToken *Lexer::readNumber() {
     bool hasDot = false;
     bool hasE = false;
 
@@ -183,7 +183,7 @@ NumberToken* Lexer::readNumber() {
     return new NumberToken(buffer);
 }
 
-Token* Lexer::readIdentifier() {
+Token *Lexer::readIdentifier() {
     string buffer = "";
     char character = this->stream->get();
 
@@ -204,7 +204,7 @@ Token* Lexer::readIdentifier() {
     return new Token(Token::TYPE::IDENTIFIER, buffer);
 }
 
-Token* Lexer::readSymbol() {
+Token *Lexer::readSymbol() {
     string buffer;
     size_t length = 0;
     for (const pair<string, OPERATORS> &item : *this->symbols) {
@@ -232,7 +232,7 @@ Token* Lexer::readSymbol() {
     return new Token(Token::TYPE::UNSUPPORTED, "" + character);
 }
 
-Token* Lexer::readString() {
+Token *Lexer::readString() {
     string buffer;
     const char brace = this->stream->get();
     char character;

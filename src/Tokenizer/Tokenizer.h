@@ -25,6 +25,7 @@ SOFTWARE.
 #ifndef APE_LANG_COMPILER_TOKENIZER_H
 #define APE_LANG_COMPILER_TOKENIZER_H
 
+#include <memory>
 #include "../Lexer/Lexer.h"
 #include "Node.h"
 
@@ -42,13 +43,19 @@ public:
 
 public:
     Node *parse();
+
 protected:
-    Node* statement() const;
-    Node* parenExpr() const;
-    Node* expression() const;
-    Node* test() const;
-    Node* summa() const;
-    Node* term() const;
+    Node *statement() const;
+
+    Node *parenExpr() const;
+
+    Node *expression() const;
+
+    Node *test() const;
+
+    Node *summa() const;
+
+    Node *term() const;
 };
 
 

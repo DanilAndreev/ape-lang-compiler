@@ -26,6 +26,7 @@ SOFTWARE.
 #define APE_LANG_COMPILER_TOKEN_H
 
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -66,6 +67,9 @@ public:
 
     Token(const Token &reference);
 
+    virtual shared_ptr<Token> clone() const;
+
+public:
     /**
      * getType - getter for token type.
      * @author Danil Andreev

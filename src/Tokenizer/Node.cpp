@@ -90,7 +90,7 @@ ostream &Node::print(ostream &stream, int shift, string message) const {
     string shiftString(shift, ' ');
     shiftString += (char) 192;
     shiftString += (char) 196;
-    stream << shiftString << this->type << ": ";
+    stream << shiftString << this->getNodeTypeStr() << ": ";
     if (message.length())
         stream << "[" << message << "] ";
     stream << *this << endl;
@@ -108,4 +108,29 @@ ostream &operator<<(ostream &stream, const Node &node) {
 Node *Node::setType(Node::TYPE newType) {
     this->type = newType;
     return this;
+}
+
+string Node::getNodeTypeStr() const {
+    switch (this->type) {
+        case Node::PROGRAM:
+            return "PROGRAM";
+        case Node::VAR:
+            return "VAR";
+        case Node::CONST:
+            return "CONST";
+        case Node::IF:
+            return "IF";
+        case Node::IFELSE:
+            return "IFELSE";
+        case Node::WHILE:
+            return "WHILE";
+        case Node::FOR:
+            return "FOR";
+        case Node::ADD:
+            return "ADD";
+        case Node::SUB:
+            return "SUB";
+        case Node::LESS:
+            return "LESS";
+    }
 }

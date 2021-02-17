@@ -37,18 +37,19 @@ Tokenizer::Tokenizer(const Tokenizer &reference) {
 Node *Tokenizer::parse() {
     this->lexer->nextToken();
     Node *node = new Node(Node::PROGRAM, this->statement());
-    if (!this->lexer->isEof())
-        throw new exception();
+    //TODO: uncomment
+//    if (!this->lexer->isEof())
+//        throw exception();
     return node;
 }
 
 Node *Tokenizer::statement() const {
-    Token entry = this->lexer->getCurrentToken();
+    shared_ptr<Token> entry = this->lexer->getCurrentToken();
     Node *node = nullptr;
 
     /// KEYWORDS
-    if (entry.getType() == Token::KEYWORD) {
-        KeywordToken *token = dynamic_cast<KeywordToken*>(&entry);
+    if (entry->getType() == Token::KEYWORD) {
+        shared_ptr<KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
 
         /// IF
         if (token->getKeywordType() == KEYWORDS::IF) {
@@ -56,9 +57,9 @@ Node *Tokenizer::statement() const {
             this->lexer->nextToken();
             node->setOperand1(this->parenExpr());
             node->setOperand2(this->statement());
-            if (this->lexer->getCurrentToken().getType() == Token::KEYWORD) {
-                entry = this->lexer->getCurrentToken();
-                KeywordToken* elseToken = dynamic_cast<KeywordToken*>(&entry);
+            entry = this->lexer->getCurrentToken();
+            if (entry->getType() == Token::KEYWORD) {
+                shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
                 /// ELSE
                 if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
                     node->setType(Node::IFELSE);
@@ -77,10 +78,10 @@ Node *Tokenizer::statement() const {
 Node *Tokenizer::parenExpr() const {
     Node *node = nullptr;
 
-    Token token = this->lexer->getCurrentToken();
-    if (token.getType() != Token::SYMBOL)
+    shared_ptr<Token> token = this->lexer->getCurrentToken();
+    if (token->getType() != Token::SYMBOL)
         throw exception();
-    OperatorToken *keyword = dynamic_cast<OperatorToken *>(&token);
+    shared_ptr<OperatorToken> keyword = dynamic_pointer_cast<OperatorToken>(token);
     if (keyword->getOperatorType() != OPERATORS::ROUND_BRACE_OPEN)
         throw exception();
 
@@ -88,9 +89,9 @@ Node *Tokenizer::parenExpr() const {
     node = this->expression();
 
     token = this->lexer->getCurrentToken();
-    if (token.getType() != Token::SYMBOL)
+    if (token->getType() != Token::SYMBOL)
         throw exception();
-    keyword = dynamic_cast<OperatorToken *>(&token);
+    keyword = dynamic_pointer_cast<OperatorToken>(token);
     if (keyword->getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
         throw exception();
 
@@ -101,7 +102,7 @@ Node *Tokenizer::parenExpr() const {
 Node *Tokenizer::expression() const {
     Node *node = this->test();
 
-    if (this->lexer->getCurrentToken().getType() == Token::IDENTIFIER)
+    if (this->lexer->getCurrentToken()->getType() == Token::IDENTIFIER)
         return node;
 
 //    if () //TODO: finish
@@ -112,9 +113,9 @@ Node *Tokenizer::expression() const {
 Node *Tokenizer::test() const {
     Node *node = this->summa();
 
-    Token token = this->lexer->getCurrentToken();
-    if (token.getType() == Token::SYMBOL) {
-        OperatorToken *operatorToken = dynamic_cast<OperatorToken *>(&token);
+    shared_ptr<Token> token = this->lexer->getCurrentToken();
+    if (token->getType() == Token::SYMBOL) {
+        shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(token);
         if (operatorToken->getOperatorType() == OPERATORS::LESS) {
             this->lexer->nextToken();
             node = new Node(Node::LESS, node, this->summa());
@@ -134,16 +135,17 @@ Node *Tokenizer::summa() const {
 
 Node *Tokenizer::term() const {
     Node *node = nullptr;
-    if (this->lexer->getCurrentToken().getType() == Token::IDENTIFIER) {
+    if (this->lexer->getCurrentToken()->getType() == Token::IDENTIFIER) {
         node = new Node(Node::VAR);
         //TODO: finish var nodes
         // node.value = this->lexer->getCurrentToken().getPayload();
         this->lexer->nextToken();
 //        return node;
-    } else if (this->lexer->getCurrentToken().getType() == Token::NUMBER) {
+    } else if (this->lexer->getCurrentToken()->getType() == Token::NUMBER) {
         node = new Node(Node::CONST);
         //TODO: finish var nodes
         // node.value = this->lexer->getCurrentToken().getPayload();
+        this->lexer->nextToken();
 //        return node;
     } else {
         return this->parenExpr();

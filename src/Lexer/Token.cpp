@@ -45,3 +45,7 @@ Token::TYPE Token::getType() const {
 string Token::getPayload() const {
     return this->payload;
 }
+
+shared_ptr<Token> Token::clone() const {
+    return make_shared<Token>(*this);
+}

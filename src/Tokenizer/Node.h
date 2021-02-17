@@ -131,6 +131,8 @@ public:
     Node *setOperand3(Node *operand);
 
 public:
+    string getNodeTypeStr() const;
+
     /**
      * destructTree - calls destructTree methods for all nested operands and deletes them.
      * After deleting operand will be assigned nullptr.
