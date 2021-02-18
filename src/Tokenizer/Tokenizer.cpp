@@ -232,7 +232,9 @@ Node *Tokenizer::summa() const {
             (token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())) != nullptr &&
             (
                     token->getOperatorType() == OPERATORS::ADD ||
-                    token->getOperatorType() == OPERATORS::SUBTRACT
+                    token->getOperatorType() == OPERATORS::SUBTRACT ||
+                    token->getOperatorType() == OPERATORS::MULTIPLY ||
+                    token->getOperatorType() == OPERATORS::DIVIDE
             )
             ) {
         Node::TYPE type;
@@ -242,6 +244,12 @@ Node *Tokenizer::summa() const {
                 break;
             case OPERATORS::SUBTRACT:
                 type = Node::SUBTRACT;
+                break;
+            case OPERATORS::MULTIPLY:
+                type = Node::MULTIPLY;
+                break;
+            case OPERATORS::DIVIDE:
+                type = Node::DIVIDE;
                 break;
         }
         this->lexer->nextToken();

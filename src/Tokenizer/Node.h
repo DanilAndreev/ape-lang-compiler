@@ -58,6 +58,8 @@ public:
 
         ADD,
         SUBTRACT,
+        MULTIPLY,
+        DIVIDE,
 
         LESS,
         GREATER,

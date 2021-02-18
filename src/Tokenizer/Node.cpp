@@ -145,6 +145,10 @@ string Node::getNodeTypeStr() const {
             return "ADD";
         case Node::SUBTRACT:
             return "SUBTRACT";
+        case Node::MULTIPLY:
+            return "MULTIPLY";
+        case Node::DIVIDE:
+            return "DIVIDE";
         case Node::LESS:
             return "LESS";
         case Node::GREATER:
