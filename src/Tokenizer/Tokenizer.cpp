@@ -27,6 +27,7 @@ SOFTWARE.
 #include "StringNode.h"
 #include "IntegerNode.h"
 #include "FloatNode.h"
+#include "VariableNode.h"
 
 Tokenizer::Tokenizer(Lexer *lexer) {
     this->lexer = lexer;
@@ -255,11 +256,9 @@ Node *Tokenizer::term() const {
     Node *node = nullptr;
     switch (this->lexer->getCurrentToken()->getType()) {
         case Token::IDENTIFIER : {
-            node = new Node(Node::VAR);
-            //TODO: finish var nodes
-            // node.value = this->lexer->getCurrentToken().getPayload();
+            string payload = this->lexer->getCurrentToken()->getPayload();
+            node = new VariableNode(payload, false);
             this->lexer->nextToken();
-            // return node;
         }
             break;
         case Token::NUMBER: {
