@@ -66,6 +66,7 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
         pair<string, KEYWORDS>("else", KEYWORDS::ELSE),
         pair<string, KEYWORDS>("for", KEYWORDS::FOR),
         pair<string, KEYWORDS>("while", KEYWORDS::WHILE),
+        pair<string, KEYWORDS>("do", KEYWORDS::DO),
         pair<string, KEYWORDS>("goto", KEYWORDS::GOTO),
 
         pair<string, KEYWORDS>("switch", KEYWORDS::SWITCH),
