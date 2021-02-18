@@ -84,11 +84,11 @@ protected:
      */
     Node *operand3;
 public:
-    Node(TYPE type, Node *operand1 = nullptr, Node *operand2 = nullptr, Node *operand3 = nullptr);
+    Node(const TYPE type, Node *operand1 = nullptr, Node *operand2 = nullptr, Node *operand3 = nullptr);
 
     Node(const Node& reference);
 
-    ~Node();
+    virtual ~Node();
 
 public:
     /**
@@ -145,7 +145,7 @@ public:
     Node *setOperand3(Node *operand);
 
 public:
-    string getNodeTypeStr() const;
+    virtual string getNodeTypeStr() const;
 
     /**
      * destructTree - calls destructTree methods for all nested operands and deletes them.
@@ -159,6 +159,8 @@ public:
      * @param stream - stream object for printing.
      */
     ostream &print(ostream &stream = cout, int shift = 0, string message = "") const;
+
+    virtual ostream& printNode(ostream& stream) const;
 
 public:
     friend ostream &operator<<(ostream &stream, const Node &node);

@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "Node.h"
 
-Node::Node(Node::TYPE type, Node *op1, Node *op2, Node *op3) {
+Node::Node(const Node::TYPE type, Node *op1, Node *op2, Node *op3) {
     this->type = type;
     this->operand1 = op1;
     this->operand2 = op2;
@@ -107,8 +107,7 @@ ostream &Node::print(ostream &stream, int shift, string message) const {
 }
 
 ostream &operator<<(ostream &stream, const Node &node) {
-    stream << "Node";
-    return stream;
+    return node.printNode(stream);
 }
 
 Node *Node::setType(Node::TYPE newType) {
@@ -159,4 +158,8 @@ string Node::getNodeTypeStr() const {
         case Node::NOT_EQUAL:
             return "NOT_EQUAL";
     }
+}
+
+ostream &Node::printNode(ostream &stream) const {
+    return stream << "Node";
 }

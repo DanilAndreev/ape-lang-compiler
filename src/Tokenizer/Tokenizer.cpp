@@ -24,6 +24,9 @@ SOFTWARE.
 
 #include "Tokenizer.h"
 #include "../exceptions/ApeCompilerException.h"
+#include "StringNode.h"
+#include "IntegerNode.h"
+#include "FloatNode.h"
 
 Tokenizer::Tokenizer(Lexer *lexer) {
     this->lexer = lexer;
@@ -91,7 +94,8 @@ Node *Tokenizer::statement() const {
                     node->setOperand2(this->parenExpr());
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
                         throw ApeCompilerException("Expected \";\"");
-                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() != OPERATORS::SEMICOLON)
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::SEMICOLON)
                         throw ApeCompilerException("Expected \";\"");
                 }
                     break;
@@ -249,20 +253,33 @@ Node *Tokenizer::summa() const {
 
 Node *Tokenizer::term() const {
     Node *node = nullptr;
-    if (this->lexer->getCurrentToken()->getType() == Token::IDENTIFIER) {
-        node = new Node(Node::VAR);
-        //TODO: finish var nodes
-        // node.value = this->lexer->getCurrentToken().getPayload();
-        this->lexer->nextToken();
-//        return node;
-    } else if (this->lexer->getCurrentToken()->getType() == Token::NUMBER) {
-        node = new Node(Node::CONST);
-        //TODO: finish var nodes
-        // node.value = this->lexer->getCurrentToken().getPayload();
-        this->lexer->nextToken();
-//        return node;
-    } else {
-        return this->parenExpr();
+    switch (this->lexer->getCurrentToken()->getType()) {
+        case Token::IDENTIFIER : {
+            node = new Node(Node::VAR);
+            //TODO: finish var nodes
+            // node.value = this->lexer->getCurrentToken().getPayload();
+            this->lexer->nextToken();
+            // return node;
+        }
+            break;
+        case Token::NUMBER: {
+            shared_ptr<NumberToken> token = dynamic_pointer_cast<NumberToken>(this->lexer->getCurrentToken());
+            if (token->isInteger())
+                node = new IntegerNode(token->getLong());
+            else
+                node = new FloatNode(token->getDouble());
+
+            this->lexer->nextToken();
+        }
+            break;
+        case Token::STRING: {
+            string payload = this->lexer->getCurrentToken()->getPayload();
+            node = new StringNode(payload);
+            this->lexer->nextToken();
+        }
+            break;
+        default:
+            return this->parenExpr();
     }
 
     return node;
