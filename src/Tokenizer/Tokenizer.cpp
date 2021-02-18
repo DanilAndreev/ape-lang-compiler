@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "Tokenizer.h"
+#include "../exceptions/ApeCompilerException.h"
 
 Tokenizer::Tokenizer(Lexer *lexer) {
     this->lexer = lexer;
@@ -82,16 +83,16 @@ Node *Tokenizer::statement() const {
                     this->lexer->nextToken();
                     node->setOperand1(this->statement());
                     if (this->lexer->getCurrentToken()->getType() != Token::KEYWORD)
-                        throw exception();
+                        throw ApeCompilerException("Expected \"while\"");
                     token = dynamic_pointer_cast<KeywordToken>(this->lexer->getCurrentToken());
                     if (token->getKeywordType() != KEYWORDS::WHILE)
-                        throw exception();
+                        throw ApeCompilerException("Expected \"while\"");
                     this->lexer->nextToken();
                     node->setOperand2(this->parenExpr());
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw exception();
+                        throw ApeCompilerException("Expected \";\"");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() != OPERATORS::SEMICOLON)
-                        throw exception();
+                        throw ApeCompilerException("Expected \";\"");
                 }
                     break;
             }
