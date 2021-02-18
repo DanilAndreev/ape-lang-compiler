@@ -140,6 +140,8 @@ string Node::getNodeTypeStr() const {
             return "WHILE";
         case Node::FOR:
             return "FOR";
+        case Node::DO:
+            return "DO";
         case Node::ADD:
             return "ADD";
         case Node::SUBTRACT:

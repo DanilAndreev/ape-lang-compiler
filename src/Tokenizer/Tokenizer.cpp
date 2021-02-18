@@ -51,24 +51,50 @@ Node *Tokenizer::statement() const {
         case Token::KEYWORD: {
             shared_ptr<KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
 
-            /// IF
-            if (token->getKeywordType() == KEYWORDS::IF) {
-                node = new Node(Node::IF);
-                this->lexer->nextToken();
-                node->setOperand1(this->parenExpr());
-                node->setOperand2(this->statement());
-                entry = this->lexer->getCurrentToken();
-                if (entry->getType() == Token::KEYWORD) {
-                    shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
-                    /// ELSE
-                    if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
-                        node->setType(Node::IFELSE);
-                        this->lexer->nextToken();
-                        node->setOperand3(this->statement());
+            switch (token->getKeywordType()) {
+                /// IF
+                case KEYWORDS::IF: {
+                    node = new Node(Node::IF);
+                    this->lexer->nextToken();
+                    node->setOperand1(this->parenExpr());
+                    node->setOperand2(this->statement());
+                    entry = this->lexer->getCurrentToken();
+                    if (entry->getType() == Token::KEYWORD) {
+                        shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
+                        /// ELSE
+                        if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
+                            node->setType(Node::IFELSE);
+                            this->lexer->nextToken();
+                            node->setOperand3(this->statement());
+                        }
                     }
                 }
+                    break;
+                case KEYWORDS::WHILE: {
+                    node = new Node(Node::WHILE);
+                    this->lexer->nextToken();
+                    node->setOperand1(this->parenExpr());
+                    node->setOperand2(this->statement());
+                }
+                    break;
+                case KEYWORDS::DO: {
+                    node = new Node(Node::DO);
+                    this->lexer->nextToken();
+                    node->setOperand1(this->statement());
+                    if (this->lexer->getCurrentToken()->getType() != Token::KEYWORD)
+                        throw exception();
+                    token = dynamic_pointer_cast<KeywordToken>(this->lexer->getCurrentToken());
+                    if (token->getKeywordType() != KEYWORDS::WHILE)
+                        throw exception();
+                    this->lexer->nextToken();
+                    node->setOperand2(this->parenExpr());
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw exception();
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() != OPERATORS::SEMICOLON)
+                        throw exception();
+                }
+                    break;
             }
-
         }
             break;
             /// SYMBOLS

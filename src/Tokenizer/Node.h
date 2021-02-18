@@ -54,6 +54,7 @@ public:
         IFELSE,
         WHILE,
         FOR,
+        DO,
 
         ADD,
         SUBTRACT,
