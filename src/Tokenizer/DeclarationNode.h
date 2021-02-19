@@ -22,44 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_TOKENIZER_H
-#define APE_LANG_COMPILER_TOKENIZER_H
+#ifndef APE_LANG_COMPILER_DECLARATIONNODE_H
+#define APE_LANG_COMPILER_DECLARATIONNODE_H
 
-#include <memory>
-#include "../Lexer/Lexer.h"
-#include "Node.h"
-#include "DeclarationNode.h"
 
-class Tokenizer {
-protected:
-    Lexer *lexer;
+#include "VariableNode.h"
+
+class DeclarationNode: public VariableNode {
 public:
-    explicit Tokenizer(Lexer *lexer);
-
-    explicit Tokenizer(Lexer &lexer);
-
-    Tokenizer(const Tokenizer &reference);
-
-    ~Tokenizer();
-
-public:
-    Node *parse();
-
+    enum DATA_TYPE {
+        INT,
+        FLOAT,
+        BOOLEAN,
+        STRING,
+    };
 protected:
-    Node *statement() const;
-
-    Node *parenExpr() const;
-
-    Node *expression() const;
-
-    DeclarationNode* declaration() const;
-
-    Node *test() const;
-
-    Node *summa() const;
-
-    Node *term() const;
+    DATA_TYPE dataType;
+    bool constant;
+public:
+    DeclarationNode(DATA_TYPE dataType, string& name, bool isFunc = false, Node* operand1 = nullptr);
+    DeclarationNode(const DeclarationNode& reference);
+    ~DeclarationNode() override;
+public:
+    DeclarationNode* setConstant(bool constant);
+    Node* setDataType(DATA_TYPE dataType);
+public:
+    bool isConstant() const;
+    DATA_TYPE getBasicType() const;
+public:
+    ostream& printNode(ostream& stream) const override;
+protected:
+    string getDatTypeString() const;
 };
 
 
-#endif //APE_LANG_COMPILER_TOKENIZER_H
+#endif //APE_LANG_COMPILER_DECLARATIONNODE_H

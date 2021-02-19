@@ -69,11 +69,18 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
         pair<string, KEYWORDS>("do", KEYWORDS::DO),
         pair<string, KEYWORDS>("goto", KEYWORDS::GOTO),
 
+        pair<string, KEYWORDS>("const", KEYWORDS::CONST),
+
         pair<string, KEYWORDS>("switch", KEYWORDS::SWITCH),
         pair<string, KEYWORDS>("case", KEYWORDS::CASE),
 
         pair<string, KEYWORDS>("true", KEYWORDS::TRUE),
-        pair<string, KEYWORDS>("false", KEYWORDS::FALSE)
+        pair<string, KEYWORDS>("false", KEYWORDS::FALSE),
+
+        pair<string, KEYWORDS>("int", KEYWORDS::INT),
+        pair<string, KEYWORDS>("float", KEYWORDS::FLOAT),
+        pair<string, KEYWORDS>("string", KEYWORDS::STRING),
+        pair<string, KEYWORDS>("boolean", KEYWORDS::BOOLEAN)
 };
 
 Lexer::Lexer(istream *const stream) {

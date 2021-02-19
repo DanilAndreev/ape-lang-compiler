@@ -100,6 +100,21 @@ Node *Tokenizer::statement() const {
                         throw ApeCompilerException("Expected \";\"");
                 }
                     break;
+                case KEYWORDS::CONST: {
+                    this->lexer->nextToken();
+                    node = this->declaration()->setConstant(true);
+                }
+                    break;
+                default:
+                    KEYWORDS type = token->getKeywordType();
+                    if (
+                            type == KEYWORDS::FLOAT ||
+                            type == KEYWORDS::BOOLEAN ||
+                            type == KEYWORDS::INT ||
+                            type == KEYWORDS::STRING
+                            ) {
+                        return this->declaration();
+                    }
             }
         }
             break;
@@ -288,6 +303,57 @@ Node *Tokenizer::term() const {
         default:
             return this->parenExpr();
     }
+
+    return node;
+}
+
+DeclarationNode *Tokenizer::declaration() const {
+    DeclarationNode* node = nullptr;
+    shared_ptr<Token> token = this->lexer->getCurrentToken();
+    if (token->getType() != Token::KEYWORD)
+        throw ApeCompilerException("Incorrect type");
+
+    shared_ptr<KeywordToken> keywordToken = dynamic_pointer_cast<KeywordToken>(token);
+    if (keywordToken == nullptr)
+        throw ApeCompilerException("Invalid cast");
+
+    KEYWORDS type = keywordToken->getKeywordType();
+
+    DeclarationNode::DATA_TYPE dataType;
+    switch (type) {
+        case KEYWORDS::FLOAT:
+            dataType = DeclarationNode::DATA_TYPE::FLOAT;
+            break;
+        case KEYWORDS::INT:
+            dataType = DeclarationNode::DATA_TYPE::INT;
+            break;
+        case KEYWORDS::BOOLEAN:
+            dataType = DeclarationNode::DATA_TYPE::BOOLEAN;
+            break;
+        case KEYWORDS::STRING:
+            dataType = DeclarationNode::DATA_TYPE::STRING;
+            break;
+    }
+    shared_ptr<Token> current = this->lexer->nextToken();
+    if (current->getType() != Token::IDENTIFIER)
+        throw ApeCompilerException("Incorrect daclaration");
+    string name = current->getPayload();
+    node = new DeclarationNode(dataType, name);
+    current = this->lexer->nextToken();
+    if (current->getType() == Token::SYMBOL) {
+        shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(current);
+        if (opToken->getOperatorType() == OPERATORS::ASSIGN) {
+            this->lexer->nextToken();
+            node->setOperand1(this->summa());
+        } else if (opToken->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
+            // TODO: finish functions!
+        }
+    }
+    current = this->lexer->getCurrentToken();
+    if (current->getType() != Token::SYMBOL)
+        throw ApeCompilerException("Expected \";\"");
+    if (dynamic_pointer_cast<OperatorToken>(current)->getOperatorType() != OPERATORS::SEMICOLON)
+        throw ApeCompilerException("Expected \";\"");
 
     return node;
 }

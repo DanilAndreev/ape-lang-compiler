@@ -44,6 +44,11 @@ enum KEYWORDS {
     SWITCH,
     CASE,
     GOTO,
+
+    INT,
+    STRING,
+    FLOAT,
+    BOOLEAN
 };
 
 /**
