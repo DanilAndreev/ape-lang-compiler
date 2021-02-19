@@ -50,9 +50,13 @@ protected:
 
     Node *parenExpr() const;
 
+    Node *argumentsDeclaration() const;
+
+    Node *arguments() const;
+
     Node *expression() const;
 
-    DeclarationNode* declaration() const;
+    DeclarationNode* declaration(bool initialization = true) const;
 
     Node *test() const;
 
