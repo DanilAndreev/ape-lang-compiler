@@ -358,7 +358,7 @@ shared_ptr<DeclarationNode> Tokenizer::declaration(bool initialization, bool sem
             node->setOperand1(this->test());
         } else if (opToken->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
 
-            node->setOperand1(this->argumentsDeclaration());
+            node->setOperand1(this->argumentsDeclaration()); //TODO: swap
             node->setOperand2(this->statement());
             return node;
         }
@@ -438,4 +438,29 @@ shared_ptr<Node> Tokenizer::arguments() const {
         throw ApeCompilerException("Expected \")\"");
     this->lexer->nextToken();
     return node;
+}
+
+shared_ptr<Node> Tokenizer::validateTree(const shared_ptr<Node> input, const shared_ptr<Scope> inputScope) {
+//    shared_ptr<Scope> scope = inputScope ? make_shared<Scope>(inputScope.get()) : make_shared<Scope>();
+    const shared_ptr<Node> operand1 = input->getOperand1();
+    const shared_ptr<Node> operand2 = input->getOperand2();
+    const shared_ptr<Node> operand3 = input->getOperand3();
+
+    switch (input->getType()) {
+        case Node::SEQUENCE:
+            break;
+        case Node::VAR:
+            shared_ptr<DeclarationNode> declaration = dynamic_pointer_cast<DeclarationNode>(input);
+            if (declaration != nullptr) {
+                // TODO: register in scope.
+            } else {
+                // TODO: check in scope
+            }
+            break;
+        default:
+            break;
+    }
+
+
+    return input;
 }

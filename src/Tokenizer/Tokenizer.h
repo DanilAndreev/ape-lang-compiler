@@ -33,6 +33,11 @@ SOFTWARE.
 class Tokenizer {
 protected:
     Lexer *lexer;
+protected:
+    typedef map<string, DeclarationNode> Scope;
+protected:
+    static shared_ptr<Node> validateTree(const shared_ptr<Node> input, const shared_ptr<Scope> scope = nullptr);
+
 public:
     explicit Tokenizer(Lexer *lexer);
 
