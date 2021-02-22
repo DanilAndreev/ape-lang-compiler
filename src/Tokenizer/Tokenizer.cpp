@@ -39,17 +39,17 @@ Tokenizer::Tokenizer(const Tokenizer &reference) {
     this->lexer = reference.lexer;
 }
 
-Node *Tokenizer::parse() {
+shared_ptr<Node> Tokenizer::parse() {
     this->lexer->nextToken();
-    Node *node = new Node(Node::PROGRAM, this->statement());
+    shared_ptr<Node> node = make_shared<Node>(Node::PROGRAM, this->statement());
     if (!this->lexer->isEof())
         throw exception();
     return node;
 }
 
-Node *Tokenizer::statement() const {
+shared_ptr<Node> Tokenizer::statement() const {
     shared_ptr<Token> entry = this->lexer->getCurrentToken();
-    Node *node = nullptr;
+    shared_ptr<Node> node = nullptr;
 
     switch (entry->getType()) {
         /// KEYWORDS
@@ -59,7 +59,7 @@ Node *Tokenizer::statement() const {
             switch (token->getKeywordType()) {
                 /// IF
                 case KEYWORDS::IF: {
-                    node = new Node(Node::IF);
+                    node = make_shared<Node>(Node::IF);
                     this->lexer->nextToken();
                     node->setOperand1(this->parenExpr());
                     node->setOperand2(this->statement());
@@ -76,14 +76,14 @@ Node *Tokenizer::statement() const {
                 }
                     break;
                 case KEYWORDS::WHILE: {
-                    node = new Node(Node::WHILE);
+                    node = make_shared<Node>(Node::WHILE);
                     this->lexer->nextToken();
                     node->setOperand1(this->parenExpr());
                     node->setOperand2(this->statement());
                 }
                     break;
                 case KEYWORDS::DO: {
-                    node = new Node(Node::DO);
+                    node = make_shared<Node>(Node::DO);
                     this->lexer->nextToken();
                     node->setOperand1(this->statement());
                     if (this->lexer->getCurrentToken()->getType() != Token::KEYWORD)
@@ -102,7 +102,8 @@ Node *Tokenizer::statement() const {
                     break;
                 case KEYWORDS::CONST: {
                     this->lexer->nextToken();
-                    node = this->declaration()->setConstant(true);
+                    node = this->declaration();
+                    dynamic_pointer_cast<DeclarationNode>(node)->setConstant(true);
                 }
                     break;
                 default:
@@ -125,14 +126,14 @@ Node *Tokenizer::statement() const {
             switch (token->getOperatorType()) {
                 /// SEMICOLON
                 case OPERATORS::SEMICOLON: {
-                    node = new Node(Node::EMPTY);
+                    node = make_shared<Node>(Node::EMPTY);
                     this->lexer->nextToken();
 
                 }
                     break;
                     /// CURLY_BRACE_OPEN
                 case OPERATORS::CURLY_BRACE_OPEN: {
-                    node = new Node(Node::EMPTY);
+                    node = make_shared<Node>(Node::EMPTY);
                     this->lexer->nextToken();
 
                     while (!(
@@ -140,7 +141,7 @@ Node *Tokenizer::statement() const {
                             dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())
                                     ->getOperatorType() == OPERATORS::CURLY_BRACE_CLOSE
                     )) {
-                        node = new Node(Node::SEQUENCE, node, this->statement());
+                        node = make_shared<Node>(Node::SEQUENCE, node, this->statement());
                     }
                     this->lexer->nextToken();
                 }
@@ -149,7 +150,7 @@ Node *Tokenizer::statement() const {
         }
             break;
         default:
-            node = new Node(Node::EXPRESSION, this->expression());
+            node = make_shared<Node>(Node::EXPRESSION, this->expression());
             if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
                 throw exception();
             shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
@@ -161,8 +162,8 @@ Node *Tokenizer::statement() const {
     return node;
 }
 
-Node *Tokenizer::parenExpr() const {
-    Node *node = nullptr;
+shared_ptr<Node> Tokenizer::parenExpr() const {
+    shared_ptr<Node> node = nullptr;
 
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::SYMBOL)
@@ -185,8 +186,8 @@ Node *Tokenizer::parenExpr() const {
     return node;
 }
 
-Node *Tokenizer::expression() const {
-    Node *node = this->test();
+shared_ptr<Node> Tokenizer::expression() const {
+    shared_ptr<Node> node = this->test();
 
     if (this->lexer->getCurrentToken()->getType() == Token::IDENTIFIER)
         return node;
@@ -195,15 +196,15 @@ Node *Tokenizer::expression() const {
         shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
         if (token->getOperatorType() == OPERATORS::ASSIGN) {
             this->lexer->nextToken();
-            node = new Node(Node::SET, node, this->summa());
+            node = make_shared<Node>(Node::SET, node, this->summa());
         }
     }
 
     return node;
 }
 
-Node *Tokenizer::test() const {
-    Node *node = this->summa();
+shared_ptr<Node> Tokenizer::test() const {
+    shared_ptr<Node> node = this->summa();
 
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() == Token::SYMBOL) {
@@ -211,27 +212,27 @@ Node *Tokenizer::test() const {
         switch (operatorToken->getOperatorType()) {
             case OPERATORS::LESS:
                 this->lexer->nextToken();
-                node = new Node(Node::LESS, node, this->summa());
+                node = make_shared<Node>(Node::LESS, node, this->summa());
                 break;
             case OPERATORS::GREATER:
                 this->lexer->nextToken();
-                node = new Node(Node::GREATER, node, this->summa());
+                node = make_shared<Node>(Node::GREATER, node, this->summa());
                 break;
             case OPERATORS::LESS_EQUAL:
                 this->lexer->nextToken();
-                node = new Node(Node::LESS_EQUAL, node, this->summa());
+                node = make_shared<Node>(Node::LESS_EQUAL, node, this->summa());
                 break;
             case OPERATORS::GREATER_EQUAL:
                 this->lexer->nextToken();
-                node = new Node(Node::GREATER_EQUAL, node, this->summa());
+                node = make_shared<Node>(Node::GREATER_EQUAL, node, this->summa());
                 break;
             case OPERATORS::EQUAL:
                 this->lexer->nextToken();
-                node = new Node(Node::EQUAL, node, this->summa());
+                node = make_shared<Node>(Node::EQUAL, node, this->summa());
                 break;
             case OPERATORS::NOTEQUAL:
                 this->lexer->nextToken();
-                node = new Node(Node::NOT_EQUAL, node, this->summa());
+                node = make_shared<Node>(Node::NOT_EQUAL, node, this->summa());
                 break;
         }
     }
@@ -239,8 +240,8 @@ Node *Tokenizer::test() const {
     return node;
 }
 
-Node *Tokenizer::summa() const {
-    Node *node = this->term();
+shared_ptr<Node> Tokenizer::summa() const {
+    shared_ptr<Node> node = this->term();
 
     shared_ptr<OperatorToken> token;
     while (
@@ -268,25 +269,25 @@ Node *Tokenizer::summa() const {
                 break;
         }
         this->lexer->nextToken();
-        node = new Node(type, node, this->term());
+        node = make_shared<Node>(type, node, this->term());
 
     }
 
     return node;
 }
 
-Node *Tokenizer::term() const {
-    Node *node = nullptr;
+shared_ptr<Node> Tokenizer::term() const {
+    shared_ptr<Node> node = nullptr;
     switch (this->lexer->getCurrentToken()->getType()) {
         case Token::IDENTIFIER : {
             string payload = this->lexer->getCurrentToken()->getPayload();
-            node = new VariableNode(payload, false);
+            node = make_shared<VariableNode>(payload, false);
             shared_ptr<Token> token = this->lexer->nextToken();
             if (token->getType() == Token::SYMBOL) {
                 shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(token);
                 switch (opToken->getOperatorType()) {
                     case OPERATORS::ROUND_BRACE_OPEN: {
-                        dynamic_cast<VariableNode*>(node)->setIsFunction(true);
+                        dynamic_pointer_cast<VariableNode>(node)->setIsFunction(true);
                         node->setOperand1(this->arguments());
                     }
                         break;
@@ -297,16 +298,16 @@ Node *Tokenizer::term() const {
         case Token::NUMBER: {
             shared_ptr<NumberToken> token = dynamic_pointer_cast<NumberToken>(this->lexer->getCurrentToken());
             if (token->isInteger())
-                node = new IntegerNode(token->getLong());
+                node = make_shared<IntegerNode>(token->getLong());
             else
-                node = new FloatNode(token->getDouble());
+                node = make_shared<FloatNode>(token->getDouble());
 
             this->lexer->nextToken();
         }
             break;
         case Token::STRING: {
             string payload = this->lexer->getCurrentToken()->getPayload();
-            node = new StringNode(payload);
+            node = make_shared<StringNode>(payload);
             this->lexer->nextToken();
         }
             break;
@@ -317,8 +318,8 @@ Node *Tokenizer::term() const {
     return node;
 }
 
-DeclarationNode *Tokenizer::declaration(bool initialization, bool semicolon) const {
-    DeclarationNode *node = nullptr;
+shared_ptr<DeclarationNode> Tokenizer::declaration(bool initialization, bool semicolon) const {
+    shared_ptr<DeclarationNode> node = nullptr;
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::KEYWORD)
         throw ApeCompilerException("Incorrect type");
@@ -348,7 +349,7 @@ DeclarationNode *Tokenizer::declaration(bool initialization, bool semicolon) con
     if (current->getType() != Token::IDENTIFIER)
         throw ApeCompilerException("Incorrect daclaration");
     string name = current->getPayload();
-    node = new DeclarationNode(dataType, name);
+    node = make_shared<DeclarationNode>(dataType, name);
     current = this->lexer->nextToken();
     if (initialization && current->getType() == Token::SYMBOL) {
         shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(current);
@@ -373,7 +374,7 @@ DeclarationNode *Tokenizer::declaration(bool initialization, bool semicolon) con
     return node;
 }
 
-Node *Tokenizer::argumentsDeclaration() const {
+shared_ptr<Node> Tokenizer::argumentsDeclaration() const {
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::SYMBOL)
         throw ApeCompilerException("Expected \"(\"");
@@ -382,12 +383,12 @@ Node *Tokenizer::argumentsDeclaration() const {
         throw ApeCompilerException("Expected \"(\"");
     token = this->lexer->nextToken();
 
-    Node *node = new Node(Node::SEQUENCE);
+    shared_ptr<Node> node = make_shared<Node>(Node::SEQUENCE);
 
     if (token->getType() != Token::SYMBOL) {
         opToken = make_shared<OperatorToken>(OPERATORS::COMA);
         while (opToken != nullptr && opToken->getOperatorType() == OPERATORS::COMA) {
-            node = new Node(Node::SEQUENCE, node, this->declaration(false, false));
+            node = make_shared<Node>(Node::SEQUENCE, node, this->declaration(false, false));
             token = this->lexer->getCurrentToken();
             opToken = dynamic_pointer_cast<OperatorToken>(token);
             if (opToken && opToken->getOperatorType() == OPERATORS::COMA)
@@ -406,7 +407,7 @@ Node *Tokenizer::argumentsDeclaration() const {
     return node;
 }
 
-Node *Tokenizer::arguments() const {
+shared_ptr<Node> Tokenizer::arguments() const {
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::SYMBOL)
         throw ApeCompilerException("Expected \"(\"");
@@ -415,12 +416,12 @@ Node *Tokenizer::arguments() const {
         throw ApeCompilerException("Expected \"(\"");
     token = this->lexer->nextToken();
 
-    Node *node = new Node(Node::SEQUENCE);
+    shared_ptr<Node> node = make_shared<Node>(Node::SEQUENCE);
 
     if (token->getType() != Token::SYMBOL) {
         opToken = make_shared<OperatorToken>(OPERATORS::COMA);
         while (opToken != nullptr && opToken->getOperatorType() == OPERATORS::COMA) {
-            node = new Node(Node::SEQUENCE, node, this->test());
+            node = make_shared<Node>(Node::SEQUENCE, node, this->test());
             token = this->lexer->getCurrentToken();
             opToken = dynamic_pointer_cast<OperatorToken>(token);
             if (opToken && opToken->getOperatorType() == OPERATORS::COMA)

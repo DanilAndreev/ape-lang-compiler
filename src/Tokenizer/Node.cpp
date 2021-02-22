@@ -24,7 +24,9 @@ SOFTWARE.
 
 #include "Node.h"
 
-Node::Node(const Node::TYPE type, Node *op1, Node *op2, Node *op3) {
+#include <memory>
+
+Node::Node(const Node::TYPE type, shared_ptr<Node> op1, shared_ptr<Node> op2, shared_ptr<Node> op3) {
     this->type = type;
     this->operand1 = op1;
     this->operand2 = op2;
@@ -38,25 +40,22 @@ Node::~Node() {
 }
 
 Node::Node(const Node& reference): Node(reference.type) {
-    if (reference.operand1) this->operand1 = new Node(*reference.operand1);
-    if (reference.operand2) this->operand2 = new Node(*reference.operand2);
-    if (reference.operand3) this->operand3 = new Node(*reference.operand3);
+    if (reference.operand1) this->operand1 = make_shared<Node>(*reference.operand1);
+    if (reference.operand2) this->operand2 = make_shared<Node>(*reference.operand2);
+    if (reference.operand3) this->operand3 = make_shared<Node>(*reference.operand3);
 }
 
 void Node::destructTree() {
     if (this->operand1) {
         this->operand1->destructTree();
-        delete this->operand1;
         this->operand1 = nullptr;
     }
     if (this->operand2) {
         this->operand2->destructTree();
-        delete this->operand2;
         this->operand2 = nullptr;
     }
     if (this->operand3) {
         this->operand3->destructTree();
-        delete this->operand3;
         this->operand3 = nullptr;
     }
 }
@@ -65,29 +64,29 @@ Node::TYPE Node::getType() const {
     return this->type;
 }
 
-Node const *Node::getOperand1() const {
+const shared_ptr<Node> Node::getOperand1() const {
     return this->operand1;
 }
 
-Node const *Node::getOperand2() const {
+const shared_ptr<Node> Node::getOperand2() const {
     return this->operand2;
 }
 
-Node const *Node::getOperand3() const {
+const shared_ptr<Node> Node::getOperand3() const {
     return this->operand3;
 }
 
-Node *Node::setOperand1(Node *operand) {
+Node *Node::setOperand1(const shared_ptr<Node> operand) {
     this->operand1 = operand;
     return this;
 }
 
-Node *Node::setOperand2(Node *operand) {
+Node *Node::setOperand2(const shared_ptr<Node>operand) {
     this->operand2 = operand;
     return this;
 }
 
-Node *Node::setOperand3(Node *operand) {
+Node *Node::setOperand3(const shared_ptr<Node> operand) {
     this->operand3 = operand;
     return this;
 }

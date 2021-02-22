@@ -26,6 +26,7 @@ SOFTWARE.
 #define APE_LANG_COMPILER_VARIABLENODE_H
 
 
+#include <memory>
 #include "Node.h"
 
 /**
@@ -39,9 +40,9 @@ protected:
     /// isFunc - if true, this variable refers to function.
     bool isFunc;
 public:
-    explicit VariableNode(string &identifier, bool isFunc = false, Node *operand1 = nullptr);
+    explicit VariableNode(string &identifier, bool isFunc = false, shared_ptr<Node> operand1 = nullptr);
 
-    explicit VariableNode(string &identifier, Node *operand1 = nullptr);
+    explicit VariableNode(string &identifier, shared_ptr<Node> operand1 = nullptr);
 
     VariableNode(const VariableNode &reference);
 

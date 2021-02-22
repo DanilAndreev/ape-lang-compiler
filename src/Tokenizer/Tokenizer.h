@@ -43,26 +43,26 @@ public:
     ~Tokenizer();
 
 public:
-    Node *parse();
+    shared_ptr<Node> parse();
 
 protected:
-    Node *statement() const;
+    shared_ptr<Node> statement() const;
 
-    Node *parenExpr() const;
+    shared_ptr<Node> parenExpr() const;
 
-    Node *argumentsDeclaration() const;
+    shared_ptr<Node> argumentsDeclaration() const;
 
-    Node *arguments() const;
+    shared_ptr<Node> arguments() const;
 
-    Node *expression() const;
+    shared_ptr<Node> expression() const;
 
-    DeclarationNode* declaration(bool initialization = true, bool semicolon = true) const;
+    shared_ptr<DeclarationNode> declaration(bool initialization = true, bool semicolon = true) const;
 
-    Node *test() const;
+    shared_ptr<Node> test() const;
 
-    Node *summa() const;
+    shared_ptr<Node> summa() const;
 
-    Node *term() const;
+    shared_ptr<Node> term() const;
 };
 
 

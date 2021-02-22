@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "DeclarationNode.h"
 
-DeclarationNode::DeclarationNode(DeclarationNode::DATA_TYPE dataType, string &name, bool isFunc, Node *operand1)
+DeclarationNode::DeclarationNode(DeclarationNode::DATA_TYPE dataType, string &name, bool isFunc, shared_ptr<Node> operand1)
         : VariableNode(name, isFunc, operand1) {
     this->dataType = dataType;
     this->constant = false;
