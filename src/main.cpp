@@ -24,10 +24,10 @@ int main(int _argc, char *_argv[]) {
 //    } while (token->getType() != Token::TYPE::EOFILE);
 
     Tokenizer *tokenizer = new Tokenizer(lexer);
-    Node *tree = tokenizer->parse();
+    shared_ptr<Node> tree = tokenizer->parse();
     tree->print(cout, 0, "root");
     tree->destructTree();
-    delete tree;
+    tree = nullptr;
 
 
     fin->close();

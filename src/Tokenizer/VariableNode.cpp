@@ -24,12 +24,12 @@ SOFTWARE.
 
 #include "VariableNode.h"
 
-VariableNode::VariableNode(string &identifier, bool isFunc, Node* operand1): Node(Node::VAR, operand1) {
+VariableNode::VariableNode(string &identifier, bool isFunc, shared_ptr<Node> operand1): Node(Node::VAR, operand1) {
     this->identifier = identifier;
     this->isFunc = isFunc;
 }
 
-VariableNode::VariableNode(string &identifier, Node *operand1): VariableNode(identifier, false, operand1) {
+VariableNode::VariableNode(string &identifier,  shared_ptr<Node> operand1): VariableNode(identifier, false, operand1) {
     if (operand1) this->isFunc = true;
 }
 

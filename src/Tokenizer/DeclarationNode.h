@@ -40,7 +40,7 @@ protected:
     DATA_TYPE dataType;
     bool constant;
 public:
-    DeclarationNode(DATA_TYPE dataType, string& name, bool isFunc = false, Node* operand1 = nullptr);
+    DeclarationNode(DATA_TYPE dataType, string& name, bool isFunc = false, shared_ptr<Node> operand1 = nullptr);
     DeclarationNode(const DeclarationNode& reference);
     ~DeclarationNode() override;
 public:

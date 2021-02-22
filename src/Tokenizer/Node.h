@@ -26,6 +26,7 @@ SOFTWARE.
 #define APE_LANG_COMPILER_NODE_H
 
 #include <iostream>
+#include <memory>
 
 using namespace std;
 
@@ -76,19 +77,24 @@ protected:
     /**
      * operand1 - first nested operand of the node.
      */
-    Node *operand1;
+    shared_ptr<Node> operand1;
     /**
      * operand2 - second nested operand of the node.
      */
-    Node *operand2;
+    shared_ptr<Node> operand2;
     /**
      * operand3 - first nested operand of the node.
      */
-    Node *operand3;
+    shared_ptr<Node> operand3;
 public:
-    Node(const TYPE type, Node *operand1 = nullptr, Node *operand2 = nullptr, Node *operand3 = nullptr);
+    Node(
+            const TYPE type,
+            shared_ptr<Node> operand1 = nullptr,
+            shared_ptr<Node> operand2 = nullptr,
+            shared_ptr<Node> operand3 = nullptr
+    );
 
-    Node(const Node& reference);
+    Node(const Node &reference);
 
     virtual ~Node();
 
@@ -103,19 +109,19 @@ public:
      * getOperand1 - getter for node first operand.
      * @author Danil Andreev
      */
-    Node const *getOperand1() const;
+    const shared_ptr<Node> getOperand1() const;
 
     /**
      * getOperand2 - getter for node second operand.
      * @author Danil Andreev
      */
-    Node const *getOperand2() const;
+    const shared_ptr<Node> getOperand2() const;
 
     /**
      * getOperand3 - getter for node third operand.
      * @author Danil Andreev
      */
-    Node const *getOperand3() const;
+    const shared_ptr<Node> getOperand3() const;
 
 public:
     /**
@@ -130,21 +136,21 @@ public:
      * @paran operand - Target node for nesting.
      * @author Danil Andreev
      */
-    Node *setOperand1(Node *operand);
+    Node *setOperand1(const shared_ptr<Node> operand);
 
     /**
      * setOperand2 - setter for node second operand.
      * @paran operand - Target node for nesting.
      * @author Danil Andreev
      */
-    Node *setOperand2(Node *operand);
+    Node *setOperand2(const shared_ptr<Node> operand);
 
     /**
      * setOperand3 - setter for node third operand.
      * @paran operand - Target node for nesting.
      * @author Danil Andreev
      */
-    Node *setOperand3(Node *operand);
+    Node *setOperand3(const shared_ptr<Node> operand);
 
 public:
     virtual string getNodeTypeStr() const;
@@ -162,7 +168,7 @@ public:
      */
     ostream &print(ostream &stream = cout, int shift = 0, string message = "") const;
 
-    virtual ostream& printNode(ostream& stream) const;
+    virtual ostream &printNode(ostream &stream) const;
 
 public:
     friend ostream &operator<<(ostream &stream, const Node &node);
