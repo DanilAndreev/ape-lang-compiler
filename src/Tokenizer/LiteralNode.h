@@ -22,30 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_LITERALNODE_H
+#define APE_LANG_COMPILER_LITERALNODE_H
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+#include "Node.h"
 
-Token::Token(const TYPE type) : Token(type, "") {}
+class LiteralNode: public Node {
+public:
+    explicit LiteralNode(const TYPE type);
+    LiteralNode(const LiteralNode& reference);
+    ~LiteralNode() override;
+};
 
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
-
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
+#endif //APE_LANG_COMPILER_LITERALNODE_H

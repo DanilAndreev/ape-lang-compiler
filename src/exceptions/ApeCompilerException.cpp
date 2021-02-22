@@ -22,30 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include "ApeCompilerException.h"
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
+std::string ApeCompilerException::getMessage() const noexcept {
+    return this->message;
 }
 
-Token::Token(const TYPE type) : Token(type, "") {}
-
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
+ApeCompilerException::ApeCompilerException(const ApeCompilerException &reference): std::exception(reference) {
+    this->fatal = reference.fatal;
+    this->message = reference.message;
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
+ApeCompilerException::ApeCompilerException(std::string message, bool fatal): std::exception() {
+    this->message = message;
+    this->fatal = fatal;
 }
 
-string Token::getPayload() const {
-    return this->payload;
+const char *ApeCompilerException::what() const noexcept {
+    return this->message.c_str();
 }
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
+ApeCompilerException::~ApeCompilerException() {}
+
+std::ostream &operator<<(std::ostream &stream, ApeCompilerException &exception) {
+    stream << exception.getMessage();
+    return stream;
 }

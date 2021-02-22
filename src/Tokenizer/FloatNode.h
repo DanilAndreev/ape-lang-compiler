@@ -22,56 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_NUMBERTOKEN_H
-#define APE_LANG_COMPILER_NUMBERTOKEN_H
+#ifndef APE_LANG_COMPILER_FLOATNODE_H
+#define APE_LANG_COMPILER_FLOATNODE_H
 
-#include <regex>
-#include "Token.h"
 
-using namespace std;
+#include "LiteralNode.h"
 
 /**
- * NumberToken - class designed to store numeric values from Lexer.
+ * FloatNode - class for storing floating point number literal nodes.
  * @author Danil Andreev
  */
-class NumberToken : public Token {
+class FloatNode: public LiteralNode {
 protected:
-    /**
-     * NumberRegExp - RegExp for number correctness check.
-     */
-    static regex NumberRegExp;
-    /**
-     * value - stored numeric value.
-     */
-    long double value;
+    /// payload of floating point number literal.
+    long double payload;
 public:
-    explicit NumberToken(const string payload);
-
-    NumberToken(const NumberToken &reference);
-
-    virtual shared_ptr<Token> clone() const;
-
+    explicit FloatNode(long double payload);
+    FloatNode(const FloatNode& reference);
+    ~FloatNode() override;
 public:
     /**
-     * isInteger - method designed to check if the stored number is integer.
-     * @return true if number is integer and false if not.
-     */
-    bool isInteger() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in float format.
+     * getPayload - getter for floating point literal payload.
      * @author Danil Andreev
      */
-    long double getDouble() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in integer format.
-     * @author Danil Andreev
-     */
-    long long getLong() const;
+    long double getPayload() const;
+public:
+    ostream& printNode(ostream& stream) const override;
 };
 
 
-#endif //APE_LANG_COMPILER_NUMBERTOKEN_H
+#endif //APE_LANG_COMPILER_FLOATNODE_H

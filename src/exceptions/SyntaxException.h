@@ -22,30 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_SYNTAXEXCEPTION_H
+#define APE_LANG_COMPILER_SYNTAXEXCEPTION_H
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+#include "ApeCompilerException.h"
 
-Token::Token(const TYPE type) : Token(type, "") {}
+class SyntaxException: public ApeCompilerException {
 
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
+};
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
 
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
+#endif //APE_LANG_COMPILER_SYNTAXEXCEPTION_H

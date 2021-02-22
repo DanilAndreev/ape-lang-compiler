@@ -22,56 +22,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_NUMBERTOKEN_H
-#define APE_LANG_COMPILER_NUMBERTOKEN_H
+#ifndef APE_LANG_COMPILER_KEYWORDTOKEN_H
+#define APE_LANG_COMPILER_KEYWORDTOKEN_H
 
-#include <regex>
+
 #include "Token.h"
 
-using namespace std;
-
 /**
- * NumberToken - class designed to store numeric values from Lexer.
+ * KEYWORDS - enumeration of keyword types.
  * @author Danil Andreev
  */
-class NumberToken : public Token {
+enum KEYWORDS {
+    DO,
+    WHILE,
+    FOR,
+    IF,
+    ELSE,
+    CONST,
+    TRUE,
+    FALSE,
+    SWITCH,
+    CASE,
+    GOTO,
+
+    INT,
+    STRING,
+    FLOAT,
+    BOOLEAN
+};
+
+/**
+ * KeywordToken - class for storing keyword tokens.
+ * Contains enum keyword type.
+ * @author Danil Andreev
+ */
+class KeywordToken : public Token {
 protected:
     /**
-     * NumberRegExp - RegExp for number correctness check.
+     * keywordType - enum keyword type.
      */
-    static regex NumberRegExp;
-    /**
-     * value - stored numeric value.
-     */
-    long double value;
+    KEYWORDS keywordType;
 public:
-    explicit NumberToken(const string payload);
+    explicit KeywordToken(KEYWORDS type, string payload = "");
 
-    NumberToken(const NumberToken &reference);
+    KeywordToken(const KeywordToken &reference);
 
     virtual shared_ptr<Token> clone() const;
 
 public:
     /**
-     * isInteger - method designed to check if the stored number is integer.
-     * @return true if number is integer and false if not.
-     */
-    bool isInteger() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in float format.
+     * getKeywordType - getter for keyword type.
      * @author Danil Andreev
      */
-    long double getDouble() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in integer format.
-     * @author Danil Andreev
-     */
-    long long getLong() const;
+    KEYWORDS getKeywordType() const;
 };
 
 
-#endif //APE_LANG_COMPILER_NUMBERTOKEN_H
+#endif //APE_LANG_COMPILER_KEYWORDTOKEN_H

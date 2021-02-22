@@ -22,30 +22,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_TOKENIZER_H
+#define APE_LANG_COMPILER_TOKENIZER_H
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+#include <memory>
+#include "../Lexer/Lexer.h"
+#include "Node.h"
+#include "DeclarationNode.h"
 
-Token::Token(const TYPE type) : Token(type, "") {}
+class Tokenizer {
+protected:
+    Lexer *lexer;
+public:
+    explicit Tokenizer(Lexer *lexer);
 
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
+    explicit Tokenizer(Lexer &lexer);
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
+    Tokenizer(const Tokenizer &reference);
 
-string Token::getPayload() const {
-    return this->payload;
-}
+    ~Tokenizer();
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
+public:
+    Node *parse();
+
+protected:
+    Node *statement() const;
+
+    Node *parenExpr() const;
+
+    Node *argumentsDeclaration() const;
+
+    Node *arguments() const;
+
+    Node *expression() const;
+
+    DeclarationNode* declaration(bool initialization = true, bool semicolon = true) const;
+
+    Node *test() const;
+
+    Node *summa() const;
+
+    Node *term() const;
+};
+
+
+#endif //APE_LANG_COMPILER_TOKENIZER_H

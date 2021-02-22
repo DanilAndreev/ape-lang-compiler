@@ -29,9 +29,12 @@ SOFTWARE.
 #include <regex>
 #include <set>
 #include <vector>
+#include <utility>
 #include <string>
 #include "Token.h"
 #include "NumberToken.h"
+#include "OperatorToken.h"
+#include "KeywordToken.h"
 
 using namespace std;
 
@@ -51,11 +54,11 @@ protected:
      * Symbols - an array of lang symbols/operators.
      * Will be added to set.
      */
-    static vector<string> Symbols;
+    static vector<pair<string, OPERATORS>> Symbols;
     /**
      * Keywords - set of lang keywords.
      */
-    static set<string> Keywords;
+    static set<pair<string, KEYWORDS>> Keywords;
     /**
      * stream - input data stream with program code.
      */
@@ -63,47 +66,79 @@ protected:
     /**
      * symbols - set of lang symbols and operators, ordered by length DESC.
      */
-    set<string, bool (*)(const string &, const string &)> *symbols;
+    set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &, const pair<string, OPERATORS> &)> *symbols;
     /**
      * symbolsStartCharacters - a set of first characters from symbols set for lexer.
      */
     set<char> *symbolsStartCharacters;
+    /**
+     * currentToken - last token got from the input stream.
+     */
+    shared_ptr<Token> currentToken;
+    /**
+     * eof - that flag sets when last got token is EOF.
+     */
+    bool eof;
 public:
     explicit Lexer(istream *const stream);
 
+    Lexer(const Lexer &reference);
+
     ~Lexer();
 
+public:
     /**
      * nextToken - method, designed to get next token from input stream.
+     * Also sets got token to lexer current token.
      * @return next token.
      * @author Danil Andreev
      */
-    Token nextToken();
+    shared_ptr<Token> nextToken();
+
+public:
+    /**
+     * getCurrentToken - getter for Lexer current token.
+     * @author Danil Andreev
+     */
+    shared_ptr<Token> getCurrentToken() const;
+
+    /**
+     * isEof - returns true if eof flag has been set.
+     * Else returns false.
+     */
+    bool isEof() const;
 
 protected:
+    /**
+     * getNextToken - method, designed to get next token from input stream.
+     * @return next token.
+     * @author Danil Andreev
+     */
+    Token *getNextToken();
+
     /**
      * readNumber - method, designed to read number from the stream.
      * @author Danil Andreev
      */
-    NumberToken readNumber();
+    NumberToken *readNumber();
 
     /**
      * readNumber - method, designed to read identifier from the stream.
      * @author Danil Andreev
      */
-    Token readIdentifier();
+    Token *readIdentifier();
 
     /**
      * readNumber - method, designed to read symbol/operator from the stream.
      * @author Danil Andreev
      */
-    Token readSymbol();
+    Token *readSymbol();
 
     /**
      * readNumber - method, designed to read braced string from the stream.
      * @author Danil Andreev
      */
-    Token readString();
+    Token *readString();
 
 protected:
     /**

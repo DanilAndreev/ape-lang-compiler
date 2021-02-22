@@ -30,88 +30,100 @@ using namespace std;
 
 regex Lexer::SkippableCharacters = regex("[ \\t]+");
 
-vector<string> Lexer::Symbols = vector<string>{
-        "+",
-        "-",
-        "*",
-        "/",
-        "^",
-
-        "=",
-        "==",
-        "!=",
-        ">=",
-        "<=",
-        "<",
-        ">",
-        "!",
-
-        "<<",
-        ">>",
-
-        "++",
-        "--",
-
-        "(",
-        ")",
-        "{",
-        "}",
-        "[",
-        "]",
-
-        ";",
-
-        "\"",
-        "'",
-        "\n",
+vector<pair<string, OPERATORS>> Lexer::Symbols = vector<pair<string, OPERATORS>>{
+        pair<string, OPERATORS>("+", OPERATORS::ADD),
+        pair<string, OPERATORS>("-", OPERATORS::SUBTRACT),
+        pair<string, OPERATORS>("*", OPERATORS::MULTIPLY),
+        pair<string, OPERATORS>("/", OPERATORS::DIVIDE),
+        pair<string, OPERATORS>("^", OPERATORS::XOR),
+        pair<string, OPERATORS>("=", OPERATORS::ASSIGN),
+        pair<string, OPERATORS>("==", OPERATORS::EQUAL),
+        pair<string, OPERATORS>("!=", OPERATORS::NOTEQUAL),
+        pair<string, OPERATORS>(">=", OPERATORS::GREATER_EQUAL),
+        pair<string, OPERATORS>("<=", OPERATORS::LESS_EQUAL),
+        pair<string, OPERATORS>("<", OPERATORS::LESS),
+        pair<string, OPERATORS>(">", OPERATORS::GREATER),
+        pair<string, OPERATORS>("!", OPERATORS::NOT),
+        pair<string, OPERATORS>("++", OPERATORS::INCREMENT),
+        pair<string, OPERATORS>("(", OPERATORS::ROUND_BRACE_OPEN),
+        pair<string, OPERATORS>(")", OPERATORS::ROUND_BRACE_CLOSE),
+        pair<string, OPERATORS>("{", OPERATORS::CURLY_BRACE_OPEN),
+        pair<string, OPERATORS>("}", OPERATORS::CURLY_BRACE_CLOSE),
+        pair<string, OPERATORS>("[", OPERATORS::SQUARE_BRACE_OPEN),
+        pair<string, OPERATORS>("]", OPERATORS::SQUARE_BRACE_CLOSE),
+        pair<string, OPERATORS>(";", OPERATORS::SEMICOLON),
+        pair<string, OPERATORS>(",", OPERATORS::COMA),
+        pair<string, OPERATORS>(".", OPERATORS::DOT),
+        pair<string, OPERATORS>("\"", OPERATORS::DOUBLE_QUOTES),
+        pair<string, OPERATORS>("'", OPERATORS::SINGLE_QUOTES),
+        pair<string, OPERATORS>("\n", OPERATORS::LINEBREAK),
+//        "<<",
+//        ">>",
 };
 
-set<string> Lexer::Keywords = set<string>{
-        "if",
-        "else",
-        "for",
-        "while",
-        "goto",
+set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
+        pair<string, KEYWORDS>("if", KEYWORDS::IF),
+        pair<string, KEYWORDS>("else", KEYWORDS::ELSE),
+        pair<string, KEYWORDS>("for", KEYWORDS::FOR),
+        pair<string, KEYWORDS>("while", KEYWORDS::WHILE),
+        pair<string, KEYWORDS>("do", KEYWORDS::DO),
+        pair<string, KEYWORDS>("goto", KEYWORDS::GOTO),
 
-        "switch",
-        "case",
+        pair<string, KEYWORDS>("const", KEYWORDS::CONST),
 
-        "true",
-        "false"
+        pair<string, KEYWORDS>("switch", KEYWORDS::SWITCH),
+        pair<string, KEYWORDS>("case", KEYWORDS::CASE),
+
+        pair<string, KEYWORDS>("true", KEYWORDS::TRUE),
+        pair<string, KEYWORDS>("false", KEYWORDS::FALSE),
+
+        pair<string, KEYWORDS>("int", KEYWORDS::INT),
+        pair<string, KEYWORDS>("float", KEYWORDS::FLOAT),
+        pair<string, KEYWORDS>("string", KEYWORDS::STRING),
+        pair<string, KEYWORDS>("boolean", KEYWORDS::BOOLEAN)
 };
 
 Lexer::Lexer(istream *const stream) {
     this->stream = stream;
+    this->currentToken = nullptr;
+    this->eof = false;
 
-    this->symbols = new set<string, bool (*)(const string &, const string &)>(
-            [](const string &lower, const string &higher) {
-                if (lower.length() == higher.length()) return lower < higher;
-                return lower.length() > higher.length();
+    this->symbols = new set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &,
+                                                              const pair<string, OPERATORS> &)>(
+            [](const pair<string, OPERATORS> &lower, const pair<string, OPERATORS> &higher) {
+                if (lower.first.length() == higher.first.length()) return lower < higher;
+                return lower.first.length() > higher.first.length();
             });
     this->symbols->insert(this->Symbols.begin(), this->Symbols.end());
 
     this->symbolsStartCharacters = new set<char>();
-    for (const string &item : *this->symbols) {
-        this->symbolsStartCharacters->insert(item.front());
+    for (const pair<string, OPERATORS> &item : *this->symbols) {
+        this->symbolsStartCharacters->insert(item.first.front());
     }
+}
+
+Lexer::Lexer(const Lexer &reference) : Lexer(reference.stream) {
+    this->currentToken = reference.currentToken;
+    this->eof = reference.eof;
 }
 
 Lexer::~Lexer() {
     delete this->symbols;
     delete this->symbolsStartCharacters;
+    this->currentToken.reset();
 }
 
-Token Lexer::nextToken() {
+Token *Lexer::getNextToken() {
     char character;
 
-    if (stream->eof()) return Token(Token::TYPE::EOFILE);
+    if (stream->eof()) return new Token(Token::TYPE::EOFILE);
 
     // Skipping skippable characters.
     do {
         this->stream->get(character);
     } while (!stream->eof() && this->isCharacterSkippable(character));
 
-    if (stream->eof()) return Token(Token::TYPE::EOFILE);
+    if (stream->eof()) return new Token(Token::TYPE::EOFILE);
     this->stream->unget();
 
     // Determining token type
@@ -126,7 +138,18 @@ Token Lexer::nextToken() {
     }
 }
 
-NumberToken Lexer::readNumber() {
+
+shared_ptr<Token> Lexer::nextToken() {
+    Token *result = this->getNextToken();
+    this->currentToken.reset();
+    this->currentToken = result->clone();
+    this->eof = false;
+    if (this->currentToken->getType() == Token::TYPE::EOFILE)
+        this->eof = true;
+    return shared_ptr<Token>(result);
+}
+
+NumberToken *Lexer::readNumber() {
     bool hasDot = false;
     bool hasE = false;
 
@@ -165,10 +188,10 @@ NumberToken Lexer::readNumber() {
         }
     }
 
-    return NumberToken(buffer);
+    return new NumberToken(buffer);
 }
 
-Token Lexer::readIdentifier() {
+Token *Lexer::readIdentifier() {
     string buffer = "";
     char character = this->stream->get();
 
@@ -178,40 +201,46 @@ Token Lexer::readIdentifier() {
     }
     if (!this->stream->eof()) this->stream->unget();
 
-    if (this->Keywords.find(buffer) != this->Keywords.end())
-        return Token(Token::TYPE::KEYWORD, buffer);
+    for (const pair<string, KEYWORDS> item : this->Keywords) {
+        if (item.first == buffer)
+            return new KeywordToken(item.second, buffer);
+    }
 
-    return Token(Token::TYPE::IDENTIFIER, buffer);
+//    if (this->Keywords.find(buffer) != this->Keywords.end())
+//        return Token(Token::TYPE::KEYWORD, buffer);
+
+    return new Token(Token::TYPE::IDENTIFIER, buffer);
 }
 
-Token Lexer::readSymbol() {
+Token *Lexer::readSymbol() {
     string buffer;
     size_t length = 0;
-    for (const string &item : *this->symbols) {
-        if (length != item.length()) {
+    for (const pair<string, OPERATORS> &item : *this->symbols) {
+        const string item_str = item.first;
+        if (length != item_str.length()) {
             long shift = (long) (buffer.length() * sizeof(char)) * -1;
             this->stream->seekg(shift, ios::cur);
-            length = item.length();
+            length = item_str.length();
             buffer = this->getFromStream(length);
         }
-        if (item == buffer) {
+        if (item_str == buffer) {
             if (buffer == "\"" || buffer == "'") {
                 this->stream->unget();
                 return this->readString();
             }
             if (buffer == "\n")
-                return Token(Token::TYPE::LINEBREAK, buffer);
-            return Token(Token::TYPE::SYMBOL, buffer);
+                return new Token(Token::TYPE::LINEBREAK, buffer);
+            return new OperatorToken(item.second, buffer);
         }
     }
     for (size_t i = 0; i < length; i++)
         this->stream->unget();
 
     wchar_t character = this->stream->get();
-    return Token(Token::TYPE::UNSUPPORTED, "" + character);
+    return new Token(Token::TYPE::UNSUPPORTED, "" + character);
 }
 
-Token Lexer::readString() {
+Token *Lexer::readString() {
     string buffer;
     const char brace = this->stream->get();
     char character;
@@ -222,7 +251,7 @@ Token Lexer::readString() {
 
         if (character == '\n') {
             this->stream->unget();
-            return Token(Token::TYPE::STRING, buffer);
+            return new Token(Token::TYPE::STRING, buffer);
         }
         if (character == '\\') {
             char next = this->stream->get();
@@ -246,11 +275,11 @@ Token Lexer::readString() {
             buffer += character;
         }
     }
-    return Token(Token::TYPE::STRING, buffer);
+    return new Token(Token::TYPE::STRING, buffer);
 }
 
 bool Lexer::isCharacterSkippable(const char character) {
-    return iscntrl(character) || regex_search(&character, this->SkippableCharacters);
+    return static_cast<bool>(iscntrl(character)) || regex_search(&character, this->SkippableCharacters);
 }
 
 string Lexer::getFromStream(size_t length) {
@@ -261,4 +290,12 @@ string Lexer::getFromStream(size_t length) {
         buffer += this->stream->get();
     }
     return buffer;
+}
+
+shared_ptr<Token> Lexer::getCurrentToken() const {
+    return shared_ptr<Token>(this->currentToken);
+}
+
+bool Lexer::isEof() const {
+    return this->eof;
 }

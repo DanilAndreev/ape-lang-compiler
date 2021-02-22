@@ -28,7 +28,7 @@ SOFTWARE.
 
 regex NumberToken::NumberRegExp = regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
-NumberToken::NumberToken(const string payload): Token(Token::TYPE::NUMBER, payload) {
+NumberToken::NumberToken(const string payload) : Token(Token::TYPE::NUMBER, payload) {
     if (!regex_match(payload, this->NumberRegExp)) {
         throw exception();
     }
@@ -38,18 +38,27 @@ NumberToken::NumberToken(const string payload): Token(Token::TYPE::NUMBER, paylo
     } catch (exception e) {
         throw exception();
     }
+    this->classname = "NumberToken";
 }
 
-long double NumberToken::getDouble() {
+NumberToken::NumberToken(const NumberToken &reference) : Token(reference) {
+    this->value = reference.value;
+}
+
+long double NumberToken::getDouble() const {
     return this->value;
 }
 
-bool NumberToken::isInteger() {
+bool NumberToken::isInteger() const {
     return trunc(this->value) == this->value;
 }
 
-long long NumberToken::getLong() {
+long long NumberToken::getLong() const {
     if (!this->isInteger())
         throw exception(); // TODO: add normal exceptions system;
     return static_cast<long long>(this->value);
+}
+
+shared_ptr<Token> NumberToken::clone() const {
+    return make_shared<NumberToken>(*this);
 }

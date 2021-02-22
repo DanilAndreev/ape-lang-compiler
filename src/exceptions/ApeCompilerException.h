@@ -22,56 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_NUMBERTOKEN_H
-#define APE_LANG_COMPILER_NUMBERTOKEN_H
+#ifndef APE_LANG_COMPILER_APECOMPILEREXCEPTION_H
+#define APE_LANG_COMPILER_APECOMPILEREXCEPTION_H
 
-#include <regex>
-#include "Token.h"
-
-using namespace std;
+#include <exception>
+#include <string>
+#include <iostream>
 
 /**
- * NumberToken - class designed to store numeric values from Lexer.
+ * ApeCompilerException - base class for ApeLang exceptions.
  * @author Danil Andreev
  */
-class NumberToken : public Token {
-protected:
-    /**
-     * NumberRegExp - RegExp for number correctness check.
-     */
-    static regex NumberRegExp;
-    /**
-     * value - stored numeric value.
-     */
-    long double value;
+class ApeCompilerException : public std::exception {
+    /// fatal - if true error will be interpreted as fatal.
+    bool fatal;
+    /// message - error message.
+    std::string message;
 public:
-    explicit NumberToken(const string payload);
-
-    NumberToken(const NumberToken &reference);
-
-    virtual shared_ptr<Token> clone() const;
-
+    explicit ApeCompilerException(std::string message = "", bool fatal = false);
+    ApeCompilerException(const ApeCompilerException& reference);
+    ~ApeCompilerException() override;
 public:
     /**
-     * isInteger - method designed to check if the stored number is integer.
-     * @return true if number is integer and false if not.
-     */
-    bool isInteger() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in float format.
+     * getMessage - getter for exception message.
      * @author Danil Andreev
      */
-    long double getDouble() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in integer format.
-     * @author Danil Andreev
-     */
-    long long getLong() const;
+    std::string getMessage() const noexcept;
+    const char* what() const noexcept override;
+public:
+    friend std::ostream& operator<< (std::ostream& stream, ApeCompilerException& exception);
 };
 
 
-#endif //APE_LANG_COMPILER_NUMBERTOKEN_H
+#endif //APE_LANG_COMPILER_APECOMPILEREXCEPTION_H

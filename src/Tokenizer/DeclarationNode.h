@@ -22,30 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_DECLARATIONNODE_H
+#define APE_LANG_COMPILER_DECLARATIONNODE_H
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
 
-Token::Token(const TYPE type) : Token(type, "") {}
+#include "VariableNode.h"
 
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
+class DeclarationNode: public VariableNode {
+public:
+    enum DATA_TYPE {
+        INT,
+        FLOAT,
+        BOOLEAN,
+        STRING,
+    };
+protected:
+    DATA_TYPE dataType;
+    bool constant;
+public:
+    DeclarationNode(DATA_TYPE dataType, string& name, bool isFunc = false, Node* operand1 = nullptr);
+    DeclarationNode(const DeclarationNode& reference);
+    ~DeclarationNode() override;
+public:
+    DeclarationNode* setConstant(bool constant);
+    Node* setDataType(DATA_TYPE dataType);
+public:
+    bool isConstant() const;
+    DATA_TYPE getBasicType() const;
+public:
+    ostream& printNode(ostream& stream) const override;
+protected:
+    string getDatTypeString() const;
+};
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
 
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
+#endif //APE_LANG_COMPILER_DECLARATIONNODE_H

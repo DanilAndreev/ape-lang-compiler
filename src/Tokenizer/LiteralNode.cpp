@@ -22,30 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include "LiteralNode.h"
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
+LiteralNode::LiteralNode(const Node::TYPE type): Node(type) {
 }
 
-Token::Token(const TYPE type) : Token(type, "") {}
-
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
+LiteralNode::LiteralNode(const LiteralNode& reference): Node(reference) {
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
-
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
+LiteralNode::~LiteralNode() {
 }

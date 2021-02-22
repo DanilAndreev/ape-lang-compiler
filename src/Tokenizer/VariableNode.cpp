@@ -22,30 +22,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include "VariableNode.h"
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
+VariableNode::VariableNode(string &identifier, bool isFunc, Node* operand1): Node(Node::VAR, operand1) {
+    this->identifier = identifier;
+    this->isFunc = isFunc;
 }
 
-Token::Token(const TYPE type) : Token(type, "") {}
-
-Token::Token(const Token &reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
+VariableNode::VariableNode(string &identifier, Node *operand1): VariableNode(identifier, false, operand1) {
+    if (operand1) this->isFunc = true;
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
+VariableNode::VariableNode(const VariableNode &reference): Node(reference) {
+    this->identifier = reference.identifier;
+    this->isFunc = reference.isFunc;
 }
 
-string Token::getPayload() const {
-    return this->payload;
+VariableNode::~VariableNode() {}
+
+bool VariableNode::isFunction() const {
+    return this->isFunc;
 }
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
+string VariableNode::getIdentifier() const {
+    return this->identifier;
+}
+
+ostream &VariableNode::printNode(ostream &stream) const {
+    stream << "VariableNode ";
+    if (this->isFunc) stream << "(Func) ";
+    stream << "| " << this->identifier;
+    return stream;
+}
+
+VariableNode *VariableNode::setIsFunction(bool isFunc) {
+    this->isFunc = isFunc;
+    return this;
 }

@@ -26,6 +26,7 @@ SOFTWARE.
 #define APE_LANG_COMPILER_TOKEN_H
 
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -47,8 +48,10 @@ public:
         EOFILE,
         STRING,
         UNSUPPORTED,
+        EMPTY,
     };
 protected:
+    string classname;
     /**
      * type - lexeme type.
      */
@@ -62,19 +65,22 @@ public:
 
     explicit Token(const TYPE type);
 
-    Token(const Token &origin);
+    Token(const Token &reference);
 
+    virtual shared_ptr<Token> clone() const;
+
+public:
     /**
      * getType - getter for token type.
      * @author Danil Andreev
      */
-    TYPE getType();
+    TYPE getType() const;
 
     /**
      * getType - getter for token payload.
      * @author Danil Andreev
      */
-    string getPayload();
+    virtual string getPayload() const;
 };
 
 #endif //APE_LANG_COMPILER_TOKEN_H

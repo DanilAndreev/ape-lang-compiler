@@ -22,56 +22,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_NUMBERTOKEN_H
-#define APE_LANG_COMPILER_NUMBERTOKEN_H
+#ifndef APE_LANG_COMPILER_VARIABLENODE_H
+#define APE_LANG_COMPILER_VARIABLENODE_H
 
-#include <regex>
-#include "Token.h"
 
-using namespace std;
+#include "Node.h"
 
 /**
- * NumberToken - class designed to store numeric values from Lexer.
+ * VariableNode - class for storing variable nodes.
  * @author Danil Andreev
  */
-class NumberToken : public Token {
+class VariableNode : public Node {
 protected:
-    /**
-     * NumberRegExp - RegExp for number correctness check.
-     */
-    static regex NumberRegExp;
-    /**
-     * value - stored numeric value.
-     */
-    long double value;
+    /// identifier - variable identifier string
+    string identifier;
+    /// isFunc - if true, this variable refers to function.
+    bool isFunc;
 public:
-    explicit NumberToken(const string payload);
+    explicit VariableNode(string &identifier, bool isFunc = false, Node *operand1 = nullptr);
 
-    NumberToken(const NumberToken &reference);
+    explicit VariableNode(string &identifier, Node *operand1 = nullptr);
 
-    virtual shared_ptr<Token> clone() const;
+    VariableNode(const VariableNode &reference);
+
+    ~VariableNode() override;
 
 public:
     /**
-     * isInteger - method designed to check if the stored number is integer.
-     * @return true if number is integer and false if not.
-     */
-    bool isInteger() const;
-
-    /**
-     * getDouble - getter for value.
-     * @return value in float format.
+     * getIdentifier - getter for variable identifier string.
      * @author Danil Andreev
      */
-    long double getDouble() const;
+    string getIdentifier() const;
 
     /**
-     * getDouble - getter for value.
-     * @return value in integer format.
+     * isFunction - if variable refers to function return true, else false.
      * @author Danil Andreev
      */
-    long long getLong() const;
+    bool isFunction() const;
+
+public:
+    /**
+     * setIsFunction - setter for isFunc field.
+     * @author Danil Andreev
+     */
+    VariableNode* setIsFunction(bool isFunc);
+public:
+    ostream &printNode(ostream &stream) const override;
 };
 
 
-#endif //APE_LANG_COMPILER_NUMBERTOKEN_H
+#endif //APE_LANG_COMPILER_VARIABLENODE_H

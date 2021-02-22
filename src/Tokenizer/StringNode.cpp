@@ -22,30 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include "StringNode.h"
 
-Token::Token(const Token::TYPE type, const string payload) {
-    this->type = type;
+StringNode::StringNode(string payload): LiteralNode(Node::CONST) {
     this->payload = payload;
-    this->classname = "Token";
 }
 
-Token::Token(const TYPE type) : Token(type, "") {}
-
-Token::Token(const Token &reference) {
-    this->type = reference.type;
+StringNode::StringNode(const StringNode &reference): LiteralNode(reference) {
     this->payload = reference.payload;
-    this->classname = reference.classname;
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
+StringNode::~StringNode() {}
 
-string Token::getPayload() const {
+string StringNode::getPayload() const {
     return this->payload;
 }
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
+ostream &StringNode::printNode(ostream& stream) const {
+    return stream << "StringNode | \"" << this->payload << "\"";
 }
