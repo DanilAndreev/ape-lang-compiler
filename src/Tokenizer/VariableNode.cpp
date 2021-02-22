@@ -54,3 +54,8 @@ ostream &VariableNode::printNode(ostream &stream) const {
     stream << "| " << this->identifier;
     return stream;
 }
+
+VariableNode *VariableNode::setIsFunction(bool isFunc) {
+    this->isFunc = isFunc;
+    return this;
+}

@@ -32,30 +32,42 @@ SOFTWARE.
  * VariableNode - class for storing variable nodes.
  * @author Danil Andreev
  */
-class VariableNode: public Node {
+class VariableNode : public Node {
 protected:
     /// identifier - variable identifier string
     string identifier;
     /// isFunc - if true, this variable refers to function.
     bool isFunc;
 public:
-    explicit VariableNode(string& identifier, bool isFunc = false, Node* operand1 = nullptr);
-    explicit VariableNode(string& identifier, Node* operand1 = nullptr);
-    VariableNode(const VariableNode& reference);
+    explicit VariableNode(string &identifier, bool isFunc = false, Node *operand1 = nullptr);
+
+    explicit VariableNode(string &identifier, Node *operand1 = nullptr);
+
+    VariableNode(const VariableNode &reference);
+
     ~VariableNode() override;
+
 public:
     /**
      * getIdentifier - getter for variable identifier string.
      * @author Danil Andreev
      */
     string getIdentifier() const;
+
     /**
      * isFunction - if variable refers to function return true, else false.
      * @author Danil Andreev
      */
     bool isFunction() const;
+
 public:
-    ostream& printNode(ostream& stream) const override;
+    /**
+     * setIsFunction - setter for isFunc field.
+     * @author Danil Andreev
+     */
+    VariableNode* setIsFunction(bool isFunc);
+public:
+    ostream &printNode(ostream &stream) const override;
 };
 
 

@@ -281,7 +281,17 @@ Node *Tokenizer::term() const {
         case Token::IDENTIFIER : {
             string payload = this->lexer->getCurrentToken()->getPayload();
             node = new VariableNode(payload, false);
-            this->lexer->nextToken();
+            shared_ptr<Token> token = this->lexer->nextToken();
+            if (token->getType() == Token::SYMBOL) {
+                shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(token);
+                switch (opToken->getOperatorType()) {
+                    case OPERATORS::ROUND_BRACE_OPEN: {
+                        dynamic_cast<VariableNode*>(node)->setIsFunction(true);
+                        node->setOperand1(this->arguments());
+                    }
+                        break;
+                }
+            }
         }
             break;
         case Token::NUMBER: {
@@ -344,7 +354,7 @@ DeclarationNode *Tokenizer::declaration(bool initialization, bool semicolon) con
         shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(current);
         if (opToken->getOperatorType() == OPERATORS::ASSIGN) {
             this->lexer->nextToken();
-            node->setOperand1(this->summa());
+            node->setOperand1(this->test());
         } else if (opToken->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
 
             node->setOperand1(this->argumentsDeclaration());
@@ -372,13 +382,12 @@ Node *Tokenizer::argumentsDeclaration() const {
         throw ApeCompilerException("Expected \"(\"");
     token = this->lexer->nextToken();
 
-    Node* node = new Node(Node::SEQUENCE);
+    Node *node = new Node(Node::SEQUENCE);
 
     if (token->getType() != Token::SYMBOL) {
         opToken = make_shared<OperatorToken>(OPERATORS::COMA);
         while (opToken != nullptr && opToken->getOperatorType() == OPERATORS::COMA) {
             node = new Node(Node::SEQUENCE, node, this->declaration(false, false));
-            cout << token->getPayload() << endl;
             token = this->lexer->getCurrentToken();
             opToken = dynamic_pointer_cast<OperatorToken>(token);
             if (opToken && opToken->getOperatorType() == OPERATORS::COMA)
@@ -398,5 +407,34 @@ Node *Tokenizer::argumentsDeclaration() const {
 }
 
 Node *Tokenizer::arguments() const {
-    return nullptr;
+    shared_ptr<Token> token = this->lexer->getCurrentToken();
+    if (token->getType() != Token::SYMBOL)
+        throw ApeCompilerException("Expected \"(\"");
+    shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(token);
+    if (opToken == nullptr || opToken->getOperatorType() != OPERATORS::ROUND_BRACE_OPEN)
+        throw ApeCompilerException("Expected \"(\"");
+    token = this->lexer->nextToken();
+
+    Node *node = new Node(Node::SEQUENCE);
+
+    if (token->getType() != Token::SYMBOL) {
+        opToken = make_shared<OperatorToken>(OPERATORS::COMA);
+        while (opToken != nullptr && opToken->getOperatorType() == OPERATORS::COMA) {
+            node = new Node(Node::SEQUENCE, node, this->test());
+            token = this->lexer->getCurrentToken();
+            opToken = dynamic_pointer_cast<OperatorToken>(token);
+            if (opToken && opToken->getOperatorType() == OPERATORS::COMA)
+                this->lexer->nextToken();
+        }
+    }
+
+
+    token = this->lexer->getCurrentToken();
+    if (token->getType() != Token::SYMBOL)
+        throw ApeCompilerException("Expected \")\"");
+    opToken = dynamic_pointer_cast<OperatorToken>(token);
+    if (opToken == nullptr || opToken->getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
+        throw ApeCompilerException("Expected \")\"");
+    this->lexer->nextToken();
+    return node;
 }
