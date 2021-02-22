@@ -56,7 +56,7 @@ protected:
 
     Node *expression() const;
 
-    DeclarationNode* declaration(bool initialization = true) const;
+    DeclarationNode* declaration(bool initialization = true, bool semicolon = true) const;
 
     Node *test() const;
 

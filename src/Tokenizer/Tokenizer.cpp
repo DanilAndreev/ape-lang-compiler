@@ -307,7 +307,7 @@ Node *Tokenizer::term() const {
     return node;
 }
 
-DeclarationNode *Tokenizer::declaration(bool initialization) const {
+DeclarationNode *Tokenizer::declaration(bool initialization, bool semicolon) const {
     DeclarationNode *node = nullptr;
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::KEYWORD)
@@ -346,14 +346,19 @@ DeclarationNode *Tokenizer::declaration(bool initialization) const {
             this->lexer->nextToken();
             node->setOperand1(this->summa());
         } else if (opToken->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
-            // TODO: finish functions!
+
+            node->setOperand1(this->argumentsDeclaration());
+            node->setOperand2(this->statement());
+            return node;
         }
     }
-    current = this->lexer->getCurrentToken();
-    if (current->getType() != Token::SYMBOL)
-        throw ApeCompilerException("Expected \";\"");
-    if (dynamic_pointer_cast<OperatorToken>(current)->getOperatorType() != OPERATORS::SEMICOLON)
-        throw ApeCompilerException("Expected \";\"");
+    if (semicolon) {
+        current = this->lexer->getCurrentToken();
+        if (current->getType() != Token::SYMBOL)
+            throw ApeCompilerException("Expected \";\"");
+        if (dynamic_pointer_cast<OperatorToken>(current)->getOperatorType() != OPERATORS::SEMICOLON)
+            throw ApeCompilerException("Expected \";\"");
+    }
 
     return node;
 }
@@ -370,8 +375,14 @@ Node *Tokenizer::argumentsDeclaration() const {
     Node* node = new Node(Node::SEQUENCE);
 
     if (token->getType() != Token::SYMBOL) {
+        opToken = make_shared<OperatorToken>(OPERATORS::COMA);
         while (opToken != nullptr && opToken->getOperatorType() == OPERATORS::COMA) {
-
+            node = new Node(Node::SEQUENCE, node, this->declaration(false, false));
+            cout << token->getPayload() << endl;
+            token = this->lexer->getCurrentToken();
+            opToken = dynamic_pointer_cast<OperatorToken>(token);
+            if (opToken && opToken->getOperatorType() == OPERATORS::COMA)
+                this->lexer->nextToken();
         }
     }
 
@@ -383,7 +394,7 @@ Node *Tokenizer::argumentsDeclaration() const {
     if (opToken == nullptr || opToken->getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
         throw ApeCompilerException("Expected \")\"");
     this->lexer->nextToken();
-    return nullptr;
+    return node;
 }
 
 Node *Tokenizer::arguments() const {
