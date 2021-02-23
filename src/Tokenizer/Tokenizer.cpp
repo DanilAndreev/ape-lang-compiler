@@ -384,7 +384,7 @@ shared_ptr<Node> Tokenizer::argumentsDeclaration() const {
         throw ApeCompilerException("Expected \"(\"");
     token = this->lexer->nextToken();
 
-    shared_ptr<Node> node = make_shared<Node>(Node::SEQUENCE);
+    shared_ptr<Node> node = make_shared<Node>(Node::EMPTY);
 
     if (token->getType() != Token::SYMBOL) {
         opToken = make_shared<OperatorToken>(OPERATORS::COMA);
@@ -417,7 +417,7 @@ shared_ptr<Node> Tokenizer::arguments() const {
         throw ApeCompilerException("Expected \"(\"");
     token = this->lexer->nextToken();
 
-    shared_ptr<Node> node = make_shared<Node>(Node::SEQUENCE);
+    shared_ptr<Node> node = make_shared<Node>(Node::EMPTY);
 
     if (token->getType() != Token::SYMBOL) {
         opToken = make_shared<OperatorToken>(OPERATORS::COMA);
