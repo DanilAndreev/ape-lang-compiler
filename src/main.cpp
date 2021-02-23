@@ -3,6 +3,7 @@
 #include "Lexer/Lexer.h"
 #include "Tokenizer/Node.h"
 #include "Tokenizer/Tokenizer.h"
+#include "exceptions/ApeCompilerException.h"
 
 using namespace std;
 
@@ -24,8 +25,19 @@ int main(int _argc, char *_argv[]) {
 //    } while (token->getType() != Token::TYPE::EOFILE);
 
     Tokenizer *tokenizer = new Tokenizer(lexer);
+    cout << "parsing" << endl;
     shared_ptr<Node> tree = tokenizer->parse();
+    cout << "parsed" << endl;
     tree->print(cout, 0, "root");
+
+    try {
+        Tokenizer::validateTree(tree);
+    } catch (ApeCompilerException &e) {
+        cerr << "Compilation error: " << e.getMessage() << endl;
+    } catch (...) {
+        cerr << "Unrecognized error" << endl;
+    }
+
     tree->destructTree();
     tree = nullptr;
 

@@ -43,7 +43,7 @@ shared_ptr<Node> Tokenizer::parse() {
     this->lexer->nextToken();
     shared_ptr<Node> node = make_shared<Node>(Node::PROGRAM, this->statement());
     if (!this->lexer->isEof())
-        throw exception();
+        throw ApeCompilerException("Missing end of file");
     return node;
 }
 
@@ -143,6 +143,7 @@ shared_ptr<Node> Tokenizer::statement() const {
                     )) {
                         node = make_shared<Node>(Node::SEQUENCE, node, this->statement());
                     }
+                    node = make_shared<Node>(Node::SCOPE, node);
                     this->lexer->nextToken();
                 }
                     break;
@@ -357,9 +358,9 @@ shared_ptr<DeclarationNode> Tokenizer::declaration(bool initialization, bool sem
             this->lexer->nextToken();
             node->setOperand1(this->test());
         } else if (opToken->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
-
             node->setOperand1(this->argumentsDeclaration()); //TODO: swap
             node->setOperand2(this->statement());
+            node->setIsFunction(true);
             return node;
         }
     }
@@ -440,27 +441,89 @@ shared_ptr<Node> Tokenizer::arguments() const {
     return node;
 }
 
-shared_ptr<Node> Tokenizer::validateTree(const shared_ptr<Node> input, const shared_ptr<Scope> inputScope) {
-//    shared_ptr<Scope> scope = inputScope ? make_shared<Scope>(inputScope.get()) : make_shared<Scope>();
+shared_ptr<Node> Tokenizer::validateTree(
+        const shared_ptr<Node> input,
+        shared_ptr<Scope> scope,
+        shared_ptr<Scope> outerScope
+) {
+    if (scope == nullptr)
+        scope = make_shared<Scope>();
+    if (outerScope == nullptr)
+        outerScope = make_shared<Scope>();
+
+    shared_ptr<Scope> inputScope = make_shared<Scope>(*scope);
+
     const shared_ptr<Node> operand1 = input->getOperand1();
     const shared_ptr<Node> operand2 = input->getOperand2();
     const shared_ptr<Node> operand3 = input->getOperand3();
 
     switch (input->getType()) {
         case Node::SEQUENCE:
+            validateTree(operand1, scope, outerScope);
+            validateTree(operand2, scope, outerScope);
             break;
-        case Node::VAR:
+        case Node::SET: {
+            // TODO: dismiss expression: int a = a + 1;
+            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(operand1);
+            if (variable == nullptr)
+                throw ApeCompilerException("Incorrect variable node on set operation");
+            string identifier = variable->getIdentifier();
+            auto declaration = scope->find(identifier); // TODO: search in both scopes
+            if (declaration != scope->end()) {
+                if (declaration->second->isConstant())
+                    throw ApeCompilerException("Assigning to const variable " + identifier);
+                if (declaration->second->isFunction())
+                    throw ApeCompilerException("Assigning to function " + identifier);
+            }
+            validateTree(operand1, scope, outerScope);
+            validateTree(operand2, scope, outerScope);
+        }
+            break;
+        case Node::VAR: {
             shared_ptr<DeclarationNode> declaration = dynamic_pointer_cast<DeclarationNode>(input);
             if (declaration != nullptr) {
-                // TODO: register in scope.
+                if (scope->find(declaration->getIdentifier()) != scope->end())
+                    throw ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier());
+                scope->insert(ScopeItem(declaration->getIdentifier(), declaration));
+
+                if (declaration->isFunction()) {
+                    // TODO: check function args
+//                    shared_ptr<Scope> innerOuterScope = make_shared<Scope>(*inputScope);
+//                    innerOuterScope->insert(outerScope->begin(), outerScope->end());
+                    validateTree(operand2, scope);
+                } else {
+                    if (operand1 != nullptr)
+                        validateTree(operand1, inputScope, outerScope);
+                }
             } else {
-                // TODO: check in scope
+                shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input);
+                if (variable == nullptr)
+                    throw ApeCompilerException("Fatal token error");
+                if (
+                        scope->find(variable->getIdentifier()) == scope->end() &&
+                        outerScope->find(variable->getIdentifier()) == scope->end()
+                        ) {
+                    throw ApeCompilerException("Undeclared variable " + variable->getIdentifier());
+                }
+
+
+                // TODO: if func - check arguments type correctness
             }
+        }
+            break;
+        case Node::SCOPE: {
+            shared_ptr<Scope> newOuterScope = make_shared<Scope>(*inputScope);
+            newOuterScope->insert(outerScope->begin(), outerScope->end());
+            if (operand1 != nullptr) validateTree(operand1, nullptr, newOuterScope);
+            if (operand2 != nullptr) validateTree(operand2, nullptr, newOuterScope);
+            if (operand3 != nullptr) validateTree(operand3, nullptr, newOuterScope);
+        }
             break;
         default:
-            break;
+            if (operand1 != nullptr) validateTree(operand1, scope, outerScope);
+            if (operand2 != nullptr) validateTree(operand2, scope, outerScope);
+            if (operand3 != nullptr) validateTree(operand3, scope, outerScope);
     }
-
 
     return input;
 }

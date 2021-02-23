@@ -122,6 +122,8 @@ string Node::getNodeTypeStr() const {
             return "EMPTY";
         case Node::SEQUENCE:
             return "SEQUENCE";
+        case Node::SCOPE:
+            return "SCOPE";
         case Node::EXPRESSION:
             return "EXPRESSION";
         case Node::VAR:
