@@ -30,8 +30,12 @@ int main(int _argc, char *_argv[]) {
     cout << "parsed" << endl;
     tree->print(cout, 0, "root");
 
+    shared_ptr<vector<ApeCompilerException>> errors;
     try {
-        Tokenizer::validateTree(tree);
+        errors = Tokenizer::validateTree(tree).second;
+        for (const auto& error: *errors) {
+            cerr << "Compilation error: " << error.getMessage() << endl;
+        }
     } catch (ApeCompilerException &e) {
         cerr << "Compilation error: " << e.getMessage() << endl;
     } catch (...) {

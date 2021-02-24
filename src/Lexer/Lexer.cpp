@@ -141,11 +141,12 @@ Token *Lexer::getNextToken() {
 
 shared_ptr<Token> Lexer::nextToken() {
     Token *result = this->getNextToken();
-    this->currentToken.reset();
+//    this->currentToken.reset();
     this->currentToken = result->clone();
     this->eof = false;
     if (this->currentToken->getType() == Token::TYPE::EOFILE)
         this->eof = true;
+    cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\";" << endl;
     return shared_ptr<Token>(result);
 }
 
