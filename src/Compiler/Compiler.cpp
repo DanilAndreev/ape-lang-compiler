@@ -27,17 +27,25 @@ SOFTWARE.
 #include "../Tokenizer/IntegerNode.h"
 #include "../Tokenizer/StringNode.h"
 #include "../Tokenizer/FloatNode.h"
+#include "../Tokenizer/DeclarationNode.h"
 
-Compiler::Compiler(ostream &stream) : out(stream) {
+Compiler::Compiler() {
     this->address = 0;
 }
 
 void Compiler::compile_tree(shared_ptr<Node> tree) {
     switch (tree->getType()) {
         case Node::VAR: {
-            this->generate(COMMANDS::FETCH);
-            shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree);
-            this->generate(node->getIdentifier());
+            shared_ptr<DeclarationNode> declaration = dynamic_pointer_cast<DeclarationNode>(tree);
+            if (declaration != nullptr) {
+                this->compile_tree(tree->getOperand1());
+                this->generate(COMMANDS::STORE);
+                this->generate(declaration->getIdentifier());
+            } else {
+                this->generate(COMMANDS::FETCH);
+                shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree);
+                this->generate(node->getIdentifier());
+            }
         }
             break;
         case Node::CONST: {
@@ -167,6 +175,7 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
         case Node::EMPTY:
             break;
         case Node::SCOPE:
+            this->compile_tree(tree->getOperand1());
             break;
         case Node::FOR:
             break;

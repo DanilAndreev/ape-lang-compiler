@@ -51,11 +51,10 @@ public:
         HALT
     };
 protected:
-    ostream &out;
     vector<string> program;
     unsigned long long address;
 public:
-    explicit Compiler(ostream &stream);
+    explicit Compiler();
 
     template <class T>
     void generate(T command);

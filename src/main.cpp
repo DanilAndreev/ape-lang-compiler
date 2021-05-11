@@ -4,6 +4,7 @@
 #include "Tokenizer/Node.h"
 #include "Tokenizer/Tokenizer.h"
 #include "exceptions/ApeCompilerException.h"
+#include "Compiler/Compiler.h"
 
 using namespace std;
 
@@ -42,11 +43,20 @@ int main(int _argc, char *_argv[]) {
         cerr << "Unrecognized error" << endl;
     }
 
+
+    Compiler* compiler = new Compiler();
+    vector<string> program = compiler->compile(tree);
+    for (string& item : program) {
+        cout << item << " ";
+    }
+
     tree->destructTree();
     tree = nullptr;
 
 
+
     fin->close();
+    delete compiler;
     delete lexer;
     delete fin;
 
