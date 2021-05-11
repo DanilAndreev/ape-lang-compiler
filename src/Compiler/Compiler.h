@@ -22,60 +22,48 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_KEYWORDTOKEN_H
-#define APE_LANG_COMPILER_KEYWORDTOKEN_H
+#ifndef APE_LANG_COMPILER_COMPILER_H
+#define APE_LANG_COMPILER_COMPILER_H
 
 
-#include "Token.h"
+#include "../Tokenizer/Node.h"
+#include <vector>
+#include <sstream>
 
-/**
- * KEYWORDS - enumeration of keyword types.
- * @author Danil Andreev
- */
-enum KEYWORDS {
-    DO,
-    WHILE,
-    FOR,
-    IF,
-    ELSE,
-    CONST,
-    TRUE,
-    FALSE,
-    SWITCH,
-    CASE,
-    GOTO,
-
-    INT,
-    STRING,
-    FLOAT,
-    BOOLEAN
-};
-
-/**
- * KeywordToken - class for storing keyword tokens.
- * Contains enum keyword type.
- * @author Danil Andreev
- */
-class KeywordToken : public Token {
+class Compiler {
+public:
+    enum COMMANDS {
+        FETCH,
+        STORE,
+        PUSH,
+        POP,
+        ADD,
+        SUBTRACT,
+        MULTIPLY,
+        DIVIDE,
+        LT,
+        LTE,
+        EQ,
+        NEQ,
+        JZ,
+        JNZ,
+        JMP,
+        HALT
+    };
 protected:
-    /**
-     * keywordType - enum keyword type.
-     */
-    KEYWORDS keywordType;
+    ostream &out;
+    vector<string> program;
+    unsigned long long address;
 public:
-    explicit KeywordToken(KEYWORDS type, string payload = "", int line = 0, int column = 0);
+    explicit Compiler(ostream &stream);
 
-    KeywordToken(const KeywordToken &reference);
+    template <class T>
+    void generate(T command);
 
-    virtual shared_ptr<Token> clone() const;
-
-public:
-    /**
-     * getKeywordType - getter for keyword type.
-     * @author Danil Andreev
-     */
-    KEYWORDS getKeywordType() const;
+    vector<string> compile(shared_ptr<Node> tree);
+protected:
+    void compile_tree(shared_ptr<Node> tree);
 };
 
 
-#endif //APE_LANG_COMPILER_KEYWORDTOKEN_H
+#endif //APE_LANG_COMPILER_COMPILER_H

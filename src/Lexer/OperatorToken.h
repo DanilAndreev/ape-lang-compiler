@@ -101,7 +101,7 @@ protected:
      */
     OPERATORS operatorType;
 public:
-    explicit OperatorToken(OPERATORS type, string payload = "");
+    explicit OperatorToken(OPERATORS type, string payload = "", int line = 0, int column = 0);
 
     OperatorToken(const OperatorToken &reference);
 

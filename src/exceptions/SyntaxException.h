@@ -28,6 +28,11 @@ SOFTWARE.
 #include "ApeCompilerException.h"
 
 class SyntaxException: public ApeCompilerException {
+protected:
+    int line;
+    int column;
+
+public:
 
 };
 

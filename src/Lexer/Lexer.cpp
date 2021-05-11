@@ -87,6 +87,8 @@ Lexer::Lexer(istream *const stream) {
     this->stream = stream;
     this->currentToken = nullptr;
     this->eof = false;
+    this->line = 0;
+    this->column = 0;
 
     this->symbols = new set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &,
                                                               const pair<string, OPERATORS> &)>(
@@ -105,6 +107,8 @@ Lexer::Lexer(istream *const stream) {
 Lexer::Lexer(const Lexer &reference) : Lexer(reference.stream) {
     this->currentToken = reference.currentToken;
     this->eof = reference.eof;
+    this->line = reference.line;
+    this->column = reference.column;
 }
 
 Lexer::~Lexer() {
@@ -120,11 +124,11 @@ Token *Lexer::getNextToken() {
 
     // Skipping skippable characters.
     do {
-        this->stream->get(character);
+        this->get(character);
     } while (!stream->eof() && this->isCharacterSkippable(character));
 
     if (stream->eof()) return new Token(Token::TYPE::EOFILE);
-    this->stream->unget();
+    this->unget();
 
     // Determining token type
     if (isdigit(character)) {
@@ -141,21 +145,24 @@ Token *Lexer::getNextToken() {
 
 shared_ptr<Token> Lexer::nextToken() {
     Token *result = this->getNextToken();
-//    this->currentToken.reset();
     this->currentToken = result->clone();
     this->eof = false;
     if (this->currentToken->getType() == Token::TYPE::EOFILE)
         this->eof = true;
-    cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\";" << endl;
+    cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\"; "
+         << result->getLine() + 1 << ":" << result->getColumn() + 1 << endl;
     return shared_ptr<Token>(result);
 }
 
 NumberToken *Lexer::readNumber() {
+    const int tokenLine = this->line;
+    const int tokenColumn = this->column;
+
     bool hasDot = false;
     bool hasE = false;
 
     string buffer = "";
-    char character = this->stream->get();
+    char character = this->get();
 
     while (!this->stream->eof()) {
         bool error = false;
@@ -172,15 +179,15 @@ NumberToken *Lexer::readNumber() {
 
         if (!error) {
             buffer += character;
-            this->stream->get(character);
+            this->get(character);
         } else {
-            this->stream->unget();
+            this->unget();
             // Rolling back to last correct number
             bool cleared = false;
             while (!cleared) {
                 if (!isdigit(buffer.back())) {
                     buffer.erase(buffer.length() - 1, 1);
-                    this->stream->unget();
+                    this->unget();
                 } else {
                     cleared = true;
                 }
@@ -189,31 +196,34 @@ NumberToken *Lexer::readNumber() {
         }
     }
 
-    return new NumberToken(buffer);
+    return new NumberToken(buffer, tokenLine, tokenColumn);
 }
 
 Token *Lexer::readIdentifier() {
+    const int tokenLine = this->line;
+    const int tokenColumn = this->column;
+
     string buffer = "";
-    char character = this->stream->get();
+    char character = this->get();
 
     while (!this->stream->eof() && iswalnum(character)) {
         buffer += character;
-        this->stream->get(character);
+        this->get(character);
     }
-    if (!this->stream->eof()) this->stream->unget();
+    if (!this->stream->eof()) this->unget();
 
     for (const pair<string, KEYWORDS> item : this->Keywords) {
         if (item.first == buffer)
-            return new KeywordToken(item.second, buffer);
+            return new KeywordToken(item.second, buffer, tokenLine, tokenColumn);
     }
 
-//    if (this->Keywords.find(buffer) != this->Keywords.end())
-//        return Token(Token::TYPE::KEYWORD, buffer);
-
-    return new Token(Token::TYPE::IDENTIFIER, buffer);
+    return new Token(Token::TYPE::IDENTIFIER, buffer, tokenLine, tokenColumn);
 }
 
 Token *Lexer::readSymbol() {
+    const int tokenLine = this->line;
+    const int tokenColumn = this->column;
+
     string buffer;
     size_t length = 0;
     for (const pair<string, OPERATORS> &item : *this->symbols) {
@@ -226,36 +236,39 @@ Token *Lexer::readSymbol() {
         }
         if (item_str == buffer) {
             if (buffer == "\"" || buffer == "'") {
-                this->stream->unget();
+                this->unget();
                 return this->readString();
             }
             if (buffer == "\n")
-                return new Token(Token::TYPE::LINEBREAK, buffer);
-            return new OperatorToken(item.second, buffer);
+                return new Token(Token::TYPE::LINEBREAK, buffer, tokenLine, tokenColumn);
+            return new OperatorToken(item.second, buffer, tokenLine, tokenColumn);
         }
     }
     for (size_t i = 0; i < length; i++)
-        this->stream->unget();
+        this->unget();
 
-    wchar_t character = this->stream->get();
-    return new Token(Token::TYPE::UNSUPPORTED, "" + character);
+    wchar_t character = this->get();
+    return new Token(Token::TYPE::UNSUPPORTED, "" + character, tokenLine, tokenColumn);
 }
 
 Token *Lexer::readString() {
+    const int tokenLine = this->line;
+    const int tokenColumn = this->column;
+
     string buffer;
-    const char brace = this->stream->get();
+    const char brace = this->get();
     char character;
     while (!this->stream->eof()) {
-        this->stream->get(character);
+        this->get(character);
         if (character == brace)
             break;
 
         if (character == '\n') {
-            this->stream->unget();
-            return new Token(Token::TYPE::STRING, buffer);
+            this->unget();
+            return new Token(Token::TYPE::STRING, buffer, tokenLine, tokenColumn);
         }
         if (character == '\\') {
-            char next = this->stream->get();
+            char next = this->get();
             if (next == EOF)
                 throw new exception();
 
@@ -276,7 +289,7 @@ Token *Lexer::readString() {
             buffer += character;
         }
     }
-    return new Token(Token::TYPE::STRING, buffer);
+    return new Token(Token::TYPE::STRING, buffer, tokenLine, tokenColumn);
 }
 
 bool Lexer::isCharacterSkippable(const char character) {
@@ -288,7 +301,7 @@ string Lexer::getFromStream(size_t length) {
     for (size_t i = 0; i < length; i++) {
         if (this->stream->peek() == EOF)
             break;
-        buffer += this->stream->get();
+        buffer += this->get();
     }
     return buffer;
 }
@@ -300,3 +313,48 @@ shared_ptr<Token> Lexer::getCurrentToken() const {
 bool Lexer::isEof() const {
     return this->eof;
 }
+
+char Lexer::get() {
+    char character = this->stream->get();
+    if (character == '\n') {
+        this->line++;
+        this->lines_length.push(this->column + 1);
+        this->column = 0;
+    } else {
+        this->column++;
+    }
+//    cout << "get: '" << character << "' " << this->line << ":" << this->column << endl;
+    return character;
+}
+
+void Lexer::get(char &input) {
+    input = this->get();
+}
+
+void Lexer::unget() {
+    this->stream->unget();
+    this->column--;
+//    if (this->column < 0) {
+//        this->column = this->lines_length.top();
+//        this->lines_length.pop();
+//        this->line--;
+//    }
+    moveLinesCounterBack();
+//    cout << "unget" << this->line << ":" << this->column << endl;
+}
+
+void Lexer::moveLinesCounterBack(long shift) {
+    shift = abs(shift);
+    this->column -= shift;
+    while (this->column < 0) {
+        if ((this->lines_length.size() && this->column >= this->lines_length.top())) {
+            this->column = this->lines_length.top();
+            this->lines_length.pop();
+        }
+        if (this->line)
+            this->line--;
+    }
+}
+
+
+
