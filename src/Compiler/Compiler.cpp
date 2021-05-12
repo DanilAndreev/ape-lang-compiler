@@ -40,11 +40,17 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             if (declaration != nullptr) {
                 this->compile_tree(tree->getOperand1());
                 this->generate(COMMANDS::STORE);
-                this->generate(declaration->getIdentifier());
+                string identifier = "\"";
+                identifier += declaration->getIdentifier();
+                identifier += "\"";
+                this->generate(identifier);
             } else {
                 this->generate(COMMANDS::FETCH);
                 shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree);
-                this->generate(node->getIdentifier());
+                string identifier = "\"";
+                identifier += node->getIdentifier();
+                identifier += "\"";
+                this->generate(identifier);
             }
         }
             break;
@@ -113,8 +119,11 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
         case Node::SET: {
             this->compile_tree(tree->getOperand2());
             this->generate(COMMANDS::STORE);
-            shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree);
-            this->generate(node->getIdentifier());
+            shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
+            string identifier = "\"";
+            identifier += node->getIdentifier();
+            identifier += "\"";
+            this->generate(identifier);
         }
             break;
         case Node::IF: {

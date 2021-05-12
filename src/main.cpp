@@ -46,9 +46,11 @@ int main(int _argc, char *_argv[]) {
 
     Compiler* compiler = new Compiler();
     vector<string> program = compiler->compile(tree);
+    cout << "[";
     for (string& item : program) {
-        cout << item << " ";
+        cout << item << ",";
     }
+    cout << "]" << endl;
 
     tree->destructTree();
     tree = nullptr;
