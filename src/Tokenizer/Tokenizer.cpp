@@ -38,6 +38,8 @@ Tokenizer::Tokenizer(const Tokenizer &reference) {
     this->lexer = reference.lexer;
 }
 
+Tokenizer::~Tokenizer() {}
+
 shared_ptr<Node> Tokenizer::parse() {
     this->lexer->nextToken();
     shared_ptr<Node> node = make_shared<Node>(Node::PROGRAM, this->statement());
