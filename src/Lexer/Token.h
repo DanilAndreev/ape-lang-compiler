@@ -52,18 +52,16 @@ public:
     };
 protected:
     string classname;
-    /**
-     * type - lexeme type.
-     */
+    /// type - lexeme type.
     TYPE type;
-    /**
-     * payload - lexeme payload. Got from input text.
-     */
+    /// payload - lexeme payload. Got from input text.
     string payload;
+    /// Token line in input file.
+    int line;
+    /// Token column in input file.
+    int column;
 public:
-    Token(const TYPE type, const string payload);
-
-    explicit Token(const TYPE type);
+    Token(TYPE type, string payload = "", int line = -1, int column = -1);
 
     Token(const Token &reference);
 
@@ -81,6 +79,18 @@ public:
      * @author Danil Andreev
      */
     virtual string getPayload() const;
+
+    /**
+     * getLine - getter for token line in input file.
+     * @author Danil Andreev
+     */
+    int getLine() const;
+
+    /**
+     * getColumn - getter for token column in input file.
+     * @author Danil Andreev
+     */
+    int getColumn() const;
 };
 
 #endif //APE_LANG_COMPILER_TOKEN_H

@@ -46,39 +46,32 @@ using namespace std;
  */
 class Lexer {
 protected:
-    /**
-     * SkippableCharacters - RegExp for skipping characters.
-     */
+    /// SkippableCharacters - RegExp for skipping characters.
     static regex SkippableCharacters;
     /**
      * Symbols - an array of lang symbols/operators.
      * Will be added to set.
      */
     static vector<pair<string, OPERATORS>> Symbols;
-    /**
-     * Keywords - set of lang keywords.
-     */
+    /// Keywords - set of lang keywords.
     static set<pair<string, KEYWORDS>> Keywords;
-    /**
-     * stream - input data stream with program code.
-     */
+    /// stream - input data stream with program code.
     istream *stream;
-    /**
-     * symbols - set of lang symbols and operators, ordered by length DESC.
-     */
+    /// symbols - set of lang symbols and operators, ordered by length DESC.
     set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &, const pair<string, OPERATORS> &)> *symbols;
-    /**
-     * symbolsStartCharacters - a set of first characters from symbols set for lexer.
-     */
+    /// symbolsStartCharacters - a set of first characters from symbols set for lexer.
     set<char> *symbolsStartCharacters;
-    /**
-     * currentToken - last token got from the input stream.
-     */
+    /// currentToken - last token got from the input stream.
     shared_ptr<Token> currentToken;
-    /**
-     * eof - that flag sets when last got token is EOF.
-     */
+    /// eof - that flag sets when last got token is EOF.
     bool eof;
+
+    /// Current line.
+    int line;
+    /// Current column.
+    int column;
+    /// Lines length history.
+    stack<int> lines_length;
 public:
     explicit Lexer(istream *const stream);
 
@@ -154,6 +147,10 @@ protected:
      * @author Danil Andreev
      */
     string getFromStream(size_t length);
+    char get();
+    void get(char& input);
+    void unget();
+    void moveLinesCounterBack(long shift = 1);
 };
 
 

@@ -44,6 +44,7 @@ public:
         PROGRAM,
         EMPTY,
         SEQUENCE,
+        SCOPE,
         EXPRESSION,
 
         VAR,

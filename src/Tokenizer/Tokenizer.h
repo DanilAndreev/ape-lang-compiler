@@ -29,10 +29,22 @@ SOFTWARE.
 #include "../Lexer/Lexer.h"
 #include "Node.h"
 #include "DeclarationNode.h"
+#include "../exceptions/ApeCompilerException.h"
 
 class Tokenizer {
 protected:
     Lexer *lexer;
+protected:
+    typedef pair<const string, shared_ptr<DeclarationNode>> ScopeItem;
+    typedef map<const string, shared_ptr<DeclarationNode>> Scope;
+public: // Change to protected
+    static pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> validateTree(
+            const shared_ptr<Node> input,
+            shared_ptr<Scope> scope = nullptr,
+            shared_ptr<Scope> outerScope = nullptr,
+            shared_ptr<vector<ApeCompilerException>> errors = nullptr
+    );
+
 public:
     explicit Tokenizer(Lexer *lexer);
 

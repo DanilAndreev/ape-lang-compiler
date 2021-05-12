@@ -45,7 +45,7 @@ protected:
      */
     long double value;
 public:
-    explicit NumberToken(const string payload);
+    explicit NumberToken(const string payload, int line = -1, int column = -1);
 
     NumberToken(const NumberToken &reference);
 

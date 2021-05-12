@@ -28,7 +28,8 @@ SOFTWARE.
 
 regex NumberToken::NumberRegExp = regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
-NumberToken::NumberToken(const string payload) : Token(Token::TYPE::NUMBER, payload) {
+NumberToken::NumberToken(const string payload, const int line, const int column)
+        : Token(Token::TYPE::NUMBER, payload, line, column) {
     if (!regex_match(payload, this->NumberRegExp)) {
         throw exception();
     }

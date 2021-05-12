@@ -24,7 +24,8 @@ SOFTWARE.
 
 #include "KeywordToken.h"
 
-KeywordToken::KeywordToken(KEYWORDS type, string payload) : Token(Token::KEYWORD, payload) {
+KeywordToken::KeywordToken(KEYWORDS type, string payload, const int line, const int token)
+        : Token(Token::KEYWORD, payload, line, column) {
     this->keywordType = type;
     this->classname = "KeywordToken";
 }

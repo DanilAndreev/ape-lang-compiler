@@ -24,18 +24,20 @@ SOFTWARE.
 
 #include "Token.h"
 
-Token::Token(const Token::TYPE type, const string payload) {
+Token::Token(const Token::TYPE type, const string payload, const int line, const int column) {
     this->type = type;
     this->payload = payload;
     this->classname = "Token";
+    this->line = line;
+    this->column = column;
 }
-
-Token::Token(const TYPE type) : Token(type, "") {}
 
 Token::Token(const Token &reference) {
     this->type = reference.type;
     this->payload = reference.payload;
     this->classname = reference.classname;
+    this->line = reference.line;
+    this->column = reference.column;
 }
 
 Token::TYPE Token::getType() const {
@@ -48,4 +50,12 @@ string Token::getPayload() const {
 
 shared_ptr<Token> Token::clone() const {
     return make_shared<Token>(*this);
+}
+
+int Token::getLine() const {
+    return this->line;
+}
+
+int Token::getColumn() const {
+    return this->column;
 }
