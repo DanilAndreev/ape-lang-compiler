@@ -6,9 +6,19 @@
 #include "exceptions/ApeCompilerException.h"
 #include "Compiler/Compiler.h"
 
+
 using namespace std;
 
+vector<string> compile(ifstream& fin) {
+
+}
+
 int main(int _argc, char *_argv[]) {
+    vector<string> args(_argv + 1, _argv + _argc);
+
+
+
+
     ifstream *fin = new ifstream("test.txt", std::ios::binary);
 
     if (!fin->is_open()) {
@@ -17,19 +27,13 @@ int main(int _argc, char *_argv[]) {
     }
 
     Lexer *lexer = new Lexer(fin);
-
-//    shared_ptr<Token> token = nullptr;
-//    do {
-//        token = lexer->nextToken();
-//        string payload = token->getPayload() == "\n" ? "\\n" : token->getPayload();
-//        cout << token->getType() << " \"" << payload << "\"" << endl;
-//    } while (token->getType() != Token::TYPE::EOFILE);
-
     Tokenizer *tokenizer = new Tokenizer(lexer);
     cout << "parsing" << endl;
     shared_ptr<Node> tree = tokenizer->parse();
     cout << "parsed" << endl;
+    #ifndef NDEBUG
     tree->print(cout, 0, "root");
+    #endif
 
     shared_ptr<vector<ApeCompilerException>> errors;
     try {
@@ -46,6 +50,7 @@ int main(int _argc, char *_argv[]) {
 
     Compiler* compiler = new Compiler();
     vector<string> program = compiler->compile(tree);
+
     cout << "[";
     for (string& item : program) {
         cout << item << ",";
@@ -54,8 +59,6 @@ int main(int _argc, char *_argv[]) {
 
     tree->destructTree();
     tree = nullptr;
-
-
 
     fin->close();
     delete compiler;

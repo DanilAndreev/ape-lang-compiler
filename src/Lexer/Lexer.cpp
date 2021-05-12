@@ -57,8 +57,6 @@ vector<pair<string, OPERATORS>> Lexer::Symbols = vector<pair<string, OPERATORS>>
         pair<string, OPERATORS>("\"", OPERATORS::DOUBLE_QUOTES),
         pair<string, OPERATORS>("'", OPERATORS::SINGLE_QUOTES),
         pair<string, OPERATORS>("\n", OPERATORS::LINEBREAK),
-//        "<<",
-//        ">>",
 };
 
 set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
@@ -149,8 +147,10 @@ shared_ptr<Token> Lexer::nextToken() {
     this->eof = false;
     if (this->currentToken->getType() == Token::TYPE::EOFILE)
         this->eof = true;
+    #ifndef NDEBUG
     cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\"; "
          << result->getLine() + 1 << ":" << result->getColumn() + 1 << endl;
+    #endif
     return shared_ptr<Token>(result);
 }
 
@@ -323,7 +323,6 @@ char Lexer::get() {
     } else {
         this->column++;
     }
-//    cout << "get: '" << character << "' " << this->line << ":" << this->column << endl;
     return character;
 }
 
@@ -334,13 +333,7 @@ void Lexer::get(char &input) {
 void Lexer::unget() {
     this->stream->unget();
     this->column--;
-//    if (this->column < 0) {
-//        this->column = this->lines_length.top();
-//        this->lines_length.pop();
-//        this->line--;
-//    }
     moveLinesCounterBack();
-//    cout << "unget" << this->line << ":" << this->column << endl;
 }
 
 void Lexer::moveLinesCounterBack(long shift) {

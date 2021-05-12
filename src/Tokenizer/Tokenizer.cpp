@@ -468,18 +468,15 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
             // TODO: dismiss expression: int a = a + 1;
             shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(operand1);
             if (variable == nullptr) {
-                // throw ApeCompilerException("Incorrect variable node on set operation");
                 errors->push_back(ApeCompilerException("Incorrect variable node on set operation"));
             }
             string identifier = variable->getIdentifier();
             auto declaration = scope->find(identifier); // TODO: search in both scopes
             if (declaration != scope->end()) {
                 if (declaration->second->isConstant()) {
-                    // throw ApeCompilerException("Assigning to const variable " + identifier);
                     errors->push_back(ApeCompilerException("Assigning to const variable " + identifier));
                 }
                 if (declaration->second->isFunction()) {
-                    // throw ApeCompilerException("Assigning to function " + identifier);
                     errors->push_back(ApeCompilerException("Assigning to function " + identifier));
                 }
             }
