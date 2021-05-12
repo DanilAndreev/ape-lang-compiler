@@ -1,3 +1,5 @@
+import sys
+
 FETCH, STORE, PUSH, POP, ADD, SUBTRACT, MULTIPLY, DIVIDE, LT, LTE, EQ, NEQ, JZ, JNZ, JMP, HALT = range(16)
 
 
@@ -5,7 +7,6 @@ class VirtualMachine:
     @staticmethod
     def run(program):
         var = dict()
-        # var = [0 for i in range(26)]
         stack = []
         pc = 0
         while True:
@@ -64,12 +65,17 @@ class VirtualMachine:
             elif op == HALT:
                 break
 
-        print('Execution finished.')
         print(var)
-        # for i in range(26):
-        #     if var[i] != 0:
-        #         print('%c = %d' % (chr(i + ord('a')), var[i]))
 
 
-prg = [2,0,1,"a",2,0,1,"b",0,"a",2,20,8,12,40,0,"a",2,1,4,1,"a",3,2,5,0,"b",8,12,38,0,"b",2,1,4,1,"b",3,14,8,15,15,]
-VirtualMachine.run(prg)
+if len(sys.argv) != 2:
+    print("Incorrect number of arguments, expected: <executable>")
+    exit(-1)
+
+with open(sys.argv[1], "r") as file:
+    text: str = file.read()
+    prog: list = eval(text)
+    if type(prog) is not list:
+        print("Invalid bytecode.")
+        exit(-2)
+    VirtualMachine.run(prog)
