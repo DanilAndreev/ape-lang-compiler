@@ -83,6 +83,53 @@ shared_ptr<Node> Tokenizer::statement() const {
                     node->setOperand2(this->statement());
                 }
                     break;
+                case KEYWORDS::FOR: {
+                    shared_ptr<Node> forNode = make_shared<Node>(Node::FOR);
+                    node = make_shared<Node>(Node::SEQUENCE);
+                    node->setOperand2(forNode);
+
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \"(\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::ROUND_BRACE_OPEN)
+                        throw ApeCompilerException("Expected \"(\"");
+
+                    if (this->lexer->nextToken()->getType() == Token::KEYWORD) {
+                        node->setOperand1(this->declaration());
+                    } else {
+                        node->setOperand1(this->expression());
+                    }
+
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \";\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::SEMICOLON)
+                        throw ApeCompilerException("Expected \";\"");
+
+
+                    this->lexer->nextToken();
+                    forNode->setOperand1(this->test());
+
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \";\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::SEMICOLON)
+                        throw ApeCompilerException("Expected \";\"");
+
+                    this->lexer->nextToken();
+                    forNode->setOperand2(this->expression());
+
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \")\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::ROUND_BRACE_CLOSE)
+                        throw ApeCompilerException("Expected \")\"");
+
+                    this->lexer->nextToken();
+                    forNode->setOperand3(this->statement());
+                }
+                    break;
                 case KEYWORDS::DO: {
                     node = make_shared<Node>(Node::DO);
                     this->lexer->nextToken();

@@ -161,6 +161,19 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->program[jump_address2] = to_string(this->address);
         }
             break;
+        case Node::FOR: {
+            unsigned long long jump_address1 = this->address;
+            this->compile_tree(tree->getOperand1());
+            this->generate(COMMANDS::JZ);
+            unsigned long long jump_address2 = this->address;
+            this->generate(0);
+            this->compile_tree(tree->getOperand2());
+            this->compile_tree(tree->getOperand3());
+            this->generate(COMMANDS::JMP);
+            this->generate(jump_address1);
+            this->program[jump_address2] = to_string(this->address);
+        }
+            break;
         case Node::DO: {
             unsigned long long jump_address = this->address;
             this->compile_tree(tree->getOperand1());
@@ -185,8 +198,6 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             break;
         case Node::SCOPE:
             this->compile_tree(tree->getOperand1());
-            break;
-        case Node::FOR:
             break;
     }
 }
