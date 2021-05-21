@@ -49,13 +49,13 @@ shared_ptr<Node> Tokenizer::parse() {
 }
 
 shared_ptr<Node> Tokenizer::statement() const {
-    shared_ptr<Token> entry = this->lexer->getCurrentToken();
-    shared_ptr<Node> node = nullptr;
+    shared_ptr <Token> entry = this->lexer->getCurrentToken();
+    shared_ptr <Node> node = nullptr;
 
     switch (entry->getType()) {
         /// KEYWORDS
         case Token::KEYWORD: {
-            shared_ptr<KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
+            shared_ptr <KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
 
             switch (token->getKeywordType()) {
                 /// IF
@@ -66,7 +66,7 @@ shared_ptr<Node> Tokenizer::statement() const {
                     node->setOperand2(this->statement());
                     entry = this->lexer->getCurrentToken();
                     if (entry->getType() == Token::KEYWORD) {
-                        shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
+                        shared_ptr <KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
                         /// ELSE
                         if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
                             node->setType(Node::IFELSE);
@@ -107,6 +107,63 @@ shared_ptr<Node> Tokenizer::statement() const {
                     dynamic_pointer_cast<DeclarationNode>(node)->setConstant(true);
                 }
                     break;
+                case KEYWORDS::PRINT: {
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \"(\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::ROUND_BRACE_OPEN)
+                        throw ApeCompilerException("Expected \"(\"");
+
+                    this->lexer->nextToken();
+                    node = this->test();
+
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \")\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::ROUND_BRACE_CLOSE)
+                        throw ApeCompilerException("Expected \")\"");
+
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \";\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::SEMICOLON)
+                        throw ApeCompilerException("Expected \";\"");
+                    node = make_shared<Node>(Node::PRINT, node);
+                }
+                    break;
+                case KEYWORDS::READ: {
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \"(\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::ROUND_BRACE_OPEN)
+                        throw ApeCompilerException("Expected \"(\"");
+
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::IDENTIFIER)
+                        throw ApeCompilerException("Expected identifier");
+
+                    string varName = this->lexer->getCurrentToken()->getPayload();
+                    node = make_shared<VariableNode>(varName, false);
+
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \")\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::ROUND_BRACE_CLOSE)
+                        throw ApeCompilerException("Expected \")\"");
+
+                    this->lexer->nextToken();
+                    if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
+                        throw ApeCompilerException("Expected \";\"");
+                    if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
+                        OPERATORS::SEMICOLON)
+                        throw ApeCompilerException("Expected \";\"");
+                    node = make_shared<Node>(Node::READ, node);
+                }
+                    break;
                 default:
                     KEYWORDS type = token->getKeywordType();
                     if (
@@ -122,7 +179,7 @@ shared_ptr<Node> Tokenizer::statement() const {
             break;
             /// SYMBOLS
         case Token::SYMBOL: {
-            shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(entry);
+            shared_ptr <OperatorToken> token = dynamic_pointer_cast<OperatorToken>(entry);
 
             switch (token->getOperatorType()) {
                 /// SEMICOLON
@@ -155,7 +212,7 @@ shared_ptr<Node> Tokenizer::statement() const {
             node = make_shared<Node>(Node::EXPRESSION, this->expression());
             if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
                 throw ApeCompilerException("Expected \";\"");
-            shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
+            shared_ptr <OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
             if (token->getOperatorType() != OPERATORS::SEMICOLON)
                 throw ApeCompilerException("Expected \";\"");
             this->lexer->nextToken();
@@ -491,7 +548,8 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
             if (declaration != nullptr) {
                 if (scope->find(declaration->getIdentifier()) != scope->end()) {
                     //throw ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier());
-                    errors->push_back(ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier()));
+                    errors->push_back(
+                            ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier()));
                 }
                 scope->insert(ScopeItem(declaration->getIdentifier(), declaration));
 

@@ -41,6 +41,8 @@ enum KEYWORDS {
     CONST,
     TRUE,
     FALSE,
+    PRINT,
+    READ,
     SWITCH,
     CASE,
     GOTO,

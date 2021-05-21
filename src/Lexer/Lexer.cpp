@@ -75,6 +75,9 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
         pair<string, KEYWORDS>("true", KEYWORDS::TRUE),
         pair<string, KEYWORDS>("false", KEYWORDS::FALSE),
 
+        pair<string, KEYWORDS>("print", KEYWORDS::PRINT),
+        pair<string, KEYWORDS>("read", KEYWORDS::READ),
+
         pair<string, KEYWORDS>("int", KEYWORDS::INT),
         pair<string, KEYWORDS>("float", KEYWORDS::FLOAT),
         pair<string, KEYWORDS>("string", KEYWORDS::STRING),
@@ -202,11 +205,11 @@ NumberToken *Lexer::readNumber() {
 Token *Lexer::readIdentifier() {
     const int tokenLine = this->line;
     const int tokenColumn = this->column;
-
+    
     string buffer = "";
     char character = this->get();
 
-    while (!this->stream->eof() && iswalnum(character)) {
+    while (!this->stream->eof() && isalnum(character)) {
         buffer += character;
         this->get(character);
     }
@@ -333,7 +336,7 @@ void Lexer::get(char &input) {
 void Lexer::unget() {
     this->stream->unget();
     this->column--;
-    moveLinesCounterBack();
+    //moveLinesCounterBack(); //TODO: finish
 }
 
 void Lexer::moveLinesCounterBack(long shift) {

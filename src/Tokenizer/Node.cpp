@@ -162,6 +162,12 @@ string Node::getNodeTypeStr() const {
             return "EQUAL";
         case Node::NOT_EQUAL:
             return "NOT_EQUAL";
+        case Node::PRINT:
+            return "PRINT";
+        case Node::READ:
+            return "READ";
+        default:
+            return "UNKNOWN";
     }
 }
 

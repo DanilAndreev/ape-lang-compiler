@@ -69,6 +69,9 @@ public:
         GREATER_EQUAL,
         EQUAL,
         NOT_EQUAL,
+
+        PRINT,
+        READ,
     };
 protected:
     /**
