@@ -32,6 +32,7 @@ VariableNode::VariableNode(string &identifier, bool isFunc, shared_ptr<Node> ope
     this->declaration = false;
     this->index = 0;
     this->dataType = DATA_TYPE::INT;
+    this->constant = false;
 }
 
 VariableNode::VariableNode(string &identifier,  shared_ptr<Node> operand1): VariableNode(identifier, false, operand1) {
@@ -39,6 +40,7 @@ VariableNode::VariableNode(string &identifier,  shared_ptr<Node> operand1): Vari
     this->declaration = false;
     this->index = 0;
     this->dataType = DATA_TYPE::INT;
+    this->constant = false;
 }
 
 VariableNode::VariableNode(const VariableNode &reference): Node(reference) {
@@ -47,6 +49,7 @@ VariableNode::VariableNode(const VariableNode &reference): Node(reference) {
     this->declaration = reference.declaration;
     this->index = reference.index;
     this->dataType = reference.dataType;
+    this->constant = reference.constant;
 }
 
 VariableNode::~VariableNode() {}

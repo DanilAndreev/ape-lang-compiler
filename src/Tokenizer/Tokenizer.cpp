@@ -602,6 +602,20 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
                     errors->push_back(ApeCompilerException("Undeclared variable " + variable->getIdentifier()));
                 }
             }
+            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
+            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
+            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
+        }
+            break;
+        case Node::SET: {
+            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input);
+            if (variable->isConstant()) {
+                errors->push_back(
+                        ApeCompilerException("Assigning to constant variable " + variable->getIdentifier()));
+            }
+            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
+            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
+            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
         }
             break;
         default:
