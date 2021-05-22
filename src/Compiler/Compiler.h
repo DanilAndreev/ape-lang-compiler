@@ -48,7 +48,9 @@ public:
         JZ,
         JNZ,
         JMP,
-        HALT
+        HALT,
+        PRINT,
+        SCAN,
     };
 protected:
     vector<string> program;
