@@ -60,16 +60,10 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
                     }
                 }
                 this->generate(COMMANDS::STORE);
-                string identifier = "\"";
-                identifier += variable->getIndex();
-                identifier += "\"";
-                this->generate(identifier);
+                this->generate(variable->getIndex());
             } else {
                 this->generate(COMMANDS::FETCH);
-                string identifier = "\"";
-                identifier += variable->getIndex();
-                identifier += "\"";
-                this->generate(identifier);
+                this->generate(variable->getIndex());
             }
         }
             break;
@@ -139,10 +133,7 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->compile_tree(tree->getOperand2());
             this->generate(COMMANDS::STORE);
             shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
-            string identifier = "\"";
-            identifier += node->getIndex();
-            identifier += "\"";
-            this->generate(identifier);
+            this->generate(node->getIndex());
         }
             break;
         case Node::IF: {
@@ -216,10 +207,7 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
         case Node::PRINT: {
             this->generate(COMMANDS::FETCH);
             shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
-            string identifier = "\"";
-            identifier += node->getIndex();
-            identifier += "\"";
-            this->generate(identifier);
+            this->generate(node->getIndex());
             this->generate(COMMANDS::PRINT);
         }
             break;
@@ -231,10 +219,7 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->generate(argument->getBasicType());
             this->generate(COMMANDS::STORE);
             shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
-            string identifier = "\"";
-            identifier += node->getIndex();
-            identifier += "\"";
-            this->generate(identifier);
+            this->generate(node->getIndex());
         }
             break;
         case Node::EMPTY:
