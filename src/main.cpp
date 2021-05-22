@@ -18,17 +18,17 @@ vector<string> compile(ifstream& fin) {
     tree->print(cout, 0, "root");
 #endif
 
-//    shared_ptr<vector<ApeCompilerException>> errors;
-//    try {
-//        errors = Tokenizer::validateTree(tree).second;
-//        for (const auto& error: *errors) {
-//            cerr << "Compilation error: " << error.getMessage() << endl;
-//        }
-//    } catch (ApeCompilerException &e) {
-//        cerr << "Compilation error: " << e.getMessage() << endl;
-//    } catch (...) {
-//        cerr << "Unrecognized error" << endl;
-//    }
+    shared_ptr<vector<ApeCompilerException>> errors;
+    try {
+        errors = Tokenizer::validateTree(tree).second;
+        for (const auto& error: *errors) {
+            cerr << "Compilation error: " << error.getMessage() << endl;
+        }
+    } catch (ApeCompilerException &e) {
+        cerr << "Compilation error: " << e.getMessage() << endl;
+    } catch (...) {
+        cerr << "Unrecognized error" << endl;
+    }
 
 
     Compiler* compiler = new Compiler();

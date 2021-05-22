@@ -35,10 +35,26 @@ SOFTWARE.
  */
 class VariableNode : public Node {
 protected:
+    static unsigned int index_counter;
+public:
+    enum DATA_TYPE {
+        INT,
+        FLOAT,
+        BOOLEAN,
+        STRING,
+    };
+
+    static unsigned int nextIndex();
+
+protected:
     /// identifier - variable identifier string
     string identifier;
     /// isFunc - if true, this variable refers to function.
     bool isFunc;
+    DATA_TYPE dataType;
+    bool constant;
+    bool declaration;
+    unsigned int index;
 public:
     explicit VariableNode(string &identifier, bool isFunc = false, shared_ptr<Node> operand1 = nullptr);
 
@@ -55,18 +71,49 @@ public:
      */
     string getIdentifier() const;
 
+    unsigned int getIndex() const;
+
     /**
      * isFunction - if variable refers to function return true, else false.
      * @author Danil Andreev
      */
     bool isFunction() const;
 
+    /**
+     * isFunction - if variable is marked as constant return true, else false.
+     * @author Danil Andreev
+     */
+    bool isConstant() const;
+
+    /**
+     * isFunction - if nmode represents variable declaration return true, else false.
+     * @author Danil Andreev
+     */
+    bool isDeclaration();
+
+    /**
+     * isFunction - getter for variable type.
+     * @author Danil Andreev
+     */
+    DATA_TYPE getBasicType() const;
+
+    VariableNode *setConstant(bool value = true);
+
+    VariableNode *setDeclaration(bool value = true);
+
+    VariableNode *setBasicType(DATA_TYPE value);
+
+    VariableNode *setIndex(unsigned int index);
+
+    VariableNode *setIndex();
+
 public:
     /**
      * setIsFunction - setter for isFunc field.
      * @author Danil Andreev
      */
-    VariableNode* setIsFunction(bool isFunc);
+    VariableNode *setIsFunction(bool isFunc);
+
 public:
     ostream &printNode(ostream &stream) const override;
 };

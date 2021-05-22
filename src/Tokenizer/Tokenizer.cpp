@@ -49,13 +49,13 @@ shared_ptr<Node> Tokenizer::parse() {
 }
 
 shared_ptr<Node> Tokenizer::statement() const {
-    shared_ptr <Token> entry = this->lexer->getCurrentToken();
-    shared_ptr <Node> node = nullptr;
+    shared_ptr<Token> entry = this->lexer->getCurrentToken();
+    shared_ptr<Node> node = nullptr;
 
     switch (entry->getType()) {
         /// KEYWORDS
         case Token::KEYWORD: {
-            shared_ptr <KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
+            shared_ptr<KeywordToken> token = dynamic_pointer_cast<KeywordToken>(entry);
 
             switch (token->getKeywordType()) {
                 /// IF
@@ -66,7 +66,7 @@ shared_ptr<Node> Tokenizer::statement() const {
                     node->setOperand2(this->statement());
                     entry = this->lexer->getCurrentToken();
                     if (entry->getType() == Token::KEYWORD) {
-                        shared_ptr <KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
+                        shared_ptr<KeywordToken> elseToken = dynamic_pointer_cast<KeywordToken>(entry);
                         /// ELSE
                         if (elseToken->getKeywordType() == KEYWORDS::ELSE) {
                             node->setType(Node::IFELSE);
@@ -151,7 +151,7 @@ shared_ptr<Node> Tokenizer::statement() const {
                 case KEYWORDS::CONST: {
                     this->lexer->nextToken();
                     node = this->declaration();
-                    dynamic_pointer_cast<DeclarationNode>(node)->setConstant(true);
+                    dynamic_pointer_cast<VariableNode>(node)->setConstant(true);
                 }
                     break;
                 case KEYWORDS::PRINT: {
@@ -226,7 +226,7 @@ shared_ptr<Node> Tokenizer::statement() const {
             break;
             /// SYMBOLS
         case Token::SYMBOL: {
-            shared_ptr <OperatorToken> token = dynamic_pointer_cast<OperatorToken>(entry);
+            shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(entry);
 
             switch (token->getOperatorType()) {
                 /// SEMICOLON
@@ -259,7 +259,7 @@ shared_ptr<Node> Tokenizer::statement() const {
             node = make_shared<Node>(Node::EXPRESSION, this->expression());
             if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
                 throw ApeCompilerException("Expected \";\"");
-            shared_ptr <OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
+            shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
             if (token->getOperatorType() != OPERATORS::SEMICOLON)
                 throw ApeCompilerException("Expected \";\"");
             this->lexer->nextToken();
@@ -424,8 +424,8 @@ shared_ptr<Node> Tokenizer::term() const {
     return node;
 }
 
-shared_ptr<DeclarationNode> Tokenizer::declaration(bool initialization, bool semicolon) const {
-    shared_ptr<DeclarationNode> node = nullptr;
+shared_ptr<VariableNode> Tokenizer::declaration(bool initialization, bool semicolon) const {
+    shared_ptr<VariableNode> node = nullptr;
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::KEYWORD)
         throw ApeCompilerException("Incorrect type");
@@ -436,26 +436,28 @@ shared_ptr<DeclarationNode> Tokenizer::declaration(bool initialization, bool sem
 
     KEYWORDS type = keywordToken->getKeywordType();
 
-    DeclarationNode::DATA_TYPE dataType;
+    VariableNode::DATA_TYPE dataType;
     switch (type) {
         case KEYWORDS::FLOAT:
-            dataType = DeclarationNode::DATA_TYPE::FLOAT;
+            dataType = VariableNode::DATA_TYPE::FLOAT;
             break;
         case KEYWORDS::INT:
-            dataType = DeclarationNode::DATA_TYPE::INT;
+            dataType = VariableNode::DATA_TYPE::INT;
             break;
         case KEYWORDS::BOOLEAN:
-            dataType = DeclarationNode::DATA_TYPE::BOOLEAN;
+            dataType = VariableNode::DATA_TYPE::BOOLEAN;
             break;
         case KEYWORDS::STRING:
-            dataType = DeclarationNode::DATA_TYPE::STRING;
+            dataType = VariableNode::DATA_TYPE::STRING;
             break;
     }
     shared_ptr<Token> current = this->lexer->nextToken();
     if (current->getType() != Token::IDENTIFIER)
         throw ApeCompilerException("Incorrect daclaration");
     string name = current->getPayload();
-    node = make_shared<DeclarationNode>(dataType, name);
+    node = make_shared<VariableNode>(name, false);
+    node->setBasicType(dataType);
+    node->setDeclaration(true);
     current = this->lexer->nextToken();
     if (initialization && current->getType() == Token::SYMBOL) {
         shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(current);
@@ -559,6 +561,59 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
     if (errors == nullptr)
         errors = make_shared<vector<ApeCompilerException>>();
 
+    const shared_ptr<Node> operand1 = input->getOperand1();
+    const shared_ptr<Node> operand2 = input->getOperand2();
+    const shared_ptr<Node> operand3 = input->getOperand3();
+
+    switch (input->getType()) {
+        case Node::SCOPE:
+            if (operand1 != nullptr)
+                validateTree(operand1, make_shared<Scope>(*scope), scope, errors);
+            if (operand2 != nullptr)
+                validateTree(operand2, make_shared<Scope>(*scope), scope, errors);
+            if (operand3 != nullptr)
+                validateTree(operand3, make_shared<Scope>(*scope), scope, errors);
+            break;
+        case Node::VAR: {
+            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input);
+            if (!variable) throw ApeCompilerException("Invalid cast");
+            if (variable->isDeclaration()) {
+                if (scope->find(variable->getIdentifier()) != scope->end()) {
+                    errors->push_back(ApeCompilerException("Re-declaration of variable" + variable->getIdentifier()));
+                } else {
+                    variable->setIndex();
+                    scope->insert(ScopeItem(variable->getIdentifier(), variable));
+                }
+            } else {
+                auto declaration = scope->find(variable->getIdentifier());
+                auto outerDeclaration = outerScope->find(variable->getIdentifier());
+                if (declaration != scope->end()) {
+                    variable->setBasicType(declaration->second->getBasicType());
+                    variable->setIndex(declaration->second->getIndex());
+                } else if (outerDeclaration != outerScope->end()) {
+                    variable->setBasicType(outerDeclaration->second->getBasicType());
+                    variable->setIndex(outerDeclaration->second->getIndex());
+                } else {
+                    errors->push_back(ApeCompilerException("Undeclared variable " + variable->getIdentifier()));
+                }
+            }
+        }
+            break;
+        default:
+            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
+            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
+            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
+
+    }
+
+/*
+    if (scope == nullptr)
+        scope = make_shared<Scope>();
+    if (outerScope == nullptr)
+        outerScope = make_shared<Scope>();
+    if (errors == nullptr)
+        errors = make_shared<vector<ApeCompilerException>>();
+
     shared_ptr<Scope> inputScope = make_shared<Scope>(*scope);
 
     const shared_ptr<Node> operand1 = input->getOperand1();
@@ -591,7 +646,7 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
         }
             break;
         case Node::VAR: {
-            shared_ptr<DeclarationNode> declaration = dynamic_pointer_cast<DeclarationNode>(input);
+            shared_ptr<VariableNode> declaration = dynamic_pointer_cast<VariableNode>(input);
             if (declaration != nullptr) {
                 if (scope->find(declaration->getIdentifier()) != scope->end()) {
                     //throw ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier());
@@ -641,4 +696,5 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
     }
 
     return pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>>(input, errors);
+*/
 }

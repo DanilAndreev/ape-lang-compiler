@@ -24,18 +24,29 @@ SOFTWARE.
 
 #include "VariableNode.h"
 
+unsigned int VariableNode::index_counter = 1;
+
 VariableNode::VariableNode(string &identifier, bool isFunc, shared_ptr<Node> operand1): Node(Node::VAR, operand1) {
     this->identifier = identifier;
     this->isFunc = isFunc;
+    this->declaration = false;
+    this->index = 0;
+    this->dataType = DATA_TYPE::INT;
 }
 
 VariableNode::VariableNode(string &identifier,  shared_ptr<Node> operand1): VariableNode(identifier, false, operand1) {
     if (operand1) this->isFunc = true;
+    this->declaration = false;
+    this->index = 0;
+    this->dataType = DATA_TYPE::INT;
 }
 
 VariableNode::VariableNode(const VariableNode &reference): Node(reference) {
     this->identifier = reference.identifier;
     this->isFunc = reference.isFunc;
+    this->declaration = reference.declaration;
+    this->index = reference.index;
+    this->dataType = reference.dataType;
 }
 
 VariableNode::~VariableNode() {}
@@ -51,6 +62,7 @@ string VariableNode::getIdentifier() const {
 ostream &VariableNode::printNode(ostream &stream) const {
     stream << "VariableNode ";
     if (this->isFunc) stream << "(Func) ";
+    if (this->declaration) stream << "Declaration ";
     stream << "| " << this->identifier;
     return stream;
 }
@@ -58,4 +70,49 @@ ostream &VariableNode::printNode(ostream &stream) const {
 VariableNode *VariableNode::setIsFunction(bool isFunc) {
     this->isFunc = isFunc;
     return this;
+}
+
+bool VariableNode::isConstant() const {
+    return this->constant;
+}
+
+VariableNode::DATA_TYPE VariableNode::getBasicType() const {
+    return this->dataType;
+}
+
+bool VariableNode::isDeclaration() {
+    return this->declaration;
+}
+
+VariableNode *VariableNode::setConstant(bool value) {
+    this->constant = value;
+    return this;
+}
+
+VariableNode *VariableNode::setDeclaration(bool value) {
+    this->declaration = value;
+    return this;
+}
+
+VariableNode *VariableNode::setBasicType(VariableNode::DATA_TYPE type) {
+    this->dataType = type;
+    return this;
+}
+
+unsigned int VariableNode::nextIndex() {
+    return index_counter++;
+}
+
+VariableNode *VariableNode::setIndex(unsigned int index) {
+    this->index = index;
+    return this;
+}
+
+VariableNode *VariableNode::setIndex() {
+    this->index = nextIndex();
+    return this;
+}
+
+unsigned int VariableNode::getIndex() const {
+    return this->index;
 }

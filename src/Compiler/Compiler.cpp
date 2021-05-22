@@ -27,7 +27,6 @@ SOFTWARE.
 #include "../Tokenizer/IntegerNode.h"
 #include "../Tokenizer/StringNode.h"
 #include "../Tokenizer/FloatNode.h"
-#include "../Tokenizer/DeclarationNode.h"
 #include "../exceptions/ApeCompilerException.h"
 
 Compiler::Compiler() {
@@ -37,37 +36,38 @@ Compiler::Compiler() {
 void Compiler::compile_tree(shared_ptr<Node> tree) {
     switch (tree->getType()) {
         case Node::VAR: {
-            shared_ptr<DeclarationNode> declaration = dynamic_pointer_cast<DeclarationNode>(tree);
-            if (declaration != nullptr) {
-                if (declaration->getOperand1()) {
-                    this->compile_tree(declaration->getOperand1());
+            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(tree);
+            if (!variable)
+                throw ApeCompilerException("Invalid cast");
+            if (variable->isDeclaration()) {
+                if (variable->getOperand1()) {
+                    this->compile_tree(variable->getOperand1());
                 } else {
                     this->generate(COMMANDS::PUSH);
-                    switch (declaration->getBasicType()) {
-                        case DeclarationNode::DATA_TYPE::INT:
+                    switch (variable->getBasicType()) {
+                        case VariableNode::DATA_TYPE::INT:
                             this->generate("0");
                             break;
-                        case DeclarationNode::DATA_TYPE::FLOAT:
+                        case VariableNode::DATA_TYPE::FLOAT:
                             this->generate("0.0");
                             break;
-                        case DeclarationNode::DATA_TYPE::BOOLEAN:
+                        case VariableNode::DATA_TYPE::BOOLEAN:
                             this->generate("True");
                             break;
-                        case DeclarationNode::DATA_TYPE::STRING:
+                        case VariableNode::DATA_TYPE::STRING:
                             this->generate("''");
                             break;
                     }
                 }
                 this->generate(COMMANDS::STORE);
                 string identifier = "\"";
-                identifier += declaration->getIdentifier();
+                identifier += variable->getIdentifier();
                 identifier += "\"";
                 this->generate(identifier);
             } else {
                 this->generate(COMMANDS::FETCH);
-                shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree);
                 string identifier = "\"";
-                identifier += node->getIdentifier();
+                identifier += variable->getIdentifier();
                 identifier += "\"";
                 this->generate(identifier);
             }
