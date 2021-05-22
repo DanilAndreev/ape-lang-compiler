@@ -566,20 +566,24 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
     const shared_ptr<Node> operand3 = input->getOperand3();
 
     switch (input->getType()) {
-        case Node::SCOPE:
+        case Node::SCOPE: {
+            shared_ptr<Scope> mergedScope = make_shared<Scope>(*outerScope);
+            mergedScope->insert(scope->begin(), scope->end());
+
             if (operand1 != nullptr)
-                validateTree(operand1, make_shared<Scope>(*scope), scope, errors);
+                validateTree(operand1, make_shared<Scope>(), mergedScope, errors);
             if (operand2 != nullptr)
-                validateTree(operand2, make_shared<Scope>(*scope), scope, errors);
+                validateTree(operand2, make_shared<Scope>(), mergedScope, errors);
             if (operand3 != nullptr)
-                validateTree(operand3, make_shared<Scope>(*scope), scope, errors);
+                validateTree(operand3, make_shared<Scope>(), mergedScope, errors);
+        }
             break;
         case Node::VAR: {
             shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input);
             if (!variable) throw ApeCompilerException("Invalid cast");
             if (variable->isDeclaration()) {
                 if (scope->find(variable->getIdentifier()) != scope->end()) {
-                    errors->push_back(ApeCompilerException("Re-declaration of variable" + variable->getIdentifier()));
+                    errors->push_back(ApeCompilerException("Re-declaration of variable " + variable->getIdentifier()));
                 } else {
                     variable->setIndex();
                     scope->insert(ScopeItem(variable->getIdentifier(), variable));
@@ -605,6 +609,8 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
             if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
 
     }
+
+    return pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>>(input, errors);
 
 /*
     if (scope == nullptr)

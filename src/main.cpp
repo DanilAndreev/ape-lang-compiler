@@ -30,6 +30,10 @@ vector<string> compile(ifstream& fin) {
         cerr << "Unrecognized error" << endl;
     }
 
+#ifndef NDEBUG
+    cout << "--- AFTER VALIDATION ---" << endl;
+    tree->print(cout, 0, "root");
+#endif
 
     Compiler* compiler = new Compiler();
     vector<string> program = compiler->compile(tree);

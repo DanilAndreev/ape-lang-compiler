@@ -63,6 +63,7 @@ ostream &VariableNode::printNode(ostream &stream) const {
     stream << "VariableNode ";
     if (this->isFunc) stream << "(Func) ";
     if (this->declaration) stream << "Declaration ";
+    if (this->index) stream << "Index(" << this->index << ") ";
     stream << "| " << this->identifier;
     return stream;
 }
