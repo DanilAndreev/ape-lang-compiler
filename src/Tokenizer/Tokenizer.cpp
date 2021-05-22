@@ -128,6 +128,7 @@ shared_ptr<Node> Tokenizer::statement() const {
 
                     this->lexer->nextToken();
                     forNode->setOperand3(this->statement());
+                    node = make_shared<Node>(Node::SCOPE, node);
                 }
                     break;
                 case KEYWORDS::DO: {

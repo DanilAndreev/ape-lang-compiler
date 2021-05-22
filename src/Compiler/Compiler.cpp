@@ -61,13 +61,13 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
                 }
                 this->generate(COMMANDS::STORE);
                 string identifier = "\"";
-                identifier += variable->getIdentifier();
+                identifier += variable->getIndex();
                 identifier += "\"";
                 this->generate(identifier);
             } else {
                 this->generate(COMMANDS::FETCH);
                 string identifier = "\"";
-                identifier += variable->getIdentifier();
+                identifier += variable->getIndex();
                 identifier += "\"";
                 this->generate(identifier);
             }
@@ -140,7 +140,7 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->generate(COMMANDS::STORE);
             shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
             string identifier = "\"";
-            identifier += node->getIdentifier();
+            identifier += node->getIndex();
             identifier += "\"";
             this->generate(identifier);
         }
@@ -217,7 +217,7 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->generate(COMMANDS::FETCH);
             shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
             string identifier = "\"";
-            identifier += node->getIdentifier();
+            identifier += node->getIndex();
             identifier += "\"";
             this->generate(identifier);
             this->generate(COMMANDS::PRINT);
@@ -228,13 +228,11 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             shared_ptr<VariableNode> argument = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
             if (!argument)
                 throw ApeCompilerException("Invalid cast");
-//            switch (argument->ge) {
-//
-//            }
+            this->generate(argument->getBasicType());
             this->generate(COMMANDS::STORE);
             shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
             string identifier = "\"";
-            identifier += node->getIdentifier();
+            identifier += node->getIndex();
             identifier += "\"";
             this->generate(identifier);
         }

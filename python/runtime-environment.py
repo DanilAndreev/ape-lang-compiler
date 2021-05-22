@@ -1,6 +1,7 @@
 import sys
 
 FETCH, STORE, PUSH, POP, ADD, SUBTRACT, MULTIPLY, DIVIDE, LT, LTE, EQ, NEQ, JZ, JNZ, JMP, HALT, PRINT, SCAN = range(18)
+TYPE_INT, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_STRING = range(4)
 
 
 class VirtualMachine:
@@ -66,8 +67,30 @@ class VirtualMachine:
                 print(stack.pop())
                 pc += 1
             elif op == SCAN:
-                stack.append(float(input()))
-                pc += 1
+                flag: bool = True
+                temp = ""
+                while flag:
+                    temp = input()
+                    try:
+                        if arg == TYPE_INT:
+                            temp = int(temp)
+                        elif arg == TYPE_FLOAT:
+                            temp = float(temp)
+                        elif arg == TYPE_BOOLEAN:
+                            if temp != "true" and temp != "false":
+                                raise Exception()
+                            else:
+                                if temp == "true":
+                                    stack.append(True)
+                                else:
+                                    stack.append(False)
+                        flag = False
+                    except Exception:
+                        flag = True
+                        print("Incorrect input type")
+
+                stack.append(temp)
+                pc += 2
             elif op == HALT:
                 break
 
