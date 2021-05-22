@@ -595,9 +595,11 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
                 if (declaration != scope->end()) {
                     variable->setBasicType(declaration->second->getBasicType());
                     variable->setIndex(declaration->second->getIndex());
+                    variable->setConstant(declaration->second->isConstant());
                 } else if (outerDeclaration != outerScope->end()) {
                     variable->setBasicType(outerDeclaration->second->getBasicType());
                     variable->setIndex(outerDeclaration->second->getIndex());
+                    variable->setConstant(outerDeclaration->second->isConstant());
                 } else {
                     errors->push_back(ApeCompilerException("Undeclared variable " + variable->getIdentifier()));
                 }
@@ -608,14 +610,14 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
         }
             break;
         case Node::SET: {
-            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input);
+            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
+            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
+            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
+            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input->getOperand1());
             if (variable->isConstant()) {
                 errors->push_back(
                         ApeCompilerException("Assigning to constant variable " + variable->getIdentifier()));
             }
-            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
-            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
-            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
         }
             break;
         default:
