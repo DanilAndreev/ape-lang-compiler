@@ -1,6 +1,6 @@
 import sys
 
-FETCH, STORE, PUSH, POP, ADD, SUBTRACT, MULTIPLY, DIVIDE, LT, LTE, EQ, NEQ, JZ, JNZ, JMP, HALT, PRINT, SCAN = range(18)
+FETCH, STORE, PUSH, POP, ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER, LT, LTE, EQ, NEQ, JZ, JNZ, JMP, HALT, PRINT, SCAN = range(19)
 TYPE_INT, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_STRING = range(4)
 
 
@@ -42,6 +42,10 @@ class VirtualMachine:
                 pc += 1
             elif op == DIVIDE:
                 stack[-2] /= stack[-1]
+                stack.pop()
+                pc += 1
+            elif op == POWER:
+                stack[-2] **= stack[-1]
                 stack.pop()
                 pc += 1
             elif op == LT:
@@ -94,7 +98,7 @@ class VirtualMachine:
             elif op == HALT:
                 break
 
-        # print(var)
+        print(var)
 
 
 if len(sys.argv) != 2:

@@ -150,6 +150,8 @@ string Node::getNodeTypeStr() const {
             return "MULTIPLY";
         case Node::DIVIDE:
             return "DIVIDE";
+        case Node::POWER:
+            return "POWER";
         case Node::LESS:
             return "LESS";
         case Node::GREATER:

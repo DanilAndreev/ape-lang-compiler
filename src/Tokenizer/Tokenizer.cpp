@@ -332,20 +332,29 @@ shared_ptr<Node> Tokenizer::expression() const {
 shared_ptr<Node> Tokenizer::test() const {
     vector<pair<RPN, shared_ptr<Node>>> result;
     stack<pair<RPN, shared_ptr<Node>>> stc;
+    stc.push(pair(RPN::RPN_START, nullptr));
     vector<pair<RPN, shared_ptr<Node>>> inputTokens;
 
     while (!(dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken()) != nullptr &&
              dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
              OPERATORS::SEMICOLON)) {
-        inputTokens.push_back(this->rpn_term());
+        inputTokens.push_back(this->rpn_term()); //TODO: emplace_back
     }
+    inputTokens.emplace_back(pair(RPN::RPN_END, nullptr));
 
 
-    while (!inputTokens.empty()) {
+    while (!(inputTokens.front().first == RPN::RPN_END && stc.top().first == RPN::RPN_START)) {
         pair<RPN, shared_ptr<Node>> inputItem = inputTokens.front();
+
+        if (inputItem.first == RPN::RPN_END) {
+            result.push_back(stc.top());
+            stc.pop();
+            continue;
+        }
 
         if (inputItem.first == RPN::RPN_OPERAND) {
             result.push_back(inputItem);
+            inputTokens.erase(inputTokens.begin());
             continue;
         }
 
@@ -360,10 +369,10 @@ shared_ptr<Node> Tokenizer::test() const {
             throw ApeCompilerException("Incorrect arithmetical expression.");
         } else {
             if (inputItem.first == RPN::RPN_ROUND_BRACE_OPEN) {
-                stc.push(inputTokens.back());
+                stc.push(inputItem);
                 inputTokens.erase(inputTokens.begin());
             } else if (Priorities[stackItem.first] < Priorities[inputItem.first]) {
-                stc.push(inputTokens.back());
+                stc.push(inputItem);
                 inputTokens.erase(inputTokens.begin());
             } else {
                 result.push_back(stc.top());
@@ -377,6 +386,7 @@ shared_ptr<Node> Tokenizer::test() const {
 
     while(!result.empty()) {
         pair<RPN, shared_ptr<Node>> item = result.front();
+        result.erase(result.begin());
         if (item.first == RPN::RPN_OPERAND) {
             stc.push(item);
         } else {
@@ -384,8 +394,8 @@ shared_ptr<Node> Tokenizer::test() const {
             stc.pop();
             pair<RPN, shared_ptr<Node>> second = stc.top();
             stc.pop();
-            item.second->setOperand1(first.second);
-            item.second->setOperand2(second.second);
+            item.second->setOperand1(second.second);
+            item.second->setOperand2(first.second);
             stc.push(item);
         }
     }

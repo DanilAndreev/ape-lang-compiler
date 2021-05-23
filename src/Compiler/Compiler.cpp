@@ -98,6 +98,11 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->compile_tree(tree->getOperand2());
             this->generate(COMMANDS::DIVIDE);
             break;
+        case Node::POWER:
+            this->compile_tree(tree->getOperand1());
+            this->compile_tree(tree->getOperand2());
+            this->generate(COMMANDS::POWER);
+            break;
         case Node::LESS: {
             this->compile_tree(tree->getOperand1());
             this->compile_tree(tree->getOperand2());

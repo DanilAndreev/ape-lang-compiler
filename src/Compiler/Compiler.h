@@ -41,6 +41,7 @@ public:
         SUBTRACT,
         MULTIPLY,
         DIVIDE,
+        POWER,
         LT,
         LTE,
         EQ,
