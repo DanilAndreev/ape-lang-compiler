@@ -404,43 +404,6 @@ shared_ptr<Node> Tokenizer::test() const {
     }
 
     return stc.top().second;
-
-
-
-//    shared_ptr<Node> node = this->summa();
-//
-//    shared_ptr<Token> inputItem = this->lexer->getCurrentToken();
-//    if (inputItem->getType() == Token::SYMBOL) {
-//        shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(inputItem);
-//        switch (operatorToken->getOperatorType()) {
-//            case OPERATORS::LESS:
-//                this->lexer->nextToken();
-//                node = make_shared<Node>(Node::LESS, node, this->summa());
-//                break;
-//            case OPERATORS::GREATER:
-//                this->lexer->nextToken();
-//                node = make_shared<Node>(Node::GREATER, node, this->summa());
-//                break;
-//            case OPERATORS::LESS_EQUAL:
-//                this->lexer->nextToken();
-//                node = make_shared<Node>(Node::LESS_EQUAL, node, this->summa());
-//                break;
-//            case OPERATORS::GREATER_EQUAL:
-//                this->lexer->nextToken();
-//                node = make_shared<Node>(Node::GREATER_EQUAL, node, this->summa());
-//                break;
-//            case OPERATORS::EQUAL:
-//                this->lexer->nextToken();
-//                node = make_shared<Node>(Node::EQUAL, node, this->summa());
-//                break;
-//            case OPERATORS::NOTEQUAL:
-//                this->lexer->nextToken();
-//                node = make_shared<Node>(Node::NOT_EQUAL, node, this->summa());
-//                break;
-//        }
-//    }
-//
-//    return node;
 }
 
 shared_ptr<Node> Tokenizer::summa() const {
