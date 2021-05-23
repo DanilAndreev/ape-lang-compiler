@@ -20,7 +20,7 @@ vector<string> compile(ifstream& fin) {
 
     shared_ptr<vector<ApeCompilerException>> errors;
     try {
-        errors = Tokenizer::validateTree(tree).second;
+        errors = get<1>(Tokenizer::validateTree(tree));
         for (const auto& error: *errors) {
             cerr << "Compilation error: " << error.getMessage() << endl;
         }

@@ -172,6 +172,8 @@ string Node::getNodeTypeStr() const {
             return "AND";
         case Node::OR:
             return "OR";
+        case Node::CONVERT:
+            return "CONVERT";
         default:
             return "UNKNOWN";
     }

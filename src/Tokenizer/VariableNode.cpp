@@ -26,6 +26,23 @@ SOFTWARE.
 
 unsigned int VariableNode::index_counter = 1;
 
+string VariableNode::getDataTypeStr(DATA_TYPE input) {
+    switch (input) {
+        case DATA_TYPE::INT:
+            return "INT";
+        case DATA_TYPE::FLOAT:
+            return "FLOAT";
+        case DATA_TYPE::BOOLEAN:
+            return "BOOLEAN";
+        case DATA_TYPE::STRING:
+            return "STRING";
+        case DATA_TYPE::VOID:
+            return "VOID";
+        default:
+            return "UNKNOWN";
+    }
+}
+
 VariableNode::VariableNode(string &identifier, bool isFunc, shared_ptr<Node> operand1): Node(Node::VAR, operand1) {
     this->identifier = identifier;
     this->isFunc = isFunc;

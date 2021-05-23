@@ -60,7 +60,7 @@ protected:
     typedef pair<const string, shared_ptr<VariableNode>> ScopeItem;
     typedef map<const string, shared_ptr<VariableNode>> Scope;
 public: // TODO: Change to protected
-    static pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> validateTree(
+    static tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::DATA_TYPE> validateTree(
             const shared_ptr<Node> input,
             shared_ptr<Scope> scope = nullptr,
             shared_ptr<Scope> outerScope = nullptr,

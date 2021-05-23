@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "ConvertNode.h"
 
-ConvertNode::ConvertNode(const VariableNode::DATA_TYPE dateType) : Node(Node::CONVERT) {
+ConvertNode::ConvertNode(const VariableNode::DATA_TYPE dateType, shared_ptr<Node> operand1) : Node(Node::CONVERT, operand1) {
     this->dataType = dateType;
 }
 
@@ -42,4 +42,8 @@ VariableNode::DATA_TYPE ConvertNode::getDataType() const {
 ConvertNode *ConvertNode::setDataType(const VariableNode::DATA_TYPE iDataType) {
     this->dataType = iDataType;
     return this;
+}
+
+ostream &ConvertNode::printNode(ostream &stream) const {
+    return stream << "ConvertNode | " << VariableNode::getDataTypeStr(this->dataType);
 }

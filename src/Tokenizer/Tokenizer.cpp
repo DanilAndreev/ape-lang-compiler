@@ -27,6 +27,7 @@ SOFTWARE.
 #include "IntegerNode.h"
 #include "FloatNode.h"
 #include "BooleanNode.h"
+#include "ConvertNode.h"
 
 map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_START,             0},
@@ -542,7 +543,7 @@ shared_ptr<Node> Tokenizer::arguments() const {
     return node;
 }
 
-pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::validateTree(
+tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::DATA_TYPE> Tokenizer::validateTree(
         const shared_ptr<Node> input,
         shared_ptr<Scope> scope,
         shared_ptr<Scope> outerScope,
@@ -554,12 +555,25 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
         outerScope = make_shared<Scope>();
     if (errors == nullptr)
         errors = make_shared<vector<ApeCompilerException>>();
+    VariableNode::DATA_TYPE resultDataType = VariableNode::DATA_TYPE::VOID;
 
     const shared_ptr<Node> operand1 = input->getOperand1();
     const shared_ptr<Node> operand2 = input->getOperand2();
     const shared_ptr<Node> operand3 = input->getOperand3();
 
     switch (input->getType()) {
+        case Node::MULTIPLY:
+        case Node::DIVIDE:
+        case Node::ADD:
+        case Node::SUBTRACT:
+        case Node::POWER: {
+            VariableNode::DATA_TYPE op1DataType = get<2>(validateTree(operand1, scope, outerScope, errors));
+            VariableNode::DATA_TYPE op2DataType = get<2>(validateTree(operand1, scope, outerScope, errors));
+            if (op1DataType != op2DataType) {
+                input->setOperand2(make_shared<ConvertNode>(op1DataType, operand2));
+            }
+        }
+            break;
         case Node::SCOPE: {
             shared_ptr<Scope> mergedScope = make_shared<Scope>(*outerScope);
             mergedScope->insert(scope->begin(), scope->end());
@@ -582,6 +596,12 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
                     variable->setIndex();
                     scope->insert(ScopeItem(variable->getIdentifier(), variable));
                 }
+                if (operand1 != nullptr) {
+                    VariableNode::DATA_TYPE valueDataType = get<2>(validateTree(operand1, scope, outerScope, errors));
+                    if (valueDataType != variable->getBasicType()) {
+                        input->setOperand1(make_shared<ConvertNode>(variable->getBasicType(), operand1));
+                    }
+                }
             } else {
                 auto declaration = scope->find(variable->getIdentifier());
                 auto outerDeclaration = outerScope->find(variable->getIdentifier());
@@ -597,19 +617,21 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
                     errors->push_back(ApeCompilerException("Undeclared variable " + variable->getIdentifier()));
                 }
             }
-            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
-            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
-            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
+//            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
+//            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
+//            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
         }
             break;
         case Node::SET: {
-            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
-            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
-            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
+            validateTree(operand1, scope, outerScope, errors);
+            VariableNode::DATA_TYPE valueDataType = get<2>(validateTree(operand2, scope, outerScope, errors));
             shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input->getOperand1());
             if (variable->isConstant()) {
                 errors->push_back(
                         ApeCompilerException("Assigning to constant variable " + variable->getIdentifier()));
+            }
+            if (variable->getBasicType() != valueDataType) {
+                input->setOperand2(make_shared<ConvertNode>(variable->getBasicType(), operand2));
             }
         }
             break;
@@ -620,7 +642,7 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
 
     }
 
-    return pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>>(input, errors);
+    return {input, errors, resultDataType};
 }
 
 pair<RPN, shared_ptr<Node>> Tokenizer::rpn_term() const {

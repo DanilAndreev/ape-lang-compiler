@@ -45,8 +45,9 @@ public:
         VOID,
     };
 
+public:
     static unsigned int nextIndex();
-
+    static string getDataTypeStr(DATA_TYPE input);
 protected:
     /// identifier - variable identifier string
     string identifier;

@@ -33,12 +33,14 @@ class ConvertNode : public Node {
 protected:
     VariableNode::DATA_TYPE dataType;
 public:
-    explicit ConvertNode(const VariableNode::DATA_TYPE dateType);
+    explicit ConvertNode(const VariableNode::DATA_TYPE dateType, shared_ptr<Node> operand1 = nullptr);
     ConvertNode(const ConvertNode& reference);
     ~ConvertNode() override;
 public:
     VariableNode::DATA_TYPE getDataType() const;
     ConvertNode* setDataType(const VariableNode::DATA_TYPE type);
+public:
+    ostream& printNode(ostream& stream) const override;
 };
 
 
