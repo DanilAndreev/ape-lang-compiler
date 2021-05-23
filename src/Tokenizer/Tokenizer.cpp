@@ -26,7 +26,26 @@ SOFTWARE.
 #include "StringNode.h"
 #include "IntegerNode.h"
 #include "FloatNode.h"
-#include "VariableNode.h"
+#include "ServiceNode.h"
+
+map<RPN, unsigned short> Tokenizer::Priorities = {
+        {RPN_START,             0},
+        {RPN_ROUND_BRACE_OPEN,  1},
+        {RPN_ROUND_BRACE_CLOSE, 1},
+        {RPN_ADD,               2},
+        {RPN_SUBTRACT,          2},
+        {RPN_MULTIPLY,          3},
+        {RPN_DIVIDE,            3},
+        {RPN_POWER,             4},
+        {RPN_AND,               5},
+        {RPN_OR,                5},
+        {RPN_GREATER,           5},
+        {RPN_LESS,              5},
+        {RPN_GREATER_EQUAL,     5},
+        {RPN_LESS_EQUAL,        5},
+        {RPN_EQUAL,             5},
+        {RPN_NOTEQUAL,          5},
+};
 
 Tokenizer::Tokenizer(Lexer *lexer) {
     this->lexer = lexer;
@@ -311,40 +330,104 @@ shared_ptr<Node> Tokenizer::expression() const {
 }
 
 shared_ptr<Node> Tokenizer::test() const {
-    shared_ptr<Node> node = this->summa();
+    vector<pair<RPN, shared_ptr<Node>>> result;
+    stack<pair<RPN, shared_ptr<Node>>> stc;
+    vector<pair<RPN, shared_ptr<Node>>> inputTokens;
 
-    shared_ptr<Token> token = this->lexer->getCurrentToken();
-    if (token->getType() == Token::SYMBOL) {
-        shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(token);
-        switch (operatorToken->getOperatorType()) {
-            case OPERATORS::LESS:
-                this->lexer->nextToken();
-                node = make_shared<Node>(Node::LESS, node, this->summa());
-                break;
-            case OPERATORS::GREATER:
-                this->lexer->nextToken();
-                node = make_shared<Node>(Node::GREATER, node, this->summa());
-                break;
-            case OPERATORS::LESS_EQUAL:
-                this->lexer->nextToken();
-                node = make_shared<Node>(Node::LESS_EQUAL, node, this->summa());
-                break;
-            case OPERATORS::GREATER_EQUAL:
-                this->lexer->nextToken();
-                node = make_shared<Node>(Node::GREATER_EQUAL, node, this->summa());
-                break;
-            case OPERATORS::EQUAL:
-                this->lexer->nextToken();
-                node = make_shared<Node>(Node::EQUAL, node, this->summa());
-                break;
-            case OPERATORS::NOTEQUAL:
-                this->lexer->nextToken();
-                node = make_shared<Node>(Node::NOT_EQUAL, node, this->summa());
-                break;
+    while (!(dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken()) != nullptr &&
+             dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
+             OPERATORS::SEMICOLON)) {
+        inputTokens.push_back(this->rpn_term());
+    }
+
+
+    while (!inputTokens.empty()) {
+        pair<RPN, shared_ptr<Node>> inputItem = inputTokens.front();
+
+        if (inputItem.first == RPN::RPN_OPERAND) {
+            result.push_back(inputItem);
+            continue;
+        }
+
+        pair<RPN, shared_ptr<Node>> stackItem = stc.top();
+
+        if (stackItem.first == RPN::RPN_ROUND_BRACE_OPEN && inputItem.first == RPN::RPN_ROUND_BRACE_CLOSE) {
+            inputTokens.erase(inputTokens.begin());
+            stc.pop();
+        } else if (stackItem.first == RPN::RPN_START && inputItem.first == RPN::RPN_ROUND_BRACE_CLOSE) {
+            throw ApeCompilerException("Incorrect arithmetical expression.");
+        } else if (stackItem.first == RPN::RPN_ROUND_BRACE_OPEN && inputTokens.empty()) {
+            throw ApeCompilerException("Incorrect arithmetical expression.");
+        } else {
+            if (inputItem.first == RPN::RPN_ROUND_BRACE_OPEN) {
+                stc.push(inputTokens.back());
+                inputTokens.erase(inputTokens.begin());
+            } else if (Priorities[stackItem.first] < Priorities[inputItem.first]) {
+                stc.push(inputTokens.back());
+                inputTokens.erase(inputTokens.begin());
+            } else {
+                result.push_back(stc.top());
+                stc.pop();
+            }
         }
     }
 
-    return node;
+    while(!stc.empty())
+        stc.pop();
+
+    while(!result.empty()) {
+        pair<RPN, shared_ptr<Node>> item = result.front();
+        if (item.first == RPN::RPN_OPERAND) {
+            stc.push(item);
+        } else {
+            pair<RPN, shared_ptr<Node>> first = stc.top();
+            stc.pop();
+            pair<RPN, shared_ptr<Node>> second = stc.top();
+            stc.pop();
+            item.second->setOperand1(first.second);
+            item.second->setOperand2(second.second);
+            stc.push(item);
+        }
+    }
+
+    return stc.top().second;
+
+
+
+//    shared_ptr<Node> node = this->summa();
+//
+//    shared_ptr<Token> inputItem = this->lexer->getCurrentToken();
+//    if (inputItem->getType() == Token::SYMBOL) {
+//        shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(inputItem);
+//        switch (operatorToken->getOperatorType()) {
+//            case OPERATORS::LESS:
+//                this->lexer->nextToken();
+//                node = make_shared<Node>(Node::LESS, node, this->summa());
+//                break;
+//            case OPERATORS::GREATER:
+//                this->lexer->nextToken();
+//                node = make_shared<Node>(Node::GREATER, node, this->summa());
+//                break;
+//            case OPERATORS::LESS_EQUAL:
+//                this->lexer->nextToken();
+//                node = make_shared<Node>(Node::LESS_EQUAL, node, this->summa());
+//                break;
+//            case OPERATORS::GREATER_EQUAL:
+//                this->lexer->nextToken();
+//                node = make_shared<Node>(Node::GREATER_EQUAL, node, this->summa());
+//                break;
+//            case OPERATORS::EQUAL:
+//                this->lexer->nextToken();
+//                node = make_shared<Node>(Node::EQUAL, node, this->summa());
+//                break;
+//            case OPERATORS::NOTEQUAL:
+//                this->lexer->nextToken();
+//                node = make_shared<Node>(Node::NOT_EQUAL, node, this->summa());
+//                break;
+//        }
+//    }
+//
+//    return node;
 }
 
 shared_ptr<Node> Tokenizer::summa() const {
@@ -415,6 +498,25 @@ shared_ptr<Node> Tokenizer::term() const {
         case Token::STRING: {
             string payload = this->lexer->getCurrentToken()->getPayload();
             node = make_shared<StringNode>(payload);
+            this->lexer->nextToken();
+        }
+            break;
+        case Token::SYMBOL: {
+            shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(
+                    this->lexer->getCurrentToken());
+            switch (operatorToken->getOperatorType()) {
+                case OPERATORS::SEMICOLON:
+                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::SEMICOLON);
+                    break;
+                case OPERATORS::ROUND_BRACE_OPEN:
+                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_OPEN);
+                    break;
+                case OPERATORS::ROUND_BRACE_CLOSE:
+                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_CLOSE);
+                    break;
+                default:
+                    throw ApeCompilerException("Unexpected term");
+            }
             this->lexer->nextToken();
         }
             break;
@@ -628,96 +730,128 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
     }
 
     return pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>>(input, errors);
+}
 
-/*
-    if (scope == nullptr)
-        scope = make_shared<Scope>();
-    if (outerScope == nullptr)
-        outerScope = make_shared<Scope>();
-    if (errors == nullptr)
-        errors = make_shared<vector<ApeCompilerException>>();
-
-    shared_ptr<Scope> inputScope = make_shared<Scope>(*scope);
-
-    const shared_ptr<Node> operand1 = input->getOperand1();
-    const shared_ptr<Node> operand2 = input->getOperand2();
-    const shared_ptr<Node> operand3 = input->getOperand3();
-
-    switch (input->getType()) {
-        case Node::SEQUENCE:
-            validateTree(operand1, scope, outerScope, errors);
-            validateTree(operand2, scope, outerScope, errors);
-            break;
-        case Node::SET: {
-            // TODO: dismiss expression: int a = a + 1;
-            shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(operand1);
-            if (variable == nullptr) {
-                errors->push_back(ApeCompilerException("Incorrect variable node on set operation"));
-            }
-            string identifier = variable->getIdentifier();
-            auto declaration = scope->find(identifier); // TODO: search in both scopes
-            if (declaration != scope->end()) {
-                if (declaration->second->isConstant()) {
-                    errors->push_back(ApeCompilerException("Assigning to const variable " + identifier));
-                }
-                if (declaration->second->isFunction()) {
-                    errors->push_back(ApeCompilerException("Assigning to function " + identifier));
+pair<RPN, shared_ptr<Node>> Tokenizer::rpn_term() const {
+    shared_ptr<Node> node = nullptr;
+    RPN type;
+    switch (this->lexer->getCurrentToken()->getType()) {
+        case Token::IDENTIFIER : {
+            string payload = this->lexer->getCurrentToken()->getPayload();
+            node = make_shared<VariableNode>(payload, false);
+            shared_ptr<Token> token = this->lexer->nextToken();
+            if (token->getType() == Token::SYMBOL) {
+                shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(token);
+                switch (opToken->getOperatorType()) {
+                    case OPERATORS::ROUND_BRACE_OPEN: {
+                        dynamic_pointer_cast<VariableNode>(node)->setIsFunction(true);
+                        node->setOperand1(this->arguments());
+                    }
+                        break;
                 }
             }
-            validateTree(operand1, scope, outerScope, errors);
-            validateTree(operand2, scope, outerScope, errors);
+            type = RPN::RPN_OPERAND;
         }
             break;
-        case Node::VAR: {
-            shared_ptr<VariableNode> declaration = dynamic_pointer_cast<VariableNode>(input);
-            if (declaration != nullptr) {
-                if (scope->find(declaration->getIdentifier()) != scope->end()) {
-                    //throw ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier());
-                    errors->push_back(
-                            ApeCompilerException("Re-declaration of variable " + declaration->getIdentifier()));
-                }
-                scope->insert(ScopeItem(declaration->getIdentifier(), declaration));
+        case Token::NUMBER: {
+            shared_ptr<NumberToken> token = dynamic_pointer_cast<NumberToken>(this->lexer->getCurrentToken());
+            if (token->isInteger())
+                node = make_shared<IntegerNode>(token->getLong());
+            else
+                node = make_shared<FloatNode>(token->getDouble());
 
-                if (declaration->isFunction()) {
-                    // TODO: check function args
-//                    shared_ptr<Scope> innerOuterScope = make_shared<Scope>(*inputScope);
-//                    innerOuterScope->insert(outerScope->begin(), outerScope->end());
-                    validateTree(operand2, scope, outerScope, errors);
-                } else {
-                    if (operand1 != nullptr)
-                        validateTree(operand1, inputScope, outerScope, errors);
-                }
-            } else {
-                shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input);
-                if (variable == nullptr)
-                    throw ApeCompilerException("Fatal token error");
-                if (
-                        scope->find(variable->getIdentifier()) == scope->end() &&
-                        outerScope->find(variable->getIdentifier()) == outerScope->end()
-                        ) {
-                    // throw ApeCompilerException("Undeclared variable " + variable->getIdentifier());
-                    errors->push_back(ApeCompilerException("Undeclared variable " + variable->getIdentifier()));
-                }
-
-
-                // TODO: if func - check arguments type correctness
+            this->lexer->nextToken();
+            type = RPN::RPN_OPERAND;
+        }
+            break;
+        case Token::STRING: {
+            string payload = this->lexer->getCurrentToken()->getPayload();
+            node = make_shared<StringNode>(payload);
+            this->lexer->nextToken();
+            type = RPN::RPN_OPERAND;
+        }
+            break;
+        case Token::SYMBOL: {
+            shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(
+                    this->lexer->getCurrentToken());
+            switch (operatorToken->getOperatorType()) {
+                case OPERATORS::SEMICOLON:
+                    // TODO: Remove ServiceNode class. Deprecated
+//                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::SEMICOLON);
+                    node = shared_ptr<Node>(nullptr);
+                    type = RPN::RPN_END;
+                    break;
+                case OPERATORS::ROUND_BRACE_OPEN:
+//                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_OPEN);
+                    node = shared_ptr<Node>(nullptr);
+                    type = RPN::RPN_ROUND_BRACE_OPEN;
+                    break;
+                case OPERATORS::ROUND_BRACE_CLOSE:
+//                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_CLOSE);
+                    node = shared_ptr<Node>(nullptr);
+                    type = RPN::RPN_ROUND_BRACE_CLOSE;
+                    break;
+                case OPERATORS::ADD:
+                    node = make_shared<Node>(Node::ADD);
+                    type = RPN::RPN_ADD;
+                    break;
+                case OPERATORS::SUBTRACT:
+                    node = make_shared<Node>(Node::SUBTRACT);
+                    type = RPN::RPN_SUBTRACT;
+                    break;
+                case OPERATORS::MULTIPLY:
+                    node = make_shared<Node>(Node::MULTIPLY);
+                    type = RPN::RPN_MULTIPLY;
+                    break;
+                case OPERATORS::DIVIDE:
+                    node = make_shared<Node>(Node::DIVIDE);
+                    type = RPN::RPN_DIVIDE;
+                    break;
+                case OPERATORS::POWER:
+                    node = make_shared<Node>(Node::POWER);
+                    type = RPN::RPN_POWER;
+                    break;
+                case OPERATORS::LESS:
+                    node = make_shared<Node>(Node::LESS);
+                    type = RPN::RPN_LESS;
+                    break;
+                case OPERATORS::GREATER:
+                    node = make_shared<Node>(Node::GREATER);
+                    type = RPN::RPN_GREATER;
+                    break;
+                case OPERATORS::LESS_EQUAL:
+                    node = make_shared<Node>(Node::LESS_EQUAL);
+                    type = RPN::RPN_LESS_EQUAL;
+                    break;
+                case OPERATORS::GREATER_EQUAL:
+                    node = make_shared<Node>(Node::GREATER_EQUAL);
+                    type = RPN::RPN_GREATER_EQUAL;
+                    break;
+                case OPERATORS::AND:
+                    node = make_shared<Node>(Node::AND);
+                    type = RPN::RPN_AND;
+                    break;
+                case OPERATORS::OR:
+                    node = make_shared<Node>(Node::OR);
+                    type = RPN::RPN_OR;
+                    break;
+                case OPERATORS::EQUAL:
+                    node = make_shared<Node>(Node::EQUAL);
+                    type = RPN::RPN_EQUAL;
+                    break;
+                case OPERATORS::NOTEQUAL:
+                    node = make_shared<Node>(Node::NOT_EQUAL);
+                    type = RPN::RPN_NOTEQUAL;
+                    break;
+                default:
+                    throw ApeCompilerException("Unexpected term");
             }
+            this->lexer->nextToken();
         }
             break;
-        case Node::SCOPE: {
-            shared_ptr<Scope> newOuterScope = make_shared<Scope>(*inputScope);
-            newOuterScope->insert(outerScope->begin(), outerScope->end());
-            if (operand1 != nullptr) validateTree(operand1, nullptr, newOuterScope, errors);
-            if (operand2 != nullptr) validateTree(operand2, nullptr, newOuterScope, errors);
-            if (operand3 != nullptr) validateTree(operand3, nullptr, newOuterScope, errors);
-        }
-            break;
-        default:
-            if (operand1 != nullptr) validateTree(operand1, scope, outerScope, errors);
-            if (operand2 != nullptr) validateTree(operand2, scope, outerScope, errors);
-            if (operand3 != nullptr) validateTree(operand3, scope, outerScope, errors);
+//        default:
+//            return this->parenExpr();
     }
 
-    return pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>>(input, errors);
-*/
+    return pair(type, node);
 }

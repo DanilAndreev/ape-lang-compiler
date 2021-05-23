@@ -86,7 +86,11 @@ enum OPERATORS {
     /// '
     SINGLE_QUOTES,
     /// ^
-    XOR,
+    POWER,
+    /// &&
+    AND,
+    /// ||
+    OR,
 };
 
 /**

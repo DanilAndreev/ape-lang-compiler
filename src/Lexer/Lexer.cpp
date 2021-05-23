@@ -35,7 +35,7 @@ vector<pair<string, OPERATORS>> Lexer::Symbols = vector<pair<string, OPERATORS>>
         pair<string, OPERATORS>("-", OPERATORS::SUBTRACT),
         pair<string, OPERATORS>("*", OPERATORS::MULTIPLY),
         pair<string, OPERATORS>("/", OPERATORS::DIVIDE),
-        pair<string, OPERATORS>("^", OPERATORS::XOR),
+        pair<string, OPERATORS>("^", OPERATORS::POWER),
         pair<string, OPERATORS>("=", OPERATORS::ASSIGN),
         pair<string, OPERATORS>("==", OPERATORS::EQUAL),
         pair<string, OPERATORS>("!=", OPERATORS::NOTEQUAL),

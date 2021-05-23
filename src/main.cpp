@@ -24,6 +24,8 @@ vector<string> compile(ifstream& fin) {
         for (const auto& error: *errors) {
             cerr << "Compilation error: " << error.getMessage() << endl;
         }
+        if (errors->size())
+            exit(-1);
     } catch (ApeCompilerException &e) {
         cerr << "Compilation error: " << e.getMessage() << endl;
     } catch (...) {

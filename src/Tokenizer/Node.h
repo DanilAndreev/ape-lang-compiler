@@ -62,6 +62,7 @@ public:
         SUBTRACT,
         MULTIPLY,
         DIVIDE,
+        POWER,
 
         LESS,
         GREATER,
@@ -70,8 +71,13 @@ public:
         EQUAL,
         NOT_EQUAL,
 
+        AND,
+        OR,
+
         PRINT,
         READ,
+
+        SERVICE,
     };
 protected:
     /**

@@ -31,9 +31,31 @@ SOFTWARE.
 #include "VariableNode.h"
 #include "../exceptions/ApeCompilerException.h"
 
+enum RPN {
+    RPN_START,
+    RPN_END,
+    RPN_ROUND_BRACE_OPEN,
+    RPN_ROUND_BRACE_CLOSE,
+    RPN_ADD,
+    RPN_SUBTRACT,
+    RPN_MULTIPLY,
+    RPN_DIVIDE,
+    RPN_POWER,
+    RPN_AND,
+    RPN_OR,
+    RPN_GREATER,
+    RPN_LESS,
+    RPN_GREATER_EQUAL,
+    RPN_LESS_EQUAL,
+    RPN_EQUAL,
+    RPN_NOTEQUAL,
+    RPN_OPERAND,
+};
+
 class Tokenizer {
 protected:
     Lexer *lexer;
+    static map<RPN, unsigned short> Priorities;
 protected:
     typedef pair<const string, shared_ptr<VariableNode>> ScopeItem;
     typedef map<const string, shared_ptr<VariableNode>> Scope;
@@ -75,6 +97,8 @@ protected:
     shared_ptr<Node> summa() const;
 
     shared_ptr<Node> term() const;
+
+    pair<RPN, shared_ptr<Node>> rpn_term() const;
 };
 
 
