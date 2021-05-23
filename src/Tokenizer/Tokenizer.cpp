@@ -335,9 +335,12 @@ shared_ptr<Node> Tokenizer::test() const {
     stc.push(pair(RPN::RPN_START, nullptr));
     vector<pair<RPN, shared_ptr<Node>>> inputTokens;
 
-    while (!(dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken()) != nullptr &&
-             dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
-             OPERATORS::SEMICOLON)) {
+    while (!(dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken()) != nullptr && (
+            dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
+            OPERATORS::SEMICOLON ||
+            dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
+            OPERATORS::ASSIGN
+    ))) {
         inputTokens.push_back(this->rpn_term()); //TODO: emplace_back
     }
     inputTokens.emplace_back(pair(RPN::RPN_END, nullptr));
@@ -381,10 +384,10 @@ shared_ptr<Node> Tokenizer::test() const {
         }
     }
 
-    while(!stc.empty())
+    while (!stc.empty())
         stc.pop();
 
-    while(!result.empty()) {
+    while (!result.empty()) {
         pair<RPN, shared_ptr<Node>> item = result.front();
         result.erase(result.begin());
         if (item.first == RPN::RPN_OPERAND) {
