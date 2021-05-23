@@ -29,6 +29,7 @@ SOFTWARE.
 #include "../Tokenizer/FloatNode.h"
 #include "../exceptions/ApeCompilerException.h"
 #include "../Tokenizer/BooleanNode.h"
+#include "../Tokenizer/ConvertNode.h"
 
 Compiler::Compiler() {
     this->address = 0;
@@ -146,6 +147,13 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->compile_tree(tree->getOperand1());
             this->compile_tree(tree->getOperand2());
             this->generate(COMMANDS::NEQ);
+            break;
+        case Node::CONVERT: {
+            this->compile_tree(tree->getOperand1());
+            this->generate(COMMANDS::CONVERT);
+            shared_ptr<ConvertNode> node = dynamic_pointer_cast<ConvertNode>(tree);
+            this->generate(node->getDataType());
+        }
             break;
         case Node::SET: {
             this->compile_tree(tree->getOperand2());

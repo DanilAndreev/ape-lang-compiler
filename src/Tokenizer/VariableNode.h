@@ -42,6 +42,7 @@ public:
         FLOAT,
         BOOLEAN,
         STRING,
+        VOID,
     };
 
     static unsigned int nextIndex();

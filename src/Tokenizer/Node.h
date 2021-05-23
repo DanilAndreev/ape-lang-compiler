@@ -77,7 +77,7 @@ public:
         PRINT,
         READ,
 
-        SERVICE,
+        CONVERT,
     };
 protected:
     /**

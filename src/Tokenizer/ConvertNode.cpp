@@ -22,53 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_COMPILER_H
-#define APE_LANG_COMPILER_COMPILER_H
+#include "ConvertNode.h"
 
+ConvertNode::ConvertNode(const VariableNode::DATA_TYPE dateType) : Node(Node::CONVERT) {
+    this->dataType = dateType;
+}
 
-#include "../Tokenizer/Node.h"
-#include <vector>
-#include <sstream>
+ConvertNode::ConvertNode(const ConvertNode &reference) : Node(reference) {
+    this->dataType = reference.dataType;
+}
 
-class Compiler {
-public:
-    enum COMMANDS {
-        FETCH,
-        STORE,
-        PUSH,
-        POP,
-        ADD,
-        SUBTRACT,
-        MULTIPLY,
-        DIVIDE,
-        POWER,
-        LT,
-        LTE,
-        AND,
-        OR,
-        EQ,
-        NEQ,
-        JZ,
-        JNZ,
-        JMP,
-        HALT,
-        PRINT,
-        SCAN,
-        CONVERT,
-    };
-protected:
-    vector<string> program;
-    unsigned long long address;
-public:
-    explicit Compiler();
+ConvertNode::~ConvertNode() {
+}
 
-    template <class T>
-    void generate(T command);
+VariableNode::DATA_TYPE ConvertNode::getDataType() const {
+    return this->dataType;
+}
 
-    vector<string> compile(shared_ptr<Node> tree);
-protected:
-    void compile_tree(shared_ptr<Node> tree);
-};
-
-
-#endif //APE_LANG_COMPILER_COMPILER_H
+ConvertNode *ConvertNode::setDataType(const VariableNode::DATA_TYPE iDataType) {
+    this->dataType = iDataType;
+    return this;
+}

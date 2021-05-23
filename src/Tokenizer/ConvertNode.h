@@ -22,53 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_COMPILER_H
-#define APE_LANG_COMPILER_COMPILER_H
+#ifndef APE_LANG_COMPILER_CONVERTNODE_H
+#define APE_LANG_COMPILER_CONVERTNODE_H
 
 
-#include "../Tokenizer/Node.h"
-#include <vector>
-#include <sstream>
+#include "Node.h"
+#include "VariableNode.h"
 
-class Compiler {
-public:
-    enum COMMANDS {
-        FETCH,
-        STORE,
-        PUSH,
-        POP,
-        ADD,
-        SUBTRACT,
-        MULTIPLY,
-        DIVIDE,
-        POWER,
-        LT,
-        LTE,
-        AND,
-        OR,
-        EQ,
-        NEQ,
-        JZ,
-        JNZ,
-        JMP,
-        HALT,
-        PRINT,
-        SCAN,
-        CONVERT,
-    };
+class ConvertNode : public Node {
 protected:
-    vector<string> program;
-    unsigned long long address;
+    VariableNode::DATA_TYPE dataType;
 public:
-    explicit Compiler();
-
-    template <class T>
-    void generate(T command);
-
-    vector<string> compile(shared_ptr<Node> tree);
-protected:
-    void compile_tree(shared_ptr<Node> tree);
+    explicit ConvertNode(const VariableNode::DATA_TYPE dateType);
+    ConvertNode(const ConvertNode& reference);
+    ~ConvertNode() override;
+public:
+    VariableNode::DATA_TYPE getDataType() const;
+    ConvertNode* setDataType(const VariableNode::DATA_TYPE type);
 };
 
 
-#endif //APE_LANG_COMPILER_COMPILER_H
+#endif //APE_LANG_COMPILER_CONVERTNODE_H
