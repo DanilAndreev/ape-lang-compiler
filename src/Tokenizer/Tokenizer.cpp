@@ -562,16 +562,24 @@ tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::
     const shared_ptr<Node> operand3 = input->getOperand3();
 
     switch (input->getType()) {
+        case Node::CONST: {
+            if(dynamic_pointer_cast<FloatNode>(input)) resultDataType = VariableNode::DATA_TYPE::FLOAT;
+            if(dynamic_pointer_cast<IntegerNode>(input)) resultDataType = VariableNode::DATA_TYPE::INT;
+            if(dynamic_pointer_cast<BooleanNode>(input)) resultDataType = VariableNode::DATA_TYPE::BOOLEAN;
+            if(dynamic_pointer_cast<StringNode>(input)) resultDataType = VariableNode::DATA_TYPE::STRING;
+        }
+            break;
         case Node::MULTIPLY:
         case Node::DIVIDE:
         case Node::ADD:
         case Node::SUBTRACT:
         case Node::POWER: {
             VariableNode::DATA_TYPE op1DataType = get<2>(validateTree(operand1, scope, outerScope, errors));
-            VariableNode::DATA_TYPE op2DataType = get<2>(validateTree(operand1, scope, outerScope, errors));
+            VariableNode::DATA_TYPE op2DataType = get<2>(validateTree(operand2, scope, outerScope, errors));
             if (op1DataType != op2DataType) {
                 input->setOperand2(make_shared<ConvertNode>(op1DataType, operand2));
             }
+            resultDataType = op1DataType;
         }
             break;
         case Node::SCOPE: {
