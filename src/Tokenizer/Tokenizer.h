@@ -94,6 +94,11 @@ protected:
 
     shared_ptr<Node> test() const;
 
+    /**
+     * summa- parses arithmetical expression without bool operations.
+     * @deprecated
+     * @author Danil Andreev
+     */
     shared_ptr<Node> summa() const;
 
     shared_ptr<Node> term() const;

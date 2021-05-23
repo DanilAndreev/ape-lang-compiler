@@ -198,6 +198,8 @@ shared_ptr<Node> Tokenizer::statement() const {
                         OPERATORS::SEMICOLON)
                         throw ApeCompilerException("Expected \";\"");
                     node = make_shared<Node>(Node::PRINT, node);
+
+                    this->lexer->nextToken(); //TODO: newly added | CAUTION
                 }
                     break;
                 case KEYWORDS::READ: {
@@ -322,7 +324,7 @@ shared_ptr<Node> Tokenizer::expression() const {
         shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
         if (token->getOperatorType() == OPERATORS::ASSIGN) {
             this->lexer->nextToken();
-            node = make_shared<Node>(Node::SET, node, this->summa());
+            node = make_shared<Node>(Node::SET, node, this->test());
         }
     }
 
@@ -335,13 +337,23 @@ shared_ptr<Node> Tokenizer::test() const {
     stc.push(pair(RPN::RPN_START, nullptr));
     vector<pair<RPN, shared_ptr<Node>>> inputTokens;
 
-    while (!(dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken()) != nullptr && (
-            dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
-            OPERATORS::SEMICOLON ||
-            dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() ==
-            OPERATORS::ASSIGN
-    ))) {
-        inputTokens.push_back(this->rpn_term()); //TODO: emplace_back
+    int braces = 0;
+    while (true) {
+        shared_ptr<OperatorToken> op = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
+        if (op != nullptr) {
+            if (op->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
+                braces++;
+            }
+            if (op->getOperatorType() == OPERATORS::ROUND_BRACE_CLOSE) {
+                braces--;
+                if (braces < 0) break;
+            }
+            if (op->getOperatorType() == OPERATORS::ASSIGN) break;
+            if (op->getOperatorType() == OPERATORS::COMA) break;
+            if (op->getOperatorType() == OPERATORS::SEMICOLON) break;
+        }
+
+        inputTokens.emplace_back(this->rpn_term());
     }
     inputTokens.emplace_back(pair(RPN::RPN_END, nullptr));
 

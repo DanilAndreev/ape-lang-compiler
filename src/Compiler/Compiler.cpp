@@ -210,9 +210,13 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             this->generate(COMMANDS::HALT);
             break;
         case Node::PRINT: {
-            this->generate(COMMANDS::FETCH);
-            shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
-            this->generate(node->getIndex());
+            if (tree->getOperand1()->getType() == Node::VAR) {
+                this->generate(COMMANDS::FETCH);
+                shared_ptr<VariableNode> node = dynamic_pointer_cast<VariableNode>(tree->getOperand1());
+                this->generate(node->getIndex());
+            } else {
+                this->compile_tree(tree->getOperand1());
+            }
             this->generate(COMMANDS::PRINT);
         }
             break;
