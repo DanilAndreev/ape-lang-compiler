@@ -26,7 +26,6 @@ SOFTWARE.
 #include "StringNode.h"
 #include "IntegerNode.h"
 #include "FloatNode.h"
-#include "ServiceNode.h"
 
 map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_START,             0},
@@ -418,103 +417,6 @@ shared_ptr<Node> Tokenizer::test() const {
     return stc.top().second;
 }
 
-shared_ptr<Node> Tokenizer::summa() const {
-    shared_ptr<Node> node = this->term();
-
-    shared_ptr<OperatorToken> token;
-    while (
-            (token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())) != nullptr &&
-            (
-                    token->getOperatorType() == OPERATORS::ADD ||
-                    token->getOperatorType() == OPERATORS::SUBTRACT ||
-                    token->getOperatorType() == OPERATORS::MULTIPLY ||
-                    token->getOperatorType() == OPERATORS::DIVIDE
-            )
-            ) {
-        Node::TYPE type;
-        switch (token->getOperatorType()) {
-            case OPERATORS::ADD:
-                type = Node::ADD;
-                break;
-            case OPERATORS::SUBTRACT:
-                type = Node::SUBTRACT;
-                break;
-            case OPERATORS::MULTIPLY:
-                type = Node::MULTIPLY;
-                break;
-            case OPERATORS::DIVIDE:
-                type = Node::DIVIDE;
-                break;
-        }
-        this->lexer->nextToken();
-        node = make_shared<Node>(type, node, this->term());
-
-    }
-
-    return node;
-}
-
-shared_ptr<Node> Tokenizer::term() const {
-    shared_ptr<Node> node = nullptr;
-    switch (this->lexer->getCurrentToken()->getType()) {
-        case Token::IDENTIFIER : {
-            string payload = this->lexer->getCurrentToken()->getPayload();
-            node = make_shared<VariableNode>(payload, false);
-            shared_ptr<Token> token = this->lexer->nextToken();
-            if (token->getType() == Token::SYMBOL) {
-                shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(token);
-                switch (opToken->getOperatorType()) {
-                    case OPERATORS::ROUND_BRACE_OPEN: {
-                        dynamic_pointer_cast<VariableNode>(node)->setIsFunction(true);
-                        node->setOperand1(this->arguments());
-                    }
-                        break;
-                }
-            }
-        }
-            break;
-        case Token::NUMBER: {
-            shared_ptr<NumberToken> token = dynamic_pointer_cast<NumberToken>(this->lexer->getCurrentToken());
-            if (token->isInteger())
-                node = make_shared<IntegerNode>(token->getLong());
-            else
-                node = make_shared<FloatNode>(token->getDouble());
-
-            this->lexer->nextToken();
-        }
-            break;
-        case Token::STRING: {
-            string payload = this->lexer->getCurrentToken()->getPayload();
-            node = make_shared<StringNode>(payload);
-            this->lexer->nextToken();
-        }
-            break;
-        case Token::SYMBOL: {
-            shared_ptr<OperatorToken> operatorToken = dynamic_pointer_cast<OperatorToken>(
-                    this->lexer->getCurrentToken());
-            switch (operatorToken->getOperatorType()) {
-                case OPERATORS::SEMICOLON:
-                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::SEMICOLON);
-                    break;
-                case OPERATORS::ROUND_BRACE_OPEN:
-                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_OPEN);
-                    break;
-                case OPERATORS::ROUND_BRACE_CLOSE:
-                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_CLOSE);
-                    break;
-                default:
-                    throw ApeCompilerException("Unexpected term");
-            }
-            this->lexer->nextToken();
-        }
-            break;
-        default:
-            return this->parenExpr();
-    }
-
-    return node;
-}
-
 shared_ptr<VariableNode> Tokenizer::declaration(bool initialization, bool semicolon) const {
     shared_ptr<VariableNode> node = nullptr;
     shared_ptr<Token> token = this->lexer->getCurrentToken();
@@ -764,18 +666,14 @@ pair<RPN, shared_ptr<Node>> Tokenizer::rpn_term() const {
                     this->lexer->getCurrentToken());
             switch (operatorToken->getOperatorType()) {
                 case OPERATORS::SEMICOLON:
-                    // TODO: Remove ServiceNode class. Deprecated
-//                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::SEMICOLON);
                     node = shared_ptr<Node>(nullptr);
                     type = RPN::RPN_END;
                     break;
                 case OPERATORS::ROUND_BRACE_OPEN:
-//                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_OPEN);
                     node = shared_ptr<Node>(nullptr);
                     type = RPN::RPN_ROUND_BRACE_OPEN;
                     break;
                 case OPERATORS::ROUND_BRACE_CLOSE:
-//                    node = make_shared<ServiceNode>(ServiceNode::SERVICE_TYPE::ROUND_BRACE_CLOSE);
                     node = shared_ptr<Node>(nullptr);
                     type = RPN::RPN_ROUND_BRACE_CLOSE;
                     break;

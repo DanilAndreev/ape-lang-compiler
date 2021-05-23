@@ -98,7 +98,7 @@ class VirtualMachine:
             elif op == HALT:
                 break
 
-        print(var)
+        # print(var)
 
 
 if len(sys.argv) != 2:

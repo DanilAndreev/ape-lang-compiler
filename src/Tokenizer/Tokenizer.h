@@ -92,16 +92,11 @@ protected:
 
     shared_ptr<VariableNode> declaration(bool initialization = true, bool semicolon = true) const;
 
-    shared_ptr<Node> test() const;
-
     /**
-     * summa- parses arithmetical expression without bool operations.
-     * @deprecated
+     * test - parses arithmetical expression without bool operations.
      * @author Danil Andreev
      */
-    shared_ptr<Node> summa() const;
-
-    shared_ptr<Node> term() const;
+    shared_ptr<Node> test() const;
 
     pair<RPN, shared_ptr<Node>> rpn_term() const;
 };
