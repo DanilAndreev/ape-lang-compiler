@@ -44,6 +44,8 @@ public:
         POWER,
         LT,
         LTE,
+        AND,
+        OR,
         EQ,
         NEQ,
         JZ,

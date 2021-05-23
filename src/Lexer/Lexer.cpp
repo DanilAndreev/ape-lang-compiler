@@ -54,6 +54,8 @@ vector<pair<string, OPERATORS>> Lexer::Symbols = vector<pair<string, OPERATORS>>
         pair<string, OPERATORS>(";", OPERATORS::SEMICOLON),
         pair<string, OPERATORS>(",", OPERATORS::COMA),
         pair<string, OPERATORS>(".", OPERATORS::DOT),
+        pair<string, OPERATORS>("&&", OPERATORS::AND),
+        pair<string, OPERATORS>("||", OPERATORS::OR),
         pair<string, OPERATORS>("\"", OPERATORS::DOUBLE_QUOTES),
         pair<string, OPERATORS>("'", OPERATORS::SINGLE_QUOTES),
         pair<string, OPERATORS>("\n", OPERATORS::LINEBREAK),

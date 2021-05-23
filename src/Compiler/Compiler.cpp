@@ -81,6 +81,16 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             }
         }
             break;
+        case Node::AND:
+            this->compile_tree(tree->getOperand1());
+            this->compile_tree(tree->getOperand2());
+            this->generate(COMMANDS::AND);
+            break;
+        case Node::OR:
+            this->compile_tree(tree->getOperand1());
+            this->compile_tree(tree->getOperand2());
+            this->generate(COMMANDS::OR);
+            break;
         case Node::ADD:
             this->compile_tree(tree->getOperand1());
             this->compile_tree(tree->getOperand2());

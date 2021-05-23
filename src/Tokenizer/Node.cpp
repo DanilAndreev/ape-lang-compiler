@@ -168,6 +168,10 @@ string Node::getNodeTypeStr() const {
             return "PRINT";
         case Node::READ:
             return "READ";
+        case Node::AND:
+            return "AND";
+        case Node::OR:
+            return "OR";
         default:
             return "UNKNOWN";
     }

@@ -1,6 +1,6 @@
 import sys
 
-FETCH, STORE, PUSH, POP, ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER, LT, LTE, EQ, NEQ, JZ, JNZ, JMP, HALT, PRINT, SCAN = range(19)
+FETCH, STORE, PUSH, POP, ADD, SUBTRACT, MULTIPLY, DIVIDE, POWER, LT, LTE, AND, OR, EQ, NEQ, JZ, JNZ, JMP, HALT, PRINT, SCAN = range(21)
 TYPE_INT, TYPE_FLOAT, TYPE_BOOLEAN, TYPE_STRING = range(4)
 
 
@@ -26,6 +26,14 @@ class VirtualMachine:
                 pc += 2
             elif op == POP:
                 stack.append(arg)
+                stack.pop()
+                pc += 1
+            elif op == AND:
+                stack[-2] = bool(stack[-2]) and bool(stack[-1])
+                stack.pop()
+                pc += 1
+            elif op == OR:
+                stack[-2] = bool(stack[-2]) or bool(stack[-1])
                 stack.pop()
                 pc += 1
             elif op == ADD:

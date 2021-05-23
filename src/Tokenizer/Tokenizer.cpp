@@ -39,12 +39,12 @@ map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_POWER,             4},
         {RPN_AND,               5},
         {RPN_OR,                5},
-        {RPN_GREATER,           5},
-        {RPN_LESS,              5},
-        {RPN_GREATER_EQUAL,     5},
-        {RPN_LESS_EQUAL,        5},
-        {RPN_EQUAL,             5},
-        {RPN_NOTEQUAL,          5},
+        {RPN_GREATER,           6},
+        {RPN_LESS,              6},
+        {RPN_GREATER_EQUAL,     6},
+        {RPN_LESS_EQUAL,        6},
+        {RPN_EQUAL,             6},
+        {RPN_NOTEQUAL,          6},
 };
 
 Tokenizer::Tokenizer(Lexer *lexer) {
