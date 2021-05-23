@@ -26,6 +26,7 @@ SOFTWARE.
 #include "StringNode.h"
 #include "IntegerNode.h"
 #include "FloatNode.h"
+#include "BooleanNode.h"
 
 map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_START,             0},
@@ -624,8 +625,21 @@ pair<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>> Tokenizer::vali
 
 pair<RPN, shared_ptr<Node>> Tokenizer::rpn_term() const {
     shared_ptr<Node> node = nullptr;
-    RPN type;
+    RPN type = RPN::RPN_OPERAND;
     switch (this->lexer->getCurrentToken()->getType()) {
+        case Token::KEYWORD: {
+            shared_ptr<KeywordToken> keyword = dynamic_pointer_cast<KeywordToken>(this->lexer->getCurrentToken());
+            if (keyword->getKeywordType() == KEYWORDS::TRUE) {
+                node = make_shared<BooleanNode>(true);
+            } else if (keyword->getKeywordType() == KEYWORDS::FALSE) {
+                node = make_shared<BooleanNode>(false);
+            } else {
+                throw ApeCompilerException("Unexpected token " + keyword->getPayload());
+            }
+            type = RPN::RPN_OPERAND;
+            this->lexer->nextToken();
+        }
+            break;
         case Token::IDENTIFIER : {
             string payload = this->lexer->getCurrentToken()->getPayload();
             node = make_shared<VariableNode>(payload, false);

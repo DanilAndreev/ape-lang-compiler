@@ -28,6 +28,7 @@ SOFTWARE.
 #include "../Tokenizer/StringNode.h"
 #include "../Tokenizer/FloatNode.h"
 #include "../exceptions/ApeCompilerException.h"
+#include "../Tokenizer/BooleanNode.h"
 
 Compiler::Compiler() {
     this->address = 0;
@@ -75,6 +76,8 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
                 this->generate(node->getPayload());
             } else if (shared_ptr<FloatNode> node = dynamic_pointer_cast<FloatNode>(tree)) {
                 this->generate(node->getPayload());
+            } else if (shared_ptr<BooleanNode> node = dynamic_pointer_cast<BooleanNode>(tree)) {
+                this->generate(node->getPayload() ? "True" : "False");
             }
         }
             break;
