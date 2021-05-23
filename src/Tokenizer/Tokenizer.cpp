@@ -127,7 +127,7 @@ shared_ptr<Node> Tokenizer::statement() const {
 
 
                     this->lexer->nextToken();
-                    forNode->setOperand1(this->test());
+                    forNode->setOperand1(this->rpn_math());
 
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
                         throw ApeCompilerException("Expected \";\"");
@@ -182,7 +182,7 @@ shared_ptr<Node> Tokenizer::statement() const {
                         throw ApeCompilerException("Expected \"(\"");
 
                     this->lexer->nextToken();
-                    node = this->test();
+                    node = this->rpn_math();
 
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
                         throw ApeCompilerException("Expected \")\"");
@@ -314,7 +314,7 @@ shared_ptr<Node> Tokenizer::parenExpr() const {
 }
 
 shared_ptr<Node> Tokenizer::expression() const {
-    shared_ptr<Node> node = this->test();
+    shared_ptr<Node> node = this->rpn_math();
 
     if (this->lexer->getCurrentToken()->getType() == Token::IDENTIFIER)
         return node;
@@ -323,14 +323,14 @@ shared_ptr<Node> Tokenizer::expression() const {
         shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
         if (token->getOperatorType() == OPERATORS::ASSIGN) {
             this->lexer->nextToken();
-            node = make_shared<Node>(Node::SET, node, this->test());
+            node = make_shared<Node>(Node::SET, node, this->rpn_math());
         }
     }
 
     return node;
 }
 
-shared_ptr<Node> Tokenizer::test() const {
+shared_ptr<Node> Tokenizer::rpn_math() const {
     vector<pair<RPN, shared_ptr<Node>>> result;
     stack<pair<RPN, shared_ptr<Node>>> stc;
     stc.push(pair(RPN::RPN_START, nullptr));
@@ -456,7 +456,7 @@ shared_ptr<VariableNode> Tokenizer::declaration(bool initialization, bool semico
         shared_ptr<OperatorToken> opToken = dynamic_pointer_cast<OperatorToken>(current);
         if (opToken->getOperatorType() == OPERATORS::ASSIGN) {
             this->lexer->nextToken();
-            node->setOperand1(this->test());
+            node->setOperand1(this->rpn_math());
         } else if (opToken->getOperatorType() == OPERATORS::ROUND_BRACE_OPEN) {
             node->setOperand1(this->argumentsDeclaration()); //TODO: swap
             node->setOperand2(this->statement());
@@ -522,7 +522,7 @@ shared_ptr<Node> Tokenizer::arguments() const {
     if (token->getType() != Token::SYMBOL) {
         opToken = make_shared<OperatorToken>(OPERATORS::COMA);
         while (opToken != nullptr && opToken->getOperatorType() == OPERATORS::COMA) {
-            node = make_shared<Node>(Node::SEQUENCE, node, this->test());
+            node = make_shared<Node>(Node::SEQUENCE, node, this->rpn_math());
             token = this->lexer->getCurrentToken();
             opToken = dynamic_pointer_cast<OperatorToken>(token);
             if (opToken && opToken->getOperatorType() == OPERATORS::COMA)

@@ -93,10 +93,10 @@ protected:
     shared_ptr<VariableNode> declaration(bool initialization = true, bool semicolon = true) const;
 
     /**
-     * test - parses arithmetical expression without bool operations.
+     * rpn_math - parses arithmetical and logical expression.
      * @author Danil Andreev
      */
-    shared_ptr<Node> test() const;
+    shared_ptr<Node> rpn_math() const;
 
     pair<RPN, shared_ptr<Node>> rpn_term() const;
 };
