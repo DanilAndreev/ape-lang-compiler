@@ -31,34 +31,34 @@ using namespace std;
 regex Lexer::SkippableCharacters = regex("[ \\t]+");
 
 vector<pair<string, OPERATORS>> Lexer::Symbols = vector<pair<string, OPERATORS>>{
-        pair<string, OPERATORS>("+", OPERATORS::ADD),
-        pair<string, OPERATORS>("-", OPERATORS::SUBTRACT),
-        pair<string, OPERATORS>("*", OPERATORS::MULTIPLY),
-        pair<string, OPERATORS>("/", OPERATORS::DIVIDE),
-        pair<string, OPERATORS>("^", OPERATORS::POWER),
-        pair<string, OPERATORS>("=", OPERATORS::ASSIGN),
-        pair<string, OPERATORS>("==", OPERATORS::EQUAL),
-        pair<string, OPERATORS>("!=", OPERATORS::NOTEQUAL),
-        pair<string, OPERATORS>(">=", OPERATORS::GREATER_EQUAL),
-        pair<string, OPERATORS>("<=", OPERATORS::LESS_EQUAL),
-        pair<string, OPERATORS>("<", OPERATORS::LESS),
-        pair<string, OPERATORS>(">", OPERATORS::GREATER),
-        pair<string, OPERATORS>("!", OPERATORS::NOT),
-        pair<string, OPERATORS>("++", OPERATORS::INCREMENT),
-        pair<string, OPERATORS>("(", OPERATORS::ROUND_BRACE_OPEN),
-        pair<string, OPERATORS>(")", OPERATORS::ROUND_BRACE_CLOSE),
-        pair<string, OPERATORS>("{", OPERATORS::CURLY_BRACE_OPEN),
-        pair<string, OPERATORS>("}", OPERATORS::CURLY_BRACE_CLOSE),
-        pair<string, OPERATORS>("[", OPERATORS::SQUARE_BRACE_OPEN),
-        pair<string, OPERATORS>("]", OPERATORS::SQUARE_BRACE_CLOSE),
-        pair<string, OPERATORS>(";", OPERATORS::SEMICOLON),
-        pair<string, OPERATORS>(",", OPERATORS::COMA),
-        pair<string, OPERATORS>(".", OPERATORS::DOT),
-        pair<string, OPERATORS>("&&", OPERATORS::AND),
-        pair<string, OPERATORS>("||", OPERATORS::OR),
-        pair<string, OPERATORS>("\"", OPERATORS::DOUBLE_QUOTES),
-        pair<string, OPERATORS>("'", OPERATORS::SINGLE_QUOTES),
-        pair<string, OPERATORS>("\n", OPERATORS::LINEBREAK),
+        {"+",  OPERATORS::ADD},
+        {"-",  OPERATORS::SUBTRACT},
+        {"*",  OPERATORS::MULTIPLY},
+        {"/",  OPERATORS::DIVIDE},
+        {"^",  OPERATORS::POWER},
+        {"=",  OPERATORS::ASSIGN},
+        {"==", OPERATORS::EQUAL},
+        {"!=", OPERATORS::NOTEQUAL},
+        {">=", OPERATORS::GREATER_EQUAL},
+        {"<=", OPERATORS::LESS_EQUAL},
+        {"<",  OPERATORS::LESS},
+        {">",  OPERATORS::GREATER},
+        {"!",  OPERATORS::NOT},
+        {"++", OPERATORS::INCREMENT},
+        {"(",  OPERATORS::ROUND_BRACE_OPEN},
+        {")",  OPERATORS::ROUND_BRACE_CLOSE},
+        {"{",  OPERATORS::CURLY_BRACE_OPEN},
+        {"}",  OPERATORS::CURLY_BRACE_CLOSE},
+        {"[",  OPERATORS::SQUARE_BRACE_OPEN},
+        {"]",  OPERATORS::SQUARE_BRACE_CLOSE},
+        {";",  OPERATORS::SEMICOLON},
+        {",",  OPERATORS::COMA},
+        {".",  OPERATORS::DOT},
+        {"&&", OPERATORS::AND},
+        {"||", OPERATORS::OR},
+        {"\"", OPERATORS::DOUBLE_QUOTES},
+        {"'",  OPERATORS::SINGLE_QUOTES},
+        {"\n", OPERATORS::LINEBREAK},
 };
 
 set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
@@ -152,10 +152,10 @@ shared_ptr<Token> Lexer::nextToken() {
     this->eof = false;
     if (this->currentToken->getType() == Token::TYPE::EOFILE)
         this->eof = true;
-    #ifndef NDEBUG
+#ifndef NDEBUG
     cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\"; "
          << result->getLine() + 1 << ":" << result->getColumn() + 1 << endl;
-    #endif
+#endif
     return shared_ptr<Token>(result);
 }
 
@@ -207,7 +207,7 @@ NumberToken *Lexer::readNumber() {
 Token *Lexer::readIdentifier() {
     const int tokenLine = this->line;
     const int tokenColumn = this->column;
-    
+
     string buffer = "";
     char character = this->get();
 
