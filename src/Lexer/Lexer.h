@@ -25,57 +25,43 @@ SOFTWARE.
 #ifndef APE_LANG_COMPILER_LEXER_H
 #define APE_LANG_COMPILER_LEXER_H
 
-#include <istream>
-#include <regex>
+#include <iostream>
 #include <set>
 #include <vector>
-#include <utility>
+#include <regex>
 #include <string>
+#include "Lexerable.h"
 #include "Tokens/Token.h"
-#include "Tokens/NumberToken.h"
 #include "Tokens/OperatorToken.h"
 #include "Tokens/KeywordToken.h"
-#include "Lexerable.h"
 
-using namespace std;
-
-/**
- * Lexer - class, designed to create tokens from text.
- * Use Lexer::nextToken to get next token.
- * @note Input stream should will not be deleted on class destruction.
- * @deprecated
- * @author Danil Andreev
- */
 class Lexer : public Lexerable {
 protected:
     /// SkippableCharacters - RegExp for skipping characters.
-    static regex SkippableCharacters;
-    /**
-     * Symbols - an array of lang symbols/operators.
-     * Will be added to set.
-     */
-    static vector<pair<string, OPERATORS>> Symbols;
+    static std::regex SkippableCharacters;
+    /// Symbols - an array of lang symbols/operators. Will be added to set.
+    static std::vector<pair<string, OPERATORS>> Symbols;
     /// Keywords - set of lang keywords.
-    static set<pair<string, KEYWORDS>> Keywords;
-    /// stream - input data stream with program code.
-    istream *stream;
+    static std::set<pair<string, KEYWORDS>> Keywords;
     /// symbols - set of lang symbols and operators, ordered by length DESC.
-    set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &, const pair<string, OPERATORS> &)> *symbols;
+    std::set<pair<string, OPERATORS>, bool (*)(const std::pair<string, OPERATORS> &,
+                                               const pair<string, OPERATORS> &)> *symbols;
     /// symbolsStartCharacters - a set of first characters from symbols set for lexer.
-    set<char> *symbolsStartCharacters;
-    /// currentToken - last token got from the input stream.
-    shared_ptr<Token> currentToken;
-    /// eof - that flag sets when last got token is EOF.
-    bool eof;
-
-    /// Current line.
+    std::set<char> *symbolsStartCharacters;
+    /// currentCharacter - last character got from the input stream.
+    char currentCharacter;
+protected:
+    /// stream - input data stream with program code.
+    std::istream &stream;
+    /// Current line in code.
     int line;
-    /// Current column.
+    /// Current column in code.
     int column;
-    /// Lines length history.
-    stack<int> lines_length;
+    std::string lineText;
+    /// currentToken - last token got from the input stream.
+    std::shared_ptr<Token> currentToken;
 public:
-    explicit Lexer(istream *const stream);
+    explicit Lexer(istream &stream);
 
     Lexer(const Lexer &reference);
 
@@ -88,14 +74,13 @@ public:
      * @return next token.
      * @author Danil Andreev
      */
-    shared_ptr<Token> nextToken() override;
+    std::shared_ptr<Token> nextToken() override;
 
-public:
     /**
      * getCurrentToken - getter for Lexer current token.
      * @author Danil Andreev
      */
-    shared_ptr<Token> getCurrentToken() const override;
+    std::shared_ptr<Token> getCurrentToken() const override;
 
     /**
      * isEof - returns true if eof flag has been set.
@@ -109,31 +94,58 @@ protected:
      * @return next token.
      * @author Danil Andreev
      */
-    Token *getNextToken();
+    std::shared_ptr<Token> getNextToken();
 
     /**
      * readNumber - method, designed to read number from the stream.
      * @author Danil Andreev
      */
-    NumberToken *readNumber();
+    std::shared_ptr<Token> readNumber();
 
     /**
-     * readNumber - method, designed to read identifier from the stream.
+     * readIdentifier - method, designed to read identifier from the stream.
      * @author Danil Andreev
      */
-    Token *readIdentifier();
+    std::shared_ptr<Token> readIdentifier();
 
     /**
-     * readNumber - method, designed to read symbol/operator from the stream.
+     * readSymbol - method, designed to read symbol/operator from the stream.
      * @author Danil Andreev
      */
-    Token *readSymbol();
+    std::shared_ptr<Token> readSymbol();
 
     /**
-     * readNumber - method, designed to read braced string from the stream.
+     * readString - method, designed to read braced string from the stream.
      * @author Danil Andreev
      */
-    Token *readString();
+    std::shared_ptr<Token> readString();
+
+protected:
+    /**
+     * get - gets next character from the stream.
+     * @return next character.
+     */
+    char get();
+
+    /**
+     * get - gets next character from the stream.
+     * @param input - reference to variable to write in.
+     */
+    void get(char &input);
+
+    /**
+     * get - gets n characters from the stream.
+     * @param length - characters quantity to get.
+     * @return next characters sequence.
+     */
+    std::string get(std::size_t length);
+
+    /**
+     * oversee - gets next n characters from the stream without extracting them.
+     * @param length
+     * @return next characters sequence.
+     */
+    std::string oversee(std::size_t length);
 
 protected:
     /**
@@ -141,21 +153,7 @@ protected:
      * @param character - Character for the check.
      * @author Danil Andreev
      */
-    bool isCharacterSkippable(const char character);
-
-    /**
-     * getFromStream - method, designed to get multiple characters from the stream.
-     * @param length - Target symbols quantity.
-     * @author Danil Andreev
-     */
-    string getFromStream(size_t length);
-    char get();
-    void get(char& input);
-    void unget();
-    /**
-     * @deprecated
-     */
-    void moveLinesCounterBack(long shift = 1);
+    bool isCharacterSkipable(const char character);
 };
 
 
