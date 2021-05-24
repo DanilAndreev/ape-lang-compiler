@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <cmath>
 #include "Compiler.h"
 #include "../Tokenizer/VariableNode.h"
 #include "../Tokenizer/IntegerNode.h"
@@ -76,7 +77,14 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
             } else if (shared_ptr<StringNode> node = dynamic_pointer_cast<StringNode>(tree)) {
                 this->generate(node->getPayload());
             } else if (shared_ptr<FloatNode> node = dynamic_pointer_cast<FloatNode>(tree)) {
-                this->generate(node->getPayload());
+                long double payload = node->getPayload();
+                if (trunc(payload) == payload) {
+                    ostringstream text;
+                    text << payload << ".0";
+                    this->generate(text.str());
+                } else {
+                    this->generate(payload);
+                }
             } else if (shared_ptr<BooleanNode> node = dynamic_pointer_cast<BooleanNode>(tree)) {
                 this->generate(node->getPayload() ? "True" : "False");
             }

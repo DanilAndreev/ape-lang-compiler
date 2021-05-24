@@ -51,7 +51,7 @@ long double NumberToken::getDouble() const {
 }
 
 bool NumberToken::isInteger() const {
-    return trunc(this->value) == this->value;
+    return trunc(this->value) == this->value && !this->payload.find('.');
 }
 
 long long NumberToken::getLong() const {
