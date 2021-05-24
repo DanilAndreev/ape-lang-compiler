@@ -338,7 +338,18 @@ void Lexer::get(char &input) {
 void Lexer::unget() {
     this->stream->unget();
     this->column--;
-    //moveLinesCounterBack(); //TODO: finish
+
+    if (this->column < 0) {
+        if (this->lines_length.empty()) {
+            this->column = 0;
+            this->line = 0;
+        } else {
+            this->column = this->lines_length.top();
+            lines_length.pop();
+            this->line--;
+        }
+    }
+    //moveLinesCounterBack();
 }
 
 void Lexer::moveLinesCounterBack(long shift) {

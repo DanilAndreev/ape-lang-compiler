@@ -150,6 +150,9 @@ protected:
     char get();
     void get(char& input);
     void unget();
+    /**
+     * @deprecated
+     */
     void moveLinesCounterBack(long shift = 1);
 };
 
