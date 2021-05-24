@@ -22,39 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include <sstream>
+#include "ReDeclarationException.h"
 
 using namespace std;
 
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
+ReDeclarationException::ReDeclarationException(
+        std::shared_ptr<VariableNode> problem,
+        std::shared_ptr<Positionable> declaration
+) : CodeException(problem, "") {
+    ostringstream text;
+    text << "Re-declaration of variable \"" << problem->getIdentifier() << "\", declared here("
+         << declaration->getLine() + 1 << ":" << declaration->getColumn() + 1 << "). |";
+    this->message = text.str();
 }
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
+ReDeclarationException::ReDeclarationException(const ReDeclarationException &reference) : CodeException(reference) {
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
-
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
-
-int Token::getLine() const {
-    return this->line;
-}
-
-int Token::getColumn() const {
-    return this->column;
+ReDeclarationException::~ReDeclarationException() {
 }

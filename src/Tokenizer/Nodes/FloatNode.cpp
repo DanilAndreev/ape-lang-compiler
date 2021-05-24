@@ -26,11 +26,12 @@ SOFTWARE.
 
 using namespace std;
 
-FloatNode::FloatNode(long double payload): LiteralNode(Node::CONST) {
+FloatNode::FloatNode(const int line, const int column, long double payload)
+        : LiteralNode(line, column, Node::CONST) {
     this->payload = payload;
 }
 
-FloatNode::FloatNode(const FloatNode &reference): LiteralNode(reference) {
+FloatNode::FloatNode(const FloatNode &reference) : LiteralNode(reference) {
     this->payload = reference.payload;
 }
 

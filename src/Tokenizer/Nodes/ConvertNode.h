@@ -33,7 +33,7 @@ class ConvertNode : public Node {
 protected:
     VariableNode::DATA_TYPE dataType;
 public:
-    explicit ConvertNode(const VariableNode::DATA_TYPE dateType, std::shared_ptr<Node> operand1 = nullptr);
+    explicit ConvertNode(int line, int column, const VariableNode::DATA_TYPE dateType, std::shared_ptr<Node> operand1 = nullptr);
     ConvertNode(const ConvertNode& reference);
     ~ConvertNode() override;
 public:

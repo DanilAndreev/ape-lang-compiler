@@ -58,9 +58,9 @@ protected:
     bool declaration;
     unsigned int index;
 public:
-    explicit VariableNode(std::string &identifier, bool isFunc = false, std::shared_ptr<Node> operand1 = nullptr);
+    explicit VariableNode(int line, int column, std::string &identifier, bool isFunc = false, std::shared_ptr<Node> operand1 = nullptr);
 
-    explicit VariableNode(std::string &identifier, std::shared_ptr<Node> operand1 = nullptr);
+    explicit VariableNode(int line, int column, std::string &identifier, std::shared_ptr<Node> operand1 = nullptr);
 
     VariableNode(const VariableNode &reference);
 

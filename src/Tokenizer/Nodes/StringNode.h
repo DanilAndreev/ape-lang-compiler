@@ -37,7 +37,7 @@ protected:
     /// Literal payload
     std::string payload;
 public:
-    explicit StringNode(std::string payload);
+    explicit StringNode(int line, int column, std::string payload);
     StringNode(const StringNode& reference);
     ~StringNode() override;
 public:

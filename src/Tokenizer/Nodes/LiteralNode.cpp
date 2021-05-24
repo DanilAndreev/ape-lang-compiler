@@ -26,7 +26,7 @@ SOFTWARE.
 
 using namespace std;
 
-LiteralNode::LiteralNode(const Node::TYPE type): Node(type) {
+LiteralNode::LiteralNode(const int line, const int column, const Node::TYPE type): Node(line, column, type) {
 }
 
 LiteralNode::LiteralNode(const LiteralNode& reference): Node(reference) {

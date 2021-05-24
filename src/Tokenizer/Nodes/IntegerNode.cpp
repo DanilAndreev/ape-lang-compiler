@@ -26,11 +26,12 @@ SOFTWARE.
 
 using namespace std;
 
-IntegerNode::IntegerNode(long long int payload): LiteralNode(Node::CONST) {
+IntegerNode::IntegerNode(const int line, const int column, long long int payload)
+        : LiteralNode(line, column, Node::CONST) {
     this->payload = payload;
 }
 
-IntegerNode::IntegerNode(IntegerNode &reference): LiteralNode(reference) {
+IntegerNode::IntegerNode(IntegerNode &reference) : LiteralNode(reference) {
     this->payload = reference.payload;
 }
 

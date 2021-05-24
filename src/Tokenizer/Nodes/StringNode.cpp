@@ -26,7 +26,7 @@ SOFTWARE.
 
 using namespace std;
 
-StringNode::StringNode(string payload): LiteralNode(Node::CONST) {
+StringNode::StringNode(const int line, const int column, string payload): LiteralNode(line, column, Node::CONST) {
     this->payload = payload;
 }
 

@@ -45,7 +45,8 @@ string VariableNode::getDataTypeStr(DATA_TYPE input) {
     }
 }
 
-VariableNode::VariableNode(string &identifier, bool isFunc, shared_ptr<Node> operand1): Node(Node::VAR, operand1) {
+VariableNode::VariableNode(const int line, const int column, string &identifier, bool isFunc, shared_ptr<Node> operand1)
+        : Node(line, column, Node::VAR, operand1) {
     this->identifier = identifier;
     this->isFunc = isFunc;
     this->declaration = false;
@@ -54,7 +55,8 @@ VariableNode::VariableNode(string &identifier, bool isFunc, shared_ptr<Node> ope
     this->constant = false;
 }
 
-VariableNode::VariableNode(string &identifier,  shared_ptr<Node> operand1): VariableNode(identifier, false, operand1) {
+VariableNode::VariableNode(const int line, const int column, string &identifier, shared_ptr<Node> operand1)
+        : VariableNode(line, column, identifier, false, operand1) {
     if (operand1) this->isFunc = true;
     this->declaration = false;
     this->index = 0;
@@ -62,7 +64,7 @@ VariableNode::VariableNode(string &identifier,  shared_ptr<Node> operand1): Vari
     this->constant = false;
 }
 
-VariableNode::VariableNode(const VariableNode &reference): Node(reference) {
+VariableNode::VariableNode(const VariableNode &reference) : Node(reference) {
     this->identifier = reference.identifier;
     this->isFunc = reference.isFunc;
     this->declaration = reference.declaration;

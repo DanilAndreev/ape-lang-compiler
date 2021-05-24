@@ -37,7 +37,7 @@ protected:
     /// payload of floating point number literal.
     long double payload;
 public:
-    explicit FloatNode(long double payload);
+    explicit FloatNode(int line, int column, long double payload);
     FloatNode(const FloatNode& reference);
     ~FloatNode() override;
 public:

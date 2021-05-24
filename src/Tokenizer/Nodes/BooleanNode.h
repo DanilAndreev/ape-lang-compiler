@@ -37,7 +37,7 @@ protected:
     /// payload of boolean literal.
     bool payload;
 public:
-    explicit BooleanNode(bool payload);
+    explicit BooleanNode(int line, int column, bool payload);
 
     BooleanNode(const BooleanNode &reference);
 

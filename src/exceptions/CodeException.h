@@ -25,14 +25,14 @@ SOFTWARE.
 #ifndef APE_LANG_COMPILER_CODEEXCEPTION_H
 #define APE_LANG_COMPILER_CODEEXCEPTION_H
 
+#include <memory>
 #include "ApeCompilerException.h"
+#include "../interfaces/Positionable.h"
 
-class CodeException: public ApeCompilerException {
-protected:
-    int line;
-    int column;
+class CodeException: public ApeCompilerException, public Positionable {
 public:
     CodeException(int line, int column, std::string message);
+    CodeException(std::shared_ptr<Positionable> target, std::string message);
     CodeException(const CodeException& reference);
     ~CodeException() override;
 public:

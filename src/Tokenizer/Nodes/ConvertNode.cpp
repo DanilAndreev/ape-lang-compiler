@@ -26,7 +26,12 @@ SOFTWARE.
 
 using namespace std;
 
-ConvertNode::ConvertNode(const VariableNode::DATA_TYPE dateType, shared_ptr<Node> operand1) : Node(Node::CONVERT, operand1) {
+ConvertNode::ConvertNode(
+        const int line,
+        const int column,
+        const VariableNode::DATA_TYPE dateType,
+        shared_ptr<Node> operand1
+) : Node(line, column, Node::CONVERT, operand1) {
     this->dataType = dateType;
 }
 

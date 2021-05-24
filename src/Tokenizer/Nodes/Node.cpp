@@ -28,7 +28,14 @@ SOFTWARE.
 
 using namespace std;
 
-Node::Node(const Node::TYPE type, shared_ptr<Node> op1, shared_ptr<Node> op2, shared_ptr<Node> op3) {
+Node::Node(
+        int line,
+        int column,
+        const Node::TYPE type,
+        shared_ptr<Node> op1,
+        shared_ptr<Node> op2,
+        shared_ptr<Node> op3
+) : Positionable(line, column) {
     this->type = type;
     this->operand1 = op1;
     this->operand2 = op2;
@@ -41,7 +48,7 @@ Node::~Node() {
     this->operand3 = nullptr;
 }
 
-Node::Node(const Node& reference): Node(reference.type) {
+Node::Node(const Node &reference) : Node(reference.line, reference.column, reference.type) {
     if (reference.operand1) this->operand1 = make_shared<Node>(*reference.operand1);
     if (reference.operand2) this->operand2 = make_shared<Node>(*reference.operand2);
     if (reference.operand3) this->operand3 = make_shared<Node>(*reference.operand3);
@@ -83,7 +90,7 @@ Node *Node::setOperand1(const shared_ptr<Node> operand) {
     return this;
 }
 
-Node *Node::setOperand2(const shared_ptr<Node>operand) {
+Node *Node::setOperand2(const shared_ptr<Node> operand) {
     this->operand2 = operand;
     return this;
 }
@@ -100,7 +107,7 @@ ostream &Node::print(ostream &stream, int shift, string message) const {
     stream << shiftString;
     if (message.length())
         stream << "[" << message << "] ";
-    stream << this->getNodeTypeStr() << ": " << *this << endl;
+    stream << this->getNodeTypeStr() << ":(" << this->getLine() << ":" << this->getColumn() << ") " << *this << endl;
     if (this->operand1) this->operand1->print(stream, shift + 2, "op1");
     if (this->operand2) this->operand2->print(stream, shift + 2, "op2");
     if (this->operand3) this->operand3->print(stream, shift + 2, "op3");

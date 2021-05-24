@@ -27,14 +27,14 @@ SOFTWARE.
 
 using namespace std;
 
-CodeException::CodeException(int line, int column, const std::string message) : ApeCompilerException(message) {
-    this->line = line;
-    this->column = column;
+CodeException::CodeException(int line, int column, const std::string message)
+        : ApeCompilerException(message),
+          Positionable(line, column) {
 }
 
-CodeException::CodeException(const CodeException &reference) : ApeCompilerException(reference) {
-    this->column = reference.column;
-    this->line = reference.line;
+CodeException::CodeException(const CodeException &reference)
+        : ApeCompilerException(reference),
+          Positionable(reference) {
 }
 
 CodeException::~CodeException() {
@@ -44,4 +44,9 @@ std::string CodeException::getMessage() const noexcept {
     ostringstream text;
     text << this->message << " " << this->line << ":" << this->column;
     return text.str();
+}
+
+CodeException::CodeException(std::shared_ptr<Positionable> target, std::string message)
+        : Positionable(*target),
+          ApeCompilerException(message) {
 }

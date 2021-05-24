@@ -22,39 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_POSITIONABLE_H
+#define APE_LANG_COMPILER_POSITIONABLE_H
 
-using namespace std;
 
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+class Positionable {
+protected:
+    int line;
+    int column;
+public:
+    Positionable(int line, int column) noexcept;
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
+    Positionable(const Positionable &reference) noexcept;
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
+    ~Positionable() noexcept;
 
-string Token::getPayload() const {
-    return this->payload;
-}
+public:
+    int getLine() const noexcept;
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
+    int getColumn() const noexcept;
+};
 
-int Token::getLine() const {
-    return this->line;
-}
 
-int Token::getColumn() const {
-    return this->column;
-}
+#endif //APE_LANG_COMPILER_POSITIONABLE_H

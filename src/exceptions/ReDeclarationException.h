@@ -22,39 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_REDECLARATIONEXCEPTION_H
+#define APE_LANG_COMPILER_REDECLARATIONEXCEPTION_H
 
-using namespace std;
 
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+#include "CodeException.h"
+#include "../Tokenizer/Nodes/VariableNode.h"
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
+class ReDeclarationException : public CodeException {
+public:
+    ReDeclarationException(std::shared_ptr<VariableNode> problem, std::shared_ptr<Positionable> declaration);
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
+    ReDeclarationException(const ReDeclarationException &reference);
 
-string Token::getPayload() const {
-    return this->payload;
-}
+    ~ReDeclarationException() override;
+};
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
 
-int Token::getLine() const {
-    return this->line;
-}
-
-int Token::getColumn() const {
-    return this->column;
-}
+#endif //APE_LANG_COMPILER_REDECLARATIONEXCEPTION_H

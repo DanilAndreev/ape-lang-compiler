@@ -25,6 +25,7 @@ SOFTWARE.
 #ifndef APE_LANG_COMPILER_NODE_H
 #define APE_LANG_COMPILER_NODE_H
 
+#include "../../interfaces/Positionable.h"
 #include <iostream>
 #include <memory>
 
@@ -33,7 +34,7 @@ SOFTWARE.
  * @see https://en.wikipedia.org/wiki/Abstract_syntax_tree
  * @author Danil Andreev
  */
-class Node {
+class Node : public Positionable {
 public:
     /**
      * TYPE - Node types enumeration.
@@ -96,6 +97,8 @@ protected:
     std::shared_ptr<Node> operand3;
 public:
     Node(
+            int line,
+            int column,
             const TYPE type,
             std::shared_ptr<Node> operand1 = nullptr,
             std::shared_ptr<Node> operand2 = nullptr,

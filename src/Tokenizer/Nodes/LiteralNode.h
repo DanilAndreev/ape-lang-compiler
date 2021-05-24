@@ -29,7 +29,7 @@ SOFTWARE.
 
 class LiteralNode : public Node {
 public:
-    explicit LiteralNode(const TYPE type);
+    explicit LiteralNode(int line, int column, const TYPE type);
 
     LiteralNode(const LiteralNode &reference);
 

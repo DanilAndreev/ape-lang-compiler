@@ -6,11 +6,12 @@
 #include "exceptions/ApeCompilerException.h"
 #include "Compiler/Compiler.h"
 #include "exceptions/CodeException.h"
+#include "exceptions/ReDeclarationException.h"
 
 
 using namespace std;
 
-vector<string> compile(ifstream& fin) {
+vector<string> compile(ifstream &fin) {
     Lexerable *lexer = new Lexer(fin);
     Tokenizer *tokenizer = new Tokenizer(lexer);
     shared_ptr<Node> tree = tokenizer->parse();
@@ -22,7 +23,7 @@ vector<string> compile(ifstream& fin) {
     shared_ptr<vector<ApeCompilerException>> errors;
     try {
         errors = get<1>(Tokenizer::validateTree(tree));
-        for (const auto& error: *errors) {
+        for (const auto &error: *errors) {
             cerr << "Compilation error: " << error.getMessage() << endl;
         }
         if (errors->size())
@@ -38,7 +39,7 @@ vector<string> compile(ifstream& fin) {
     tree->print(cout, 0, "root");
 #endif
 
-    Compiler* compiler = new Compiler();
+    Compiler *compiler = new Compiler();
     vector<string> program = compiler->compile(tree);
 
 
@@ -59,7 +60,7 @@ int main(int _argc, char *_argv[]) {
         string resultFile = "a.ape";
 
         if (args.empty()) {
-            cerr <<"Not enough arguments, expected: <file> [result] " << endl;
+            cerr << "Not enough arguments, expected: <file> [result] " << endl;
             return -1;
         }
         inputFile = args[0];
@@ -68,7 +69,7 @@ int main(int _argc, char *_argv[]) {
             resultFile = args[1];
 
         if (args.size() > 2) {
-            cerr <<"Too many arguments, expected: <file> [result] " << endl;
+            cerr << "Too many arguments, expected: <file> [result] " << endl;
             return -1;
         }
 
@@ -91,17 +92,17 @@ int main(int _argc, char *_argv[]) {
 
 
         fout << "[";
-        for (string& item : program) {
+        for (string &item : program) {
             fout << item << ",";
         }
         fout << "]" << endl;
 
         return 0;
-    } catch (CodeException& e) {
-        cerr << e.getMessage();
+    } catch (CodeException &e) {
+        cerr << "Compilation error: " << e.getMessage();
         exit(-1);
-    } catch (ApeCompilerException& e) {
-        cerr << e.getMessage();
+    } catch (ApeCompilerException &e) {
+        cerr << "Compilation error: " << e.getMessage();
         exit(-1);
     }
 }

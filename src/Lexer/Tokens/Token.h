@@ -27,12 +27,13 @@ SOFTWARE.
 
 #include <string>
 #include <memory>
+#include "../../interfaces/Positionable.h"
 
 /**
  * Token - class designed to store lexemes from Lexer.
  * @author Danil Andreev
  */
-class Token {
+class Token : public Positionable {
 public:
     /**
      * TYPE - lexeme types enumeration.
@@ -54,10 +55,6 @@ protected:
     TYPE type;
     /// payload - lexeme payload. Got from input text.
     std::string payload;
-    /// Token line in input file.
-    int line;
-    /// Token column in input file.
-    int column;
 public:
     Token(TYPE type, std::string payload = "", int line = -1, int column = -1);
 
