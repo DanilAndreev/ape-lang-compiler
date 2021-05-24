@@ -35,6 +35,7 @@ SOFTWARE.
 #include "Tokens/NumberToken.h"
 #include "Tokens/OperatorToken.h"
 #include "Tokens/KeywordToken.h"
+#include "Lexerable.h"
 
 using namespace std;
 
@@ -44,7 +45,7 @@ using namespace std;
  * @note Input stream should will not be deleted on class destruction.
  * @author Danil Andreev
  */
-class Lexer {
+class Lexer : public Lexerable {
 protected:
     /// SkippableCharacters - RegExp for skipping characters.
     static regex SkippableCharacters;
@@ -86,20 +87,20 @@ public:
      * @return next token.
      * @author Danil Andreev
      */
-    shared_ptr<Token> nextToken();
+    shared_ptr<Token> nextToken() override;
 
 public:
     /**
      * getCurrentToken - getter for Lexer current token.
      * @author Danil Andreev
      */
-    shared_ptr<Token> getCurrentToken() const;
+    shared_ptr<Token> getCurrentToken() const override;
 
     /**
      * isEof - returns true if eof flag has been set.
      * Else returns false.
      */
-    bool isEof() const;
+    bool isEof() const override;
 
 protected:
     /**

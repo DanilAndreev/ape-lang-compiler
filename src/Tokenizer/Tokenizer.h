@@ -26,7 +26,10 @@ SOFTWARE.
 #define APE_LANG_COMPILER_TOKENIZER_H
 
 #include <memory>
-#include "../Lexer/Lexer.h"
+#include <vector>
+#include <map>
+#include "../Lexer/Tokens/Token.h"
+#include "../Lexer/Lexerable.h"
 #include "Nodes/Node.h"
 #include "Nodes/VariableNode.h"
 #include "../exceptions/ApeCompilerException.h"
@@ -54,7 +57,7 @@ enum RPN {
 
 class Tokenizer {
 protected:
-    Lexer *lexer;
+    Lexerable *lexer;
     static map<RPN, unsigned short> Priorities;
 protected:
     typedef pair<const string, shared_ptr<VariableNode>> ScopeItem;
@@ -68,9 +71,9 @@ public: // TODO: Change to protected
     );
 
 public:
-    explicit Tokenizer(Lexer *lexer);
+    explicit Tokenizer(Lexerable *lexer);
 
-    explicit Tokenizer(Lexer &lexer);
+    explicit Tokenizer(Lexerable &lexer);
 
     Tokenizer(const Tokenizer &reference);
 

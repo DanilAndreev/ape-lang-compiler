@@ -22,12 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stack>
 #include "Tokenizer.h"
 #include "Nodes/StringNode.h"
 #include "Nodes/IntegerNode.h"
 #include "Nodes/FloatNode.h"
 #include "Nodes/BooleanNode.h"
 #include "Nodes/ConvertNode.h"
+#include "../Lexer/Tokens/KeywordToken.h"
+#include "../Lexer/Tokens/OperatorToken.h"
+#include "../Lexer/Tokens/NumberToken.h"
 
 map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_START,             0},
@@ -48,11 +52,11 @@ map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_NOTEQUAL,          6},
 };
 
-Tokenizer::Tokenizer(Lexer *lexer) {
+Tokenizer::Tokenizer(Lexerable *lexer) {
     this->lexer = lexer;
 }
 
-Tokenizer::Tokenizer(Lexer &lexer) : Tokenizer(&lexer) {}
+Tokenizer::Tokenizer(Lexerable &lexer) : Tokenizer(&lexer) {}
 
 Tokenizer::Tokenizer(const Tokenizer &reference) {
     this->lexer = reference.lexer;
