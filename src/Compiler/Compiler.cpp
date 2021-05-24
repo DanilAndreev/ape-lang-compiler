@@ -80,7 +80,9 @@ void Compiler::compile_tree(shared_ptr<Node> tree) {
                 long double payload = node->getPayload();
                 if (trunc(payload) == payload) {
                     ostringstream text;
-                    text << payload << ".0";
+                    text << payload;
+                    if (!to_string(payload).find('e'))
+                        text << ".0";
                     this->generate(text.str());
                 } else {
                     this->generate(payload);

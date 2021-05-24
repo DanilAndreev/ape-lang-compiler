@@ -26,6 +26,7 @@ SOFTWARE.
 #define APE_LANG_COMPILER_LEXERABLE_H
 
 #include <memory>
+#include "Tokens/Token.h"
 
 class Lexerable {
 public:

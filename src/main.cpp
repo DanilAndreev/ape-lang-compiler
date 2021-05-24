@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "Lexer/Lexer.h"
+#include "Lexer/Lexer1.h"
 #include "Tokenizer/Nodes/Node.h"
 #include "Tokenizer/Tokenizer.h"
 #include "exceptions/ApeCompilerException.h"
@@ -10,7 +11,7 @@
 using namespace std;
 
 vector<string> compile(ifstream& fin) {
-    Lexer *lexer = new Lexer(&fin);
+    Lexerable *lexer = new Lexer1(fin);
     Tokenizer *tokenizer = new Tokenizer(lexer);
     shared_ptr<Node> tree = tokenizer->parse();
 

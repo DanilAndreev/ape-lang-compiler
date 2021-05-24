@@ -43,6 +43,7 @@ using namespace std;
  * Lexer - class, designed to create tokens from text.
  * Use Lexer::nextToken to get next token.
  * @note Input stream should will not be deleted on class destruction.
+ * @deprecated
  * @author Danil Andreev
  */
 class Lexer : public Lexerable {
