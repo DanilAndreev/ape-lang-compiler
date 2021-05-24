@@ -20,11 +20,11 @@ vector<string> compile(ifstream &fin) {
     tree->print(cout, 0, "root");
 #endif
 
-    shared_ptr<vector<ApeCompilerException>> errors;
+    shared_ptr<vector<shared_ptr<ApeCompilerException>>> errors;
     try {
         errors = get<1>(Tokenizer::validateTree(tree));
         for (const auto &error: *errors) {
-            cerr << "Compilation error: " << error.getMessage() << endl;
+            cerr << "Compilation error: " << error->getMessage() << endl;
         }
         if (errors->size())
             exit(-1);

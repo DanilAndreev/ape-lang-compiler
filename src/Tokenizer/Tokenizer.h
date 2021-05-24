@@ -65,13 +65,13 @@ protected:
 public:
     static std::tuple<
             std::shared_ptr<Node>,
-            std::shared_ptr<std::vector<ApeCompilerException>>,
+            std::shared_ptr<std::vector<std::shared_ptr<ApeCompilerException>>>,
             VariableNode::DATA_TYPE
     > validateTree(
             const std::shared_ptr<Node> input,
             std::shared_ptr<Scope> scope = nullptr,
             std::shared_ptr<Scope> outerScope = nullptr,
-            std::shared_ptr<std::vector<ApeCompilerException>> errors = nullptr
+            std::shared_ptr<std::vector<std::shared_ptr<ApeCompilerException>>> errors = nullptr
     );
 
 public:

@@ -582,18 +582,22 @@ shared_ptr<Node> Tokenizer::arguments() const {
     return node;
 }
 
-tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::DATA_TYPE> Tokenizer::validateTree(
+tuple<
+        shared_ptr<Node>,
+        shared_ptr<vector<std::shared_ptr<ApeCompilerException>>>,
+        VariableNode::DATA_TYPE
+> Tokenizer::validateTree(
         const shared_ptr<Node> input,
         shared_ptr<Scope> scope,
         shared_ptr<Scope> outerScope,
-        shared_ptr<vector<ApeCompilerException>> errors
+        shared_ptr<vector<std::shared_ptr<ApeCompilerException>>> errors
 ) {
     if (scope == nullptr)
         scope = make_shared<Scope>();
     if (outerScope == nullptr)
         outerScope = make_shared<Scope>();
     if (errors == nullptr)
-        errors = make_shared<vector<ApeCompilerException>>();
+        errors = make_shared<vector<std::shared_ptr<ApeCompilerException>>>();
     VariableNode::DATA_TYPE resultDataType = VariableNode::DATA_TYPE::VOID;
 
     const shared_ptr<Node> operand1 = input->getOperand1();
@@ -640,8 +644,7 @@ tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::
             if (variable->isDeclaration()) {
                 auto declaration = scope->find(variable->getIdentifier());
                 if (declaration != scope->end()) {
-                    errors->push_back(ReDeclarationException(variable, declaration->second));
-//                    errors->push_back(ApeCompilerException("Re-declaration of variable \"" + variable->getIdentifier() + "\""));
+                    errors->push_back(make_shared<ReDeclarationException>(variable, declaration->second));
                 } else {
                     variable->setIndex();
                     scope->insert(ScopeItem(variable->getIdentifier(), variable));
@@ -665,7 +668,7 @@ tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::
                     variable->setIndex(outerDeclaration->second->getIndex());
                     variable->setConstant(outerDeclaration->second->isConstant());
                 } else {
-                    errors->push_back(ApeCompilerException("Undeclared variable " + variable->getIdentifier()));
+                    errors->push_back(make_shared<ApeCompilerException>("Undeclared variable " + variable->getIdentifier()));
                 }
             }
         }
@@ -676,7 +679,7 @@ tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::
             shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input->getOperand1());
             if (variable->isConstant()) {
                 errors->push_back(
-                        ApeCompilerException("Assigning to constant variable " + variable->getIdentifier()));
+                        make_shared<ApeCompilerException>("Assigning to constant variable " + variable->getIdentifier()));
             }
             if (variable->getBasicType() != valueDataType) {
                 input->setOperand2(
