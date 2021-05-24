@@ -25,6 +25,7 @@ SOFTWARE.
 #include "Lexer.h"
 #include "../exceptions/ApeCompilerException.h"
 #include "Tokens/NumberToken.h"
+#include "../exceptions/CodeException.h"
 
 using namespace std;
 
@@ -196,7 +197,7 @@ std::shared_ptr<Token> Lexer::getNextToken() {
     } else if (isalpha(character)) {
         return this->readIdentifier();
     } else {
-        throw ApeCompilerException("Error");
+        throw CodeException(this->line, this->column, "Unexpected lexeme.");
     }
 }
 
@@ -298,7 +299,7 @@ std::shared_ptr<Token> Lexer::readString() {
         if (character == '\\') {
             char next = this->get();
             if (next == EOF)
-                throw new exception();
+                throw CodeException(tokenLine, tokenColumn, "String literal has no ending.");
 
             switch (next) {
                 case 'n':

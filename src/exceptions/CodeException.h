@@ -22,4 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "SyntaxException.h"
+#ifndef APE_LANG_COMPILER_CODEEXCEPTION_H
+#define APE_LANG_COMPILER_CODEEXCEPTION_H
+
+#include "ApeCompilerException.h"
+
+class CodeException: public ApeCompilerException {
+protected:
+    int line;
+    int column;
+public:
+    CodeException(int line, int column, std::string message);
+    CodeException(const CodeException& reference);
+    ~CodeException() override;
+public:
+    std::string getMessage() const noexcept override;
+};
+
+
+#endif //APE_LANG_COMPILER_CODEEXCEPTION_H

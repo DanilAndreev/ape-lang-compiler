@@ -5,6 +5,7 @@
 #include "Tokenizer/Tokenizer.h"
 #include "exceptions/ApeCompilerException.h"
 #include "Compiler/Compiler.h"
+#include "exceptions/CodeException.h"
 
 
 using namespace std;
@@ -51,48 +52,56 @@ vector<string> compile(ifstream& fin) {
 }
 
 int main(int _argc, char *_argv[]) {
-    vector<string> args(_argv + 1, _argv + _argc);
+    try {
+        vector<string> args(_argv + 1, _argv + _argc);
 
-    string inputFile;
-    string resultFile = "a.ape";
+        string inputFile;
+        string resultFile = "a.ape";
 
-    if (args.empty()) {
-        cerr <<"Not enough arguments, expected: <file> [result] " << endl;
-        return -1;
+        if (args.empty()) {
+            cerr <<"Not enough arguments, expected: <file> [result] " << endl;
+            return -1;
+        }
+        inputFile = args[0];
+
+        if (args.size() >= 2)
+            resultFile = args[1];
+
+        if (args.size() > 2) {
+            cerr <<"Too many arguments, expected: <file> [result] " << endl;
+            return -1;
+        }
+
+        ifstream fin(inputFile, std::ios::binary);
+
+        if (!fin.is_open()) {
+            cerr << "Failed to open file: \"" << inputFile << "\"" << endl;
+            return -2;
+        }
+
+
+        vector<string> program = compile(fin);
+        fin.close();
+
+        ofstream fout(resultFile);
+        if (!fout.is_open()) {
+            cerr << "Failed to open or create file: \"" << resultFile << "\"" << endl;
+            return -2;
+        }
+
+
+        fout << "[";
+        for (string& item : program) {
+            fout << item << ",";
+        }
+        fout << "]" << endl;
+
+        return 0;
+    } catch (CodeException& e) {
+        cerr << e.getMessage();
+        exit(-1);
+    } catch (ApeCompilerException& e) {
+        cerr << e.getMessage();
+        exit(-1);
     }
-    inputFile = args[0];
-
-    if (args.size() >= 2)
-        resultFile = args[1];
-
-    if (args.size() > 2) {
-        cerr <<"Too many arguments, expected: <file> [result] " << endl;
-        return -1;
-    }
-
-    ifstream fin(inputFile, std::ios::binary);
-
-    if (!fin.is_open()) {
-        cerr << "Failed to open file: \"" << inputFile << "\"" << endl;
-        return -2;
-    }
-
-
-    vector<string> program = compile(fin);
-    fin.close();
-
-    ofstream fout(resultFile);
-    if (!fout.is_open()) {
-        cerr << "Failed to open or create file: \"" << resultFile << "\"" << endl;
-        return -2;
-    }
-
-
-    fout << "[";
-    for (string& item : program) {
-        fout << item << ",";
-    }
-    fout << "]" << endl;
-
-    return 0;
 }

@@ -22,7 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <cstring>
 #include "ApeCompilerException.h"
+
+using namespace std;
 
 std::string ApeCompilerException::getMessage() const noexcept {
     return this->message;
@@ -39,7 +42,7 @@ ApeCompilerException::ApeCompilerException(std::string message, bool fatal): std
 }
 
 const char *ApeCompilerException::what() const noexcept {
-    return this->message.c_str();
+    return "ApeCompilerException, use getMessage() to get message.";
 }
 
 ApeCompilerException::~ApeCompilerException() {}

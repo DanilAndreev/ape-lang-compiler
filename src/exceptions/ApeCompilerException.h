@@ -34,6 +34,7 @@ SOFTWARE.
  * @author Danil Andreev
  */
 class ApeCompilerException : public std::exception {
+protected:
     /// fatal - if true error will be interpreted as fatal.
     bool fatal;
     /// message - error message.
@@ -47,7 +48,7 @@ public:
      * getMessage - getter for exception message.
      * @author Danil Andreev
      */
-    std::string getMessage() const noexcept;
+    virtual std::string getMessage() const noexcept;
     const char* what() const noexcept override;
 public:
     friend std::ostream& operator<< (std::ostream& stream, ApeCompilerException& exception);

@@ -22,19 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_SYNTAXEXCEPTION_H
-#define APE_LANG_COMPILER_SYNTAXEXCEPTION_H
+#include <sstream>
+#include "CodeException.h"
 
-#include "ApeCompilerException.h"
+using namespace std;
 
-class SyntaxException: public ApeCompilerException {
-protected:
-    int line;
-    int column;
+CodeException::CodeException(int line, int column, const std::string message) : ApeCompilerException(message) {
+    this->line = line;
+    this->column = column;
+}
 
-public:
+CodeException::CodeException(const CodeException &reference) : ApeCompilerException(reference) {
+    this->column = reference.column;
+    this->line = reference.line;
+}
 
-};
+CodeException::~CodeException() {
+}
 
-
-#endif //APE_LANG_COMPILER_SYNTAXEXCEPTION_H
+std::string CodeException::getMessage() const noexcept {
+    ostringstream text;
+    text << this->message << " " << this->line << ":" << this->column;
+    return text.str();
+}

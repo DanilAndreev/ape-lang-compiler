@@ -32,6 +32,8 @@ SOFTWARE.
 #include "../Lexer/Tokens/KeywordToken.h"
 #include "../Lexer/Tokens/OperatorToken.h"
 #include "../Lexer/Tokens/NumberToken.h"
+#include "../exceptions/CodeException.h"
+#include "../exceptions/UnexpectedTokenException.h"
 
 using namespace std;
 
@@ -116,10 +118,11 @@ shared_ptr<Node> Tokenizer::statement() const {
 
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \"(\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::ROUND_BRACE_OPEN)
-                        throw ApeCompilerException("Expected \"(\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
+
 
                     if (this->lexer->nextToken()->getType() == Token::KEYWORD) {
                         node->setOperand1(this->declaration());
@@ -128,29 +131,29 @@ shared_ptr<Node> Tokenizer::statement() const {
                     }
 
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::SEMICOLON)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
 
 
                     this->lexer->nextToken();
                     forNode->setOperand1(this->rpn_math());
 
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::SEMICOLON)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
 
                     this->lexer->nextToken();
                     forNode->setOperand2(this->expression());
 
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \")\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::ROUND_BRACE_CLOSE)
-                        throw ApeCompilerException("Expected \")\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
 
                     this->lexer->nextToken();
                     forNode->setOperand3(this->statement());
@@ -162,17 +165,17 @@ shared_ptr<Node> Tokenizer::statement() const {
                     this->lexer->nextToken();
                     node->setOperand1(this->statement());
                     if (this->lexer->getCurrentToken()->getType() != Token::KEYWORD)
-                        throw ApeCompilerException("Expected \"while\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "while");
                     token = dynamic_pointer_cast<KeywordToken>(this->lexer->getCurrentToken());
                     if (token->getKeywordType() != KEYWORDS::WHILE)
-                        throw ApeCompilerException("Expected \"while\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "while");
                     this->lexer->nextToken();
                     node->setOperand2(this->parenExpr());
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::SEMICOLON)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                 }
                     break;
                 case KEYWORDS::CONST: {
@@ -184,59 +187,59 @@ shared_ptr<Node> Tokenizer::statement() const {
                 case KEYWORDS::PRINT: {
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \"(\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::ROUND_BRACE_OPEN)
-                        throw ApeCompilerException("Expected \"(\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
 
                     this->lexer->nextToken();
                     node = this->rpn_math();
 
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \")\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::ROUND_BRACE_CLOSE)
-                        throw ApeCompilerException("Expected \")\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
 
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::SEMICOLON)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     node = make_shared<Node>(Node::PRINT, node);
 
-                    this->lexer->nextToken(); //TODO: newly added | CAUTION
+                    this->lexer->nextToken();
                 }
                     break;
                 case KEYWORDS::READ: {
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \"(\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::ROUND_BRACE_OPEN)
-                        throw ApeCompilerException("Expected \"(\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
 
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::IDENTIFIER)
-                        throw ApeCompilerException("Expected identifier");
+                        throw ApeCompilerException("Expected identifier"); //TODO: finish
 
                     string varName = this->lexer->getCurrentToken()->getPayload();
                     node = make_shared<VariableNode>(varName, false);
 
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \")\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::ROUND_BRACE_CLOSE)
-                        throw ApeCompilerException("Expected \")\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
 
                     this->lexer->nextToken();
                     if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     if (dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken())->getOperatorType() !=
                         OPERATORS::SEMICOLON)
-                        throw ApeCompilerException("Expected \";\"");
+                        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
                     node = make_shared<Node>(Node::READ, node);
                 }
                     break;
@@ -287,10 +290,10 @@ shared_ptr<Node> Tokenizer::statement() const {
         default:
             node = make_shared<Node>(Node::EXPRESSION, this->expression());
             if (this->lexer->getCurrentToken()->getType() != Token::SYMBOL)
-                throw ApeCompilerException("Expected \";\"");
+                throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
             shared_ptr<OperatorToken> token = dynamic_pointer_cast<OperatorToken>(this->lexer->getCurrentToken());
             if (token->getOperatorType() != OPERATORS::SEMICOLON)
-                throw ApeCompilerException("Expected \";\"");
+                throw UnexpectedTokenException(this->lexer->getCurrentToken(), ";");
             this->lexer->nextToken();
     }
 
@@ -302,20 +305,20 @@ shared_ptr<Node> Tokenizer::parenExpr() const {
 
     shared_ptr<Token> token = this->lexer->getCurrentToken();
     if (token->getType() != Token::SYMBOL)
-        throw ApeCompilerException("Expected \"(\", got token type: \'" + token->getType());
+        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
     shared_ptr<OperatorToken> keyword = dynamic_pointer_cast<OperatorToken>(token);
     if (keyword->getOperatorType() != OPERATORS::ROUND_BRACE_OPEN)
-        throw ApeCompilerException("Expected \"(\", got \"" + keyword->getPayload() + "\n");
+        throw UnexpectedTokenException(this->lexer->getCurrentToken(), "(");
 
     this->lexer->nextToken();
     node = this->expression();
 
     token = this->lexer->getCurrentToken();
     if (token->getType() != Token::SYMBOL)
-        throw ApeCompilerException("Expected \")\"");
+        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
     keyword = dynamic_pointer_cast<OperatorToken>(token);
     if (keyword->getOperatorType() != OPERATORS::ROUND_BRACE_CLOSE)
-        throw ApeCompilerException("Expected \")\"");
+        throw UnexpectedTokenException(this->lexer->getCurrentToken(), ")");
 
     this->lexer->nextToken();
     return node;
@@ -386,7 +389,7 @@ shared_ptr<Node> Tokenizer::rpn_math() const {
             inputTokens.erase(inputTokens.begin());
             stc.pop();
         } else if (stackItem.first == RPN::RPN_START && inputItem.first == RPN::RPN_ROUND_BRACE_CLOSE) {
-            throw ApeCompilerException("Incorrect arithmetical expression.");
+            throw ApeCompilerException("Incorrect arithmetical expression.");  //TODO: finish errors
         } else if (stackItem.first == RPN::RPN_ROUND_BRACE_OPEN && inputTokens.empty()) {
             throw ApeCompilerException("Incorrect arithmetical expression.");
         } else {
@@ -569,10 +572,10 @@ tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::
 
     switch (input->getType()) {
         case Node::CONST: {
-            if(dynamic_pointer_cast<FloatNode>(input)) resultDataType = VariableNode::DATA_TYPE::FLOAT;
-            if(dynamic_pointer_cast<IntegerNode>(input)) resultDataType = VariableNode::DATA_TYPE::INT;
-            if(dynamic_pointer_cast<BooleanNode>(input)) resultDataType = VariableNode::DATA_TYPE::BOOLEAN;
-            if(dynamic_pointer_cast<StringNode>(input)) resultDataType = VariableNode::DATA_TYPE::STRING;
+            if (dynamic_pointer_cast<FloatNode>(input)) resultDataType = VariableNode::DATA_TYPE::FLOAT;
+            if (dynamic_pointer_cast<IntegerNode>(input)) resultDataType = VariableNode::DATA_TYPE::INT;
+            if (dynamic_pointer_cast<BooleanNode>(input)) resultDataType = VariableNode::DATA_TYPE::BOOLEAN;
+            if (dynamic_pointer_cast<StringNode>(input)) resultDataType = VariableNode::DATA_TYPE::STRING;
         }
             break;
         case Node::MULTIPLY:
