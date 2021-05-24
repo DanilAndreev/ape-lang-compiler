@@ -24,13 +24,13 @@ SOFTWARE.
 
 #include <cmath>
 #include "Compiler.h"
-#include "../Tokenizer/VariableNode.h"
-#include "../Tokenizer/IntegerNode.h"
-#include "../Tokenizer/StringNode.h"
-#include "../Tokenizer/FloatNode.h"
+#include "../Tokenizer/Nodes/VariableNode.h"
+#include "../Tokenizer/Nodes/IntegerNode.h"
+#include "../Tokenizer/Nodes/StringNode.h"
+#include "../Tokenizer/Nodes/FloatNode.h"
 #include "../exceptions/ApeCompilerException.h"
-#include "../Tokenizer/BooleanNode.h"
-#include "../Tokenizer/ConvertNode.h"
+#include "../Tokenizer/Nodes/BooleanNode.h"
+#include "../Tokenizer/Nodes/ConvertNode.h"
 
 Compiler::Compiler() {
     this->address = 0;

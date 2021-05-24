@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "Lexer/Lexer.h"
-#include "Tokenizer/Node.h"
+#include "Tokenizer/Nodes/Node.h"
 #include "Tokenizer/Tokenizer.h"
 #include "exceptions/ApeCompilerException.h"
 #include "Compiler/Compiler.h"

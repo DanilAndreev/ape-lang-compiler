@@ -23,11 +23,11 @@ SOFTWARE.
 */
 
 #include "Tokenizer.h"
-#include "StringNode.h"
-#include "IntegerNode.h"
-#include "FloatNode.h"
-#include "BooleanNode.h"
-#include "ConvertNode.h"
+#include "Nodes/StringNode.h"
+#include "Nodes/IntegerNode.h"
+#include "Nodes/FloatNode.h"
+#include "Nodes/BooleanNode.h"
+#include "Nodes/ConvertNode.h"
 
 map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_START,             0},

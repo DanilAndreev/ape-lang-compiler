@@ -26,7 +26,7 @@ SOFTWARE.
 #define APE_LANG_COMPILER_COMPILER_H
 
 
-#include "../Tokenizer/Node.h"
+#include "../Tokenizer/Nodes/Node.h"
 #include <vector>
 #include <sstream>
 

@@ -27,8 +27,8 @@ SOFTWARE.
 
 #include <memory>
 #include "../Lexer/Lexer.h"
-#include "Node.h"
-#include "VariableNode.h"
+#include "Nodes/Node.h"
+#include "Nodes/VariableNode.h"
 #include "../exceptions/ApeCompilerException.h"
 
 enum RPN {

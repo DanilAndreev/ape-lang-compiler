@@ -31,10 +31,10 @@ SOFTWARE.
 #include <vector>
 #include <utility>
 #include <string>
-#include "Token.h"
-#include "NumberToken.h"
-#include "OperatorToken.h"
-#include "KeywordToken.h"
+#include "Tokens/Token.h"
+#include "Tokens/NumberToken.h"
+#include "Tokens/OperatorToken.h"
+#include "Tokens/KeywordToken.h"
 
 using namespace std;
 
