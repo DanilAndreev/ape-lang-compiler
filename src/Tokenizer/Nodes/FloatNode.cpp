@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "FloatNode.h"
 
+using namespace std;
+
 FloatNode::FloatNode(long double payload): LiteralNode(Node::CONST) {
     this->payload = payload;
 }

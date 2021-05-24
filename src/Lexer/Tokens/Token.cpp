@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "Token.h"
 
+using namespace std;
+
 Token::Token(const Token::TYPE type, const string payload, const int line, const int column) {
     this->type = type;
     this->payload = payload;

@@ -27,10 +27,12 @@ SOFTWARE.
 
 #include "Node.h"
 
-class LiteralNode: public Node {
+class LiteralNode : public Node {
 public:
     explicit LiteralNode(const TYPE type);
-    LiteralNode(const LiteralNode& reference);
+
+    LiteralNode(const LiteralNode &reference);
+
     ~LiteralNode() override;
 };
 

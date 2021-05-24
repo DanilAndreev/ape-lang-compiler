@@ -35,17 +35,22 @@ SOFTWARE.
 #include "Tokens/OperatorToken.h"
 #include "Tokens/KeywordToken.h"
 
+/**
+ * Lexer - class, designed to create tokens from text.
+ * Use Lexer::nextToken to get next token.
+ * @author Danil Andreev
+ */
 class Lexer : public Lexerable {
 protected:
     /// SkippableCharacters - RegExp for skipping characters.
     static std::regex SkippableCharacters;
     /// Symbols - an array of lang symbols/operators. Will be added to set.
-    static std::vector<pair<string, OPERATORS>> Symbols;
+    static std::vector<std::pair<std::string, OPERATORS>> Symbols;
     /// Keywords - set of lang keywords.
-    static std::set<pair<string, KEYWORDS>> Keywords;
+    static std::set<std::pair<std::string, KEYWORDS>> Keywords;
     /// symbols - set of lang symbols and operators, ordered by length DESC.
-    std::set<pair<string, OPERATORS>, bool (*)(const std::pair<string, OPERATORS> &,
-                                               const pair<string, OPERATORS> &)> *symbols;
+    std::set<std::pair<std::string, OPERATORS>, bool (*)(const std::pair<std::string, OPERATORS> &,
+                                               const std::pair<std::string, OPERATORS> &)> *symbols;
     /// symbolsStartCharacters - a set of first characters from symbols set for lexer.
     std::set<char> *symbolsStartCharacters;
     /// currentCharacter - last character got from the input stream.
@@ -61,7 +66,7 @@ protected:
     /// currentToken - last token got from the input stream.
     std::shared_ptr<Token> currentToken;
 public:
-    explicit Lexer(istream &stream);
+    explicit Lexer(std::istream &stream);
 
     Lexer(const Lexer &reference);
 

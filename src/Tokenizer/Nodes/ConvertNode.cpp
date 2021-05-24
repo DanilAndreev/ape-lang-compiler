@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "ConvertNode.h"
 
+using namespace std;
+
 ConvertNode::ConvertNode(const VariableNode::DATA_TYPE dateType, shared_ptr<Node> operand1) : Node(Node::CONVERT, operand1) {
     this->dataType = dateType;
 }

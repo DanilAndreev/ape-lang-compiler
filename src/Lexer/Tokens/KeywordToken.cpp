@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "KeywordToken.h"
 
+using namespace std;
+
 KeywordToken::KeywordToken(KEYWORDS type, string payload, const int line, const int column)
         : Token(Token::KEYWORD, payload, line, column) {
     this->keywordType = type;

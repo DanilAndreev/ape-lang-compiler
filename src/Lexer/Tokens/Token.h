@@ -28,8 +28,6 @@ SOFTWARE.
 #include <string>
 #include <memory>
 
-using namespace std;
-
 /**
  * Token - class designed to store lexemes from Lexer.
  * @author Danil Andreev
@@ -51,21 +49,21 @@ public:
         EMPTY,
     };
 protected:
-    string classname;
+    std::string classname;
     /// type - lexeme type.
     TYPE type;
     /// payload - lexeme payload. Got from input text.
-    string payload;
+    std::string payload;
     /// Token line in input file.
     int line;
     /// Token column in input file.
     int column;
 public:
-    Token(TYPE type, string payload = "", int line = -1, int column = -1);
+    Token(TYPE type, std::string payload = "", int line = -1, int column = -1);
 
     Token(const Token &reference);
 
-    virtual shared_ptr<Token> clone() const;
+    virtual std::shared_ptr<Token> clone() const;
 
 public:
     /**
@@ -78,7 +76,7 @@ public:
      * getType - getter for token payload.
      * @author Danil Andreev
      */
-    virtual string getPayload() const;
+    virtual std::string getPayload() const;
 
     /**
      * getLine - getter for token line in input file.

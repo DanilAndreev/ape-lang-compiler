@@ -32,6 +32,8 @@ SOFTWARE.
 #include "../Tokenizer/Nodes/BooleanNode.h"
 #include "../Tokenizer/Nodes/ConvertNode.h"
 
+using namespace std;
+
 Compiler::Compiler() {
     this->address = 0;
 }

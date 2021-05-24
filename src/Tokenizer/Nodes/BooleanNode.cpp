@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "BooleanNode.h"
 
+using namespace std;
+
 BooleanNode::BooleanNode(bool payload): LiteralNode(Node::CONST) {
     this->payload = payload;
 }

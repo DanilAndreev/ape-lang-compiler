@@ -28,8 +28,6 @@ SOFTWARE.
 #include <regex>
 #include "Token.h"
 
-using namespace std;
-
 /**
  * NumberToken - class designed to store numeric values from Lexer.
  * @author Danil Andreev
@@ -39,17 +37,17 @@ protected:
     /**
      * NumberRegExp - RegExp for number correctness check.
      */
-    static regex NumberRegExp;
+    static std::regex NumberRegExp;
     /**
      * value - stored numeric value.
      */
     long double value;
 public:
-    explicit NumberToken(const string payload, int line = -1, int column = -1);
+    explicit NumberToken(const std::string payload, int line = -1, int column = -1);
 
     NumberToken(const NumberToken &reference);
 
-    virtual shared_ptr<Token> clone() const;
+    virtual std::shared_ptr<Token> clone() const;
 
 public:
     /**

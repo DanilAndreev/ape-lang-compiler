@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "VariableNode.h"
 
+using namespace std;
+
 unsigned int VariableNode::index_counter = 1;
 
 string VariableNode::getDataTypeStr(DATA_TYPE input) {

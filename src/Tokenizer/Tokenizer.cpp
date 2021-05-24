@@ -33,6 +33,8 @@ SOFTWARE.
 #include "../Lexer/Tokens/OperatorToken.h"
 #include "../Lexer/Tokens/NumberToken.h"
 
+using namespace std;
+
 map<RPN, unsigned short> Tokenizer::Priorities = {
         {RPN_START,             0},
         {RPN_ROUND_BRACE_OPEN,  1},

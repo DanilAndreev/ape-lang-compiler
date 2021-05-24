@@ -47,7 +47,7 @@ public:
      */
     long double getPayload() const;
 public:
-    ostream& printNode(ostream& stream) const override;
+    std::ostream& printNode(std::ostream& stream) const override;
 };
 
 

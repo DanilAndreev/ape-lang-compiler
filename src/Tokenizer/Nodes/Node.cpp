@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include <memory>
 
+using namespace std;
+
 Node::Node(const Node::TYPE type, shared_ptr<Node> op1, shared_ptr<Node> op2, shared_ptr<Node> op3) {
     this->type = type;
     this->operand1 = op1;

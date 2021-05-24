@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "StringNode.h"
 
+using namespace std;
+
 StringNode::StringNode(string payload): LiteralNode(Node::CONST) {
     this->payload = payload;
 }

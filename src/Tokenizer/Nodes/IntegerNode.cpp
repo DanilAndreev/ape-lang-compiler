@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "IntegerNode.h"
 
+using namespace std;
+
 IntegerNode::IntegerNode(long long int payload): LiteralNode(Node::CONST) {
     this->payload = payload;
 }

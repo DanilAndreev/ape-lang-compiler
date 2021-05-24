@@ -105,11 +105,11 @@ protected:
      */
     OPERATORS operatorType;
 public:
-    explicit OperatorToken(OPERATORS type, string payload = "", int line = 0, int column = 0);
+    explicit OperatorToken(OPERATORS type, std::string payload = "", int line = 0, int column = 0);
 
     OperatorToken(const OperatorToken &reference);
 
-    virtual shared_ptr<Token> clone() const;
+    virtual std::shared_ptr<Token> clone() const;
 
 public:
     /**

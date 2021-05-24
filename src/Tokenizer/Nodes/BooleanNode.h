@@ -32,22 +32,26 @@ SOFTWARE.
  * BoolNode - class for storing boolean literal nodes.
  * @author Danil Andreev
  */
-class BooleanNode: public LiteralNode {
+class BooleanNode : public LiteralNode {
 protected:
     /// payload of boolean literal.
     bool payload;
 public:
     explicit BooleanNode(bool payload);
-    BooleanNode(const BooleanNode& reference);
+
+    BooleanNode(const BooleanNode &reference);
+
     ~BooleanNode() override;
+
 public:
     /**
      * getPayload - getter for floating point literal payload.
      * @author Danil Andreev
      */
     bool getPayload() const;
+
 public:
-    ostream& printNode(ostream& stream) const override;
+    std::ostream &printNode(std::ostream &stream) const override;
 };
 
 

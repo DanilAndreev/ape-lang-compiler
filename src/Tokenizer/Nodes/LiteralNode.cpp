@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "LiteralNode.h"
 
+using namespace std;
+
 LiteralNode::LiteralNode(const Node::TYPE type): Node(type) {
 }
 
