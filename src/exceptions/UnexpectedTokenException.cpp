@@ -22,19 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef APE_LANG_COMPILER_SYNTAXEXCEPTION_H
-#define APE_LANG_COMPILER_SYNTAXEXCEPTION_H
+#include <sstream>
+#include "UnexpectedTokenException.h"
 
-#include "ApeCompilerException.h"
+using namespace std;
 
-class SyntaxException: public ApeCompilerException {
-protected:
-    int line;
-    int column;
+UnexpectedTokenException::UnexpectedTokenException(std::shared_ptr<Token> got, std::string expected)
+        : CodeException(got, "") {
+    ostringstream text;
+    text << "Unexpected token \"" << got->getPayload() << "\", expected " << expected << ".";
+    this->message = text.str();
+}
 
-public:
+UnexpectedTokenException::UnexpectedTokenException(const UnexpectedTokenException &reference)
+        : CodeException(reference) {
+}
 
-};
-
-
-#endif //APE_LANG_COMPILER_SYNTAXEXCEPTION_H
+UnexpectedTokenException::~UnexpectedTokenException() {
+}

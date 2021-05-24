@@ -22,39 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_LEXERABLE_H
+#define APE_LANG_COMPILER_LEXERABLE_H
 
-using namespace std;
+#include <memory>
+#include "Tokens/Token.h"
 
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+class Lexerable {
+public:
+    /**
+     * nextToken - method, designed to get next token from input stream.
+     * Also sets got token to lexer current token.
+     * @return next token.
+     * @author Danil Andreev
+     */
+    virtual std::shared_ptr <Token> nextToken() = 0;
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
+    /**
+     * getCurrentToken - getter for Lexer current token.
+     * @author Danil Andreev
+     */
+    virtual std::shared_ptr <Token> getCurrentToken() const = 0;
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
+    /**
+     * isEof - returns true if eof flag has been set.
+     * Else returns false.
+     */
+    virtual bool isEof() const = 0;
+};
 
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
-
-int Token::getLine() const {
-    return this->line;
-}
-
-int Token::getColumn() const {
-    return this->column;
-}
+#endif //APE_LANG_COMPILER_LEXERABLE_H

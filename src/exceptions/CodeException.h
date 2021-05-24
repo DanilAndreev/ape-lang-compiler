@@ -22,39 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#ifndef APE_LANG_COMPILER_CODEEXCEPTION_H
+#define APE_LANG_COMPILER_CODEEXCEPTION_H
 
-using namespace std;
+#include <memory>
+#include "ApeCompilerException.h"
+#include "../interfaces/Positionable.h"
 
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
-}
+class CodeException: public ApeCompilerException, public Positionable {
+public:
+    CodeException(int line, int column, std::string message);
+    CodeException(std::shared_ptr<Positionable> target, std::string message);
+    CodeException(const CodeException& reference);
+    ~CodeException() override;
+public:
+    std::string getMessage() const noexcept override;
+};
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
-}
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
-
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
-
-int Token::getLine() const {
-    return this->line;
-}
-
-int Token::getColumn() const {
-    return this->column;
-}
+#endif //APE_LANG_COMPILER_CODEEXCEPTION_H

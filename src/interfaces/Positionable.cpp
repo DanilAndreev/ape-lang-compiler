@@ -22,39 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include "Positionable.h"
 
-using namespace std;
-
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
+Positionable::Positionable(int line, int column) noexcept {
+    this->line = line;
+    this->column = column;
 }
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
+Positionable::Positionable(const Positionable& reference) noexcept {
+    this->line = reference.line;
+    this->column = reference.column;
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
-}
+Positionable::~Positionable() noexcept {}
 
-string Token::getPayload() const {
-    return this->payload;
-}
-
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
-
-int Token::getLine() const {
+int Positionable::getLine() const noexcept {
     return this->line;
 }
 
-int Token::getColumn() const {
+int Positionable::getColumn() const noexcept {
     return this->column;
 }

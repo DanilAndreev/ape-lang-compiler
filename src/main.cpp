@@ -5,12 +5,14 @@
 #include "Tokenizer/Tokenizer.h"
 #include "exceptions/ApeCompilerException.h"
 #include "Compiler/Compiler.h"
+#include "exceptions/CodeException.h"
+#include "exceptions/ReDeclarationException.h"
 
 
 using namespace std;
 
-vector<string> compile(ifstream& fin) {
-    Lexer *lexer = new Lexer(&fin);
+vector<string> compile(ifstream &fin) {
+    Lexerable *lexer = new Lexer(fin);
     Tokenizer *tokenizer = new Tokenizer(lexer);
     shared_ptr<Node> tree = tokenizer->parse();
 
@@ -18,11 +20,11 @@ vector<string> compile(ifstream& fin) {
     tree->print(cout, 0, "root");
 #endif
 
-    shared_ptr<vector<ApeCompilerException>> errors;
+    shared_ptr<vector<shared_ptr<ApeCompilerException>>> errors;
     try {
         errors = get<1>(Tokenizer::validateTree(tree));
-        for (const auto& error: *errors) {
-            cerr << "Compilation error: " << error.getMessage() << endl;
+        for (const auto &error: *errors) {
+            cerr << "Compilation error: " << error->getMessage() << endl;
         }
         if (errors->size())
             exit(-1);
@@ -37,7 +39,7 @@ vector<string> compile(ifstream& fin) {
     tree->print(cout, 0, "root");
 #endif
 
-    Compiler* compiler = new Compiler();
+    Compiler *compiler = new Compiler();
     vector<string> program = compiler->compile(tree);
 
 
@@ -51,48 +53,56 @@ vector<string> compile(ifstream& fin) {
 }
 
 int main(int _argc, char *_argv[]) {
-    vector<string> args(_argv + 1, _argv + _argc);
+    try {
+        vector<string> args(_argv + 1, _argv + _argc);
 
-    string inputFile;
-    string resultFile = "a.ape";
+        string inputFile;
+        string resultFile = "a.ape";
 
-    if (args.empty()) {
-        cerr <<"Not enough arguments, expected: <file> [result] " << endl;
-        return -1;
+        if (args.empty()) {
+            cerr << "Not enough arguments, expected: <file> [result] " << endl;
+            return -1;
+        }
+        inputFile = args[0];
+
+        if (args.size() >= 2)
+            resultFile = args[1];
+
+        if (args.size() > 2) {
+            cerr << "Too many arguments, expected: <file> [result] " << endl;
+            return -1;
+        }
+
+        ifstream fin(inputFile, std::ios::binary);
+
+        if (!fin.is_open()) {
+            cerr << "Failed to open file: \"" << inputFile << "\"" << endl;
+            return -2;
+        }
+
+
+        vector<string> program = compile(fin);
+        fin.close();
+
+        ofstream fout(resultFile);
+        if (!fout.is_open()) {
+            cerr << "Failed to open or create file: \"" << resultFile << "\"" << endl;
+            return -2;
+        }
+
+
+        fout << "[";
+        for (string &item : program) {
+            fout << item << ",";
+        }
+        fout << "]" << endl;
+
+        return 0;
+    } catch (CodeException &e) {
+        cerr << "Compilation error: " << e.getMessage();
+        exit(-1);
+    } catch (ApeCompilerException &e) {
+        cerr << "Compilation error: " << e.getMessage();
+        exit(-1);
     }
-    inputFile = args[0];
-
-    if (args.size() >= 2)
-        resultFile = args[1];
-
-    if (args.size() > 2) {
-        cerr <<"Too many arguments, expected: <file> [result] " << endl;
-        return -1;
-    }
-
-    ifstream fin(inputFile, std::ios::binary);
-
-    if (!fin.is_open()) {
-        cerr << "Failed to open file: \"" << inputFile << "\"" << endl;
-        return -2;
-    }
-
-
-    vector<string> program = compile(fin);
-    fin.close();
-
-    ofstream fout(resultFile);
-    if (!fout.is_open()) {
-        cerr << "Failed to open or create file: \"" << resultFile << "\"" << endl;
-        return -2;
-    }
-
-
-    fout << "[";
-    for (string& item : program) {
-        fout << item << ",";
-    }
-    fout << "]" << endl;
-
-    return 0;
 }

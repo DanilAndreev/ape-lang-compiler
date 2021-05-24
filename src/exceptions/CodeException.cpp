@@ -22,39 +22,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Token.h"
+#include <sstream>
+#include "CodeException.h"
 
 using namespace std;
 
-Token::Token(const Token::TYPE type, const string payload, const int line, const int column)
-        : Positionable(line, column) {
-    this->type = type;
-    this->payload = payload;
-    this->classname = "Token";
+CodeException::CodeException(int line, int column, const std::string message)
+        : ApeCompilerException(message),
+          Positionable(line, column) {
 }
 
-Token::Token(const Token &reference) : Positionable(reference) {
-    this->type = reference.type;
-    this->payload = reference.payload;
-    this->classname = reference.classname;
+CodeException::CodeException(const CodeException &reference)
+        : ApeCompilerException(reference),
+          Positionable(reference) {
 }
 
-Token::TYPE Token::getType() const {
-    return this->type;
+CodeException::~CodeException() {
 }
 
-string Token::getPayload() const {
-    return this->payload;
+std::string CodeException::getMessage() const noexcept {
+    ostringstream text;
+    text << this->message << " " << this->line << ":" << this->column;
+    return text.str();
 }
 
-shared_ptr<Token> Token::clone() const {
-    return make_shared<Token>(*this);
-}
-
-int Token::getLine() const {
-    return this->line;
-}
-
-int Token::getColumn() const {
-    return this->column;
+CodeException::CodeException(std::shared_ptr<Positionable> target, std::string message)
+        : Positionable(*target),
+          ApeCompilerException(message) {
 }

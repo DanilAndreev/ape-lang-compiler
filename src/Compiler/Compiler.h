@@ -57,7 +57,7 @@ public:
         CONVERT,
     };
 protected:
-    vector<string> program;
+    std::vector<std::string> program;
     unsigned long long address;
 public:
     explicit Compiler();
@@ -65,9 +65,9 @@ public:
     template <class T>
     void generate(T command);
 
-    vector<string> compile(shared_ptr<Node> tree);
+    std::vector<std::string> compile(std::shared_ptr<Node> tree);
 protected:
-    void compile_tree(shared_ptr<Node> tree);
+    void compile_tree(std::shared_ptr<Node> tree);
 };
 
 

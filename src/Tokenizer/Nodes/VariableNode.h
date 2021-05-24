@@ -47,10 +47,10 @@ public:
 
 public:
     static unsigned int nextIndex();
-    static string getDataTypeStr(DATA_TYPE input);
+    static std::string getDataTypeStr(DATA_TYPE input);
 protected:
     /// identifier - variable identifier string
-    string identifier;
+    std::string identifier;
     /// isFunc - if true, this variable refers to function.
     bool isFunc;
     DATA_TYPE dataType;
@@ -58,9 +58,9 @@ protected:
     bool declaration;
     unsigned int index;
 public:
-    explicit VariableNode(string &identifier, bool isFunc = false, shared_ptr<Node> operand1 = nullptr);
+    explicit VariableNode(int line, int column, std::string &identifier, bool isFunc = false, std::shared_ptr<Node> operand1 = nullptr);
 
-    explicit VariableNode(string &identifier, shared_ptr<Node> operand1 = nullptr);
+    explicit VariableNode(int line, int column, std::string &identifier, std::shared_ptr<Node> operand1 = nullptr);
 
     VariableNode(const VariableNode &reference);
 
@@ -71,7 +71,7 @@ public:
      * getIdentifier - getter for variable identifier string.
      * @author Danil Andreev
      */
-    string getIdentifier() const;
+    std::string getIdentifier() const;
 
     unsigned int getIndex() const;
 
@@ -117,7 +117,7 @@ public:
     VariableNode *setIsFunction(bool isFunc);
 
 public:
-    ostream &printNode(ostream &stream) const override;
+    std::ostream &printNode(std::ostream &stream) const override;
 };
 
 

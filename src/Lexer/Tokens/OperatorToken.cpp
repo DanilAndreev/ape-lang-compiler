@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include "OperatorToken.h"
 
+using namespace std;
+
 OperatorToken::OperatorToken(OPERATORS type, string payload, const int line, const int token)
         : Token(Token::SYMBOL, payload, line, token) {
     this->operatorType = type;

@@ -25,17 +25,16 @@ SOFTWARE.
 #ifndef APE_LANG_COMPILER_NODE_H
 #define APE_LANG_COMPILER_NODE_H
 
+#include "../../interfaces/Positionable.h"
 #include <iostream>
 #include <memory>
-
-using namespace std;
 
 /**
  * Node - class for storing Syntax tree node.
  * @see https://en.wikipedia.org/wiki/Abstract_syntax_tree
  * @author Danil Andreev
  */
-class Node {
+class Node : public Positionable {
 public:
     /**
      * TYPE - Node types enumeration.
@@ -87,21 +86,23 @@ protected:
     /**
      * operand1 - first nested operand of the node.
      */
-    shared_ptr<Node> operand1;
+    std::shared_ptr<Node> operand1;
     /**
      * operand2 - second nested operand of the node.
      */
-    shared_ptr<Node> operand2;
+    std::shared_ptr<Node> operand2;
     /**
      * operand3 - first nested operand of the node.
      */
-    shared_ptr<Node> operand3;
+    std::shared_ptr<Node> operand3;
 public:
     Node(
+            int line,
+            int column,
             const TYPE type,
-            shared_ptr<Node> operand1 = nullptr,
-            shared_ptr<Node> operand2 = nullptr,
-            shared_ptr<Node> operand3 = nullptr
+            std::shared_ptr<Node> operand1 = nullptr,
+            std::shared_ptr<Node> operand2 = nullptr,
+            std::shared_ptr<Node> operand3 = nullptr
     );
 
     Node(const Node &reference);
@@ -119,19 +120,19 @@ public:
      * getOperand1 - getter for node first operand.
      * @author Danil Andreev
      */
-    const shared_ptr<Node> getOperand1() const;
+    const std::shared_ptr<Node> getOperand1() const;
 
     /**
      * getOperand2 - getter for node second operand.
      * @author Danil Andreev
      */
-    const shared_ptr<Node> getOperand2() const;
+    const std::shared_ptr<Node> getOperand2() const;
 
     /**
      * getOperand3 - getter for node third operand.
      * @author Danil Andreev
      */
-    const shared_ptr<Node> getOperand3() const;
+    const std::shared_ptr<Node> getOperand3() const;
 
 public:
     /**
@@ -146,24 +147,24 @@ public:
      * @paran operand - Target node for nesting.
      * @author Danil Andreev
      */
-    Node *setOperand1(const shared_ptr<Node> operand);
+    Node *setOperand1(const std::shared_ptr<Node> operand);
 
     /**
      * setOperand2 - setter for node second operand.
      * @paran operand - Target node for nesting.
      * @author Danil Andreev
      */
-    Node *setOperand2(const shared_ptr<Node> operand);
+    Node *setOperand2(const std::shared_ptr<Node> operand);
 
     /**
      * setOperand3 - setter for node third operand.
      * @paran operand - Target node for nesting.
      * @author Danil Andreev
      */
-    Node *setOperand3(const shared_ptr<Node> operand);
+    Node *setOperand3(const std::shared_ptr<Node> operand);
 
 public:
-    virtual string getNodeTypeStr() const;
+    virtual std::string getNodeTypeStr() const;
 
     /**
      * destructTree - calls destructTree methods for all nested operands and deletes them.
@@ -176,12 +177,12 @@ public:
      * print - method designed for printing tree structure to stream.
      * @param stream - stream object for printing.
      */
-    ostream &print(ostream &stream = cout, int shift = 0, string message = "") const;
+    std::ostream &print(std::ostream &stream = std::cout, int shift = 0, std::string message = "") const;
 
-    virtual ostream &printNode(ostream &stream) const;
+    virtual std::ostream &printNode(std::ostream &stream) const;
 
 public:
-    friend ostream &operator<<(ostream &stream, const Node &node);
+    friend std::ostream &operator<<(std::ostream &stream, const Node &node);
 };
 
 

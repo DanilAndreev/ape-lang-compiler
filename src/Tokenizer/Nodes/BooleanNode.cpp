@@ -24,11 +24,13 @@ SOFTWARE.
 
 #include "BooleanNode.h"
 
-BooleanNode::BooleanNode(bool payload): LiteralNode(Node::CONST) {
+using namespace std;
+
+BooleanNode::BooleanNode(const int line, const int column, bool payload) : LiteralNode(line, column, Node::CONST) {
     this->payload = payload;
 }
 
-BooleanNode::BooleanNode(const BooleanNode &reference): LiteralNode(reference) {
+BooleanNode::BooleanNode(const BooleanNode &reference) : LiteralNode(reference) {
     this->payload = reference.payload;
 }
 

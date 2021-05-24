@@ -26,6 +26,8 @@ SOFTWARE.
 #include "NumberToken.h"
 #include <iostream>
 
+using namespace std;
+
 regex NumberToken::NumberRegExp = regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
 NumberToken::NumberToken(const string payload, const int line, const int column)

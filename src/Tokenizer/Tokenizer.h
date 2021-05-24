@@ -26,7 +26,10 @@ SOFTWARE.
 #define APE_LANG_COMPILER_TOKENIZER_H
 
 #include <memory>
-#include "../Lexer/Lexer.h"
+#include <vector>
+#include <map>
+#include "../Lexer/Tokens/Token.h"
+#include "../Lexer/Lexerable.h"
 #include "Nodes/Node.h"
 #include "Nodes/VariableNode.h"
 #include "../exceptions/ApeCompilerException.h"
@@ -54,51 +57,55 @@ enum RPN {
 
 class Tokenizer {
 protected:
-    Lexer *lexer;
-    static map<RPN, unsigned short> Priorities;
+    Lexerable *lexer;
+    static std::map<RPN, unsigned short> Priorities;
 protected:
-    typedef pair<const string, shared_ptr<VariableNode>> ScopeItem;
-    typedef map<const string, shared_ptr<VariableNode>> Scope;
-public: // TODO: Change to protected
-    static tuple<shared_ptr<Node>, shared_ptr<vector<ApeCompilerException>>, VariableNode::DATA_TYPE> validateTree(
-            const shared_ptr<Node> input,
-            shared_ptr<Scope> scope = nullptr,
-            shared_ptr<Scope> outerScope = nullptr,
-            shared_ptr<vector<ApeCompilerException>> errors = nullptr
+    typedef std::pair<const std::string, std::shared_ptr<VariableNode>> ScopeItem;
+    typedef std::map<const std::string, std::shared_ptr<VariableNode>> Scope;
+public:
+    static std::tuple<
+            std::shared_ptr<Node>,
+            std::shared_ptr<std::vector<std::shared_ptr<ApeCompilerException>>>,
+            VariableNode::DATA_TYPE
+    > validateTree(
+            const std::shared_ptr<Node> input,
+            std::shared_ptr<Scope> scope = nullptr,
+            std::shared_ptr<Scope> outerScope = nullptr,
+            std::shared_ptr<std::vector<std::shared_ptr<ApeCompilerException>>> errors = nullptr
     );
 
 public:
-    explicit Tokenizer(Lexer *lexer);
+    explicit Tokenizer(Lexerable *lexer);
 
-    explicit Tokenizer(Lexer &lexer);
+    explicit Tokenizer(Lexerable &lexer);
 
     Tokenizer(const Tokenizer &reference);
 
     ~Tokenizer();
 
 public:
-    shared_ptr<Node> parse();
+    std::shared_ptr<Node> parse();
 
 protected:
-    shared_ptr<Node> statement() const;
+    std::shared_ptr<Node> statement() const;
 
-    shared_ptr<Node> parenExpr() const;
+    std::shared_ptr<Node> parenExpr() const;
 
-    shared_ptr<Node> argumentsDeclaration() const;
+    std::shared_ptr<Node> argumentsDeclaration() const;
 
-    shared_ptr<Node> arguments() const;
+    std::shared_ptr<Node> arguments() const;
 
-    shared_ptr<Node> expression() const;
+    std::shared_ptr<Node> expression() const;
 
-    shared_ptr<VariableNode> declaration(bool initialization = true, bool semicolon = true) const;
+    std::shared_ptr<VariableNode> declaration(bool initialization = true, bool semicolon = true) const;
 
     /**
      * rpn_math - parses arithmetical and logical expression.
      * @author Danil Andreev
      */
-    shared_ptr<Node> rpn_math() const;
+    std::shared_ptr<Node> rpn_math() const;
 
-    pair<RPN, shared_ptr<Node>> rpn_term() const;
+    std::pair<RPN, std::shared_ptr<Node>> rpn_term() const;
 };
 
 

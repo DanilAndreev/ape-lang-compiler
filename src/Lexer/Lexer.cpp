@@ -23,8 +23,9 @@ SOFTWARE.
 */
 
 #include "Lexer.h"
-#include <iostream>
-#include <locale>
+#include "../exceptions/ApeCompilerException.h"
+#include "Tokens/NumberToken.h"
+#include "../exceptions/CodeException.h"
 
 using namespace std;
 
@@ -86,12 +87,12 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
         pair<string, KEYWORDS>("boolean", KEYWORDS::BOOLEAN)
 };
 
-Lexer::Lexer(istream *const stream) {
-    this->stream = stream;
-    this->currentToken = nullptr;
-    this->eof = false;
+Lexer::Lexer(istream &input_stream) : stream(input_stream) {
     this->line = 0;
     this->column = 0;
+    this->lineText = string();
+    this->currentToken = nullptr;
+    this->currentCharacter = '\0';
 
     this->symbols = new set<pair<string, OPERATORS>, bool (*)(const pair<string, OPERATORS> &,
                                                               const pair<string, OPERATORS> &)>(
@@ -108,30 +109,85 @@ Lexer::Lexer(istream *const stream) {
 }
 
 Lexer::Lexer(const Lexer &reference) : Lexer(reference.stream) {
-    this->currentToken = reference.currentToken;
-    this->eof = reference.eof;
     this->line = reference.line;
     this->column = reference.column;
+    this->lineText = reference.lineText;
+    this->currentToken = reference.currentToken;
+    this->currentCharacter = reference.currentCharacter;
 }
 
 Lexer::~Lexer() {
-    delete this->symbols;
-    delete this->symbolsStartCharacters;
-    this->currentToken.reset();
 }
 
-Token *Lexer::getNextToken() {
+std::shared_ptr<Token> Lexer::nextToken() {
+    shared_ptr<Token> result = this->getNextToken();
+    this->currentToken = result->clone();
+    //TODO: check if custom EOF  is deprecated.
+#ifndef NDEBUG
+    cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\"; "
+         << result->getLine() + 1 << ":" << result->getColumn() + 1 << endl;
+#endif
+    return result;
+}
+
+std::shared_ptr<Token> Lexer::getCurrentToken() const {
+    return this->currentToken;
+}
+
+bool Lexer::isEof() const {
+    return this->stream.eof();
+}
+
+char Lexer::get() {
+    char symbol = static_cast<char>(this->stream.get());
+    if (symbol == '\n') {
+        this->column = 0;
+        this->line++;
+        this->lineText.clear();
+    } else {
+        this->column++;
+        this->lineText += symbol;
+    }
+    this->currentCharacter = symbol;
+    return symbol;
+}
+
+void Lexer::get(char &input) {
+    input = this->get();
+}
+
+std::string Lexer::get(size_t length) {
+    if (!length) return "";
+    string buffer;
+    for (size_t i = 0; i < length && !this->stream.eof(); i++) {
+        buffer += static_cast<char>(this->get());
+    }
+    return buffer;
+}
+
+std::string Lexer::oversee(std::size_t length) {
+    if (!length) return "";
+    char current = this->currentCharacter;
+    int currentLine = this->line;
+    int currentColumn = this->column;
+    string buffer = this->get(length);
+    this->stream.seekg(-((long) buffer.length()), ios_base::cur);
+    this->currentCharacter = current;
+    this->column = currentColumn;
+    this->line = currentLine;
+    return buffer;
+}
+
+std::shared_ptr<Token> Lexer::getNextToken() {
     char character;
+    if (stream.eof()) return make_shared<Token>(Token::EOFILE);
 
-    if (stream->eof()) return new Token(Token::TYPE::EOFILE);
-
-    // Skipping skippable characters.
-    do {
+    character = this->currentCharacter;
+    while ((!stream.eof() && this->isCharacterSkipable(character)) || character == '\0') {
         this->get(character);
-    } while (!stream->eof() && this->isCharacterSkippable(character));
+    }
 
-    if (stream->eof()) return new Token(Token::TYPE::EOFILE);
-    this->unget();
+    if (stream.eof()) return make_shared<Token>(Token::TYPE::EOFILE);
 
     // Determining token type
     if (isdigit(character)) {
@@ -141,35 +197,25 @@ Token *Lexer::getNextToken() {
     } else if (isalpha(character)) {
         return this->readIdentifier();
     } else {
-        throw exception();
+        throw CodeException(this->line, this->column, "Unexpected lexeme.");
     }
 }
 
-
-shared_ptr<Token> Lexer::nextToken() {
-    Token *result = this->getNextToken();
-    this->currentToken = result->clone();
-    this->eof = false;
-    if (this->currentToken->getType() == Token::TYPE::EOFILE)
-        this->eof = true;
-#ifndef NDEBUG
-    cout << "Lexer: got token: " << result->getType() << " | payload: \"" << result->getPayload() << "\"; "
-         << result->getLine() + 1 << ":" << result->getColumn() + 1 << endl;
-#endif
-    return shared_ptr<Token>(result);
+bool Lexer::isCharacterSkipable(const char character) {
+    return static_cast<bool>(iscntrl(character)) || regex_search(&character, this->SkippableCharacters);
 }
 
-NumberToken *Lexer::readNumber() {
+std::shared_ptr<Token> Lexer::readNumber() {
     const int tokenLine = this->line;
-    const int tokenColumn = this->column;
+    const int tokenColumn = this->column - 1;
 
     bool hasDot = false;
     bool hasE = false;
 
-    string buffer = "";
-    char character = this->get();
+    string buffer;
+    char character = this->currentCharacter;
 
-    while (!this->stream->eof()) {
+    while (!this->stream.eof()) {
         bool error = false;
         // Checking number structure
         if (character == L'.' && !hasDot && !hasE) {
@@ -186,96 +232,74 @@ NumberToken *Lexer::readNumber() {
             buffer += character;
             this->get(character);
         } else {
-            this->unget();
-            // Rolling back to last correct number
-            bool cleared = false;
-            while (!cleared) {
-                if (!isdigit(buffer.back())) {
-                    buffer.erase(buffer.length() - 1, 1);
-                    this->unget();
-                } else {
-                    cleared = true;
-                }
-            }
             break;
         }
     }
 
-    return new NumberToken(buffer, tokenLine, tokenColumn);
+    return make_shared<NumberToken>(buffer, tokenLine, tokenColumn);
 }
 
-Token *Lexer::readIdentifier() {
+std::shared_ptr<Token> Lexer::readIdentifier() {
     const int tokenLine = this->line;
-    const int tokenColumn = this->column;
+    const int tokenColumn = this->column - 1;
 
-    string buffer = "";
-    char character = this->get();
+    string buffer;
+    char character = this->currentCharacter;
 
-    while (!this->stream->eof() && isalnum(character)) {
+    while (!this->stream.eof() && isalnum(character)) {
         buffer += character;
         this->get(character);
     }
-    if (!this->stream->eof()) this->unget();
 
     for (const pair<string, KEYWORDS> item : this->Keywords) {
         if (item.first == buffer)
-            return new KeywordToken(item.second, buffer, tokenLine, tokenColumn);
+            return make_shared<KeywordToken>(item.second, buffer, tokenLine, tokenColumn);
     }
 
-    return new Token(Token::TYPE::IDENTIFIER, buffer, tokenLine, tokenColumn);
+    return make_shared<Token>(Token::TYPE::IDENTIFIER, buffer, tokenLine, tokenColumn);
+
 }
 
-Token *Lexer::readSymbol() {
+std::shared_ptr<Token> Lexer::readSymbol() {
     const int tokenLine = this->line;
-    const int tokenColumn = this->column;
+    const int tokenColumn = this->column - 1;
 
-    string buffer;
-    size_t length = 0;
+    const string start(1, this->currentCharacter);
     for (const pair<string, OPERATORS> &item : *this->symbols) {
-        const string item_str = item.first;
-        if (length != item_str.length()) {
-            long shift = (long) (buffer.length() * sizeof(char)) * -1;
-            this->stream->seekg(shift, ios::cur);
-            length = item_str.length();
-            buffer = this->getFromStream(length);
-        }
-        if (item_str == buffer) {
-            if (buffer == "\"" || buffer == "'") {
-                this->unget();
-                return this->readString();
-            }
-            if (buffer == "\n")
-                return new Token(Token::TYPE::LINEBREAK, buffer, tokenLine, tokenColumn);
-            return new OperatorToken(item.second, buffer, tokenLine, tokenColumn);
+        const string itemStr = item.first;
+
+        const string buffer = start + this->oversee(itemStr.length() - 1);
+        if (itemStr == buffer) {
+            this->get(itemStr.length());
+            if (itemStr == "\n")
+                return make_shared<Token>(Token::TYPE::LINEBREAK, itemStr, tokenLine, tokenColumn);
+            return make_shared<OperatorToken>(item.second, itemStr, tokenLine, tokenColumn);
         }
     }
-    for (size_t i = 0; i < length; i++)
-        this->unget();
-
-    wchar_t character = this->get();
-    return new Token(Token::TYPE::UNSUPPORTED, "" + character, tokenLine, tokenColumn);
+    string character;
+    character += this->get();
+    return make_shared<Token>(Token::TYPE::UNSUPPORTED, character, tokenLine, tokenColumn);
 }
 
-Token *Lexer::readString() {
+std::shared_ptr<Token> Lexer::readString() {
     const int tokenLine = this->line;
-    const int tokenColumn = this->column;
+    const int tokenColumn = this->column - 1;
 
     string buffer;
     const char brace = this->get();
     char character;
-    while (!this->stream->eof()) {
+    while (!this->stream.eof()) {
         this->get(character);
         if (character == brace)
             break;
 
         if (character == '\n') {
-            this->unget();
-            return new Token(Token::TYPE::STRING, buffer, tokenLine, tokenColumn);
+            return make_shared<Token>(Token::TYPE::STRING, buffer, tokenLine, tokenColumn);
         }
         if (character == '\\') {
             char next = this->get();
             if (next == EOF)
-                throw new exception();
+                throw CodeException(tokenLine, tokenColumn, "String literal has no ending.");
 
             switch (next) {
                 case 'n':
@@ -294,65 +318,5 @@ Token *Lexer::readString() {
             buffer += character;
         }
     }
-    return new Token(Token::TYPE::STRING, buffer, tokenLine, tokenColumn);
+    return make_shared<Token>(Token::TYPE::STRING, buffer, tokenLine, tokenColumn);
 }
-
-bool Lexer::isCharacterSkippable(const char character) {
-    return static_cast<bool>(iscntrl(character)) || regex_search(&character, this->SkippableCharacters);
-}
-
-string Lexer::getFromStream(size_t length) {
-    string buffer;
-    for (size_t i = 0; i < length; i++) {
-        if (this->stream->peek() == EOF)
-            break;
-        buffer += this->get();
-    }
-    return buffer;
-}
-
-shared_ptr<Token> Lexer::getCurrentToken() const {
-    return shared_ptr<Token>(this->currentToken);
-}
-
-bool Lexer::isEof() const {
-    return this->eof;
-}
-
-char Lexer::get() {
-    char character = this->stream->get();
-    if (character == '\n') {
-        this->line++;
-        this->lines_length.push(this->column + 1);
-        this->column = 0;
-    } else {
-        this->column++;
-    }
-    return character;
-}
-
-void Lexer::get(char &input) {
-    input = this->get();
-}
-
-void Lexer::unget() {
-    this->stream->unget();
-    this->column--;
-    //moveLinesCounterBack(); //TODO: finish
-}
-
-void Lexer::moveLinesCounterBack(long shift) {
-    shift = abs(shift);
-    this->column -= shift;
-    while (this->column < 0) {
-        if ((this->lines_length.size() && this->column >= this->lines_length.top())) {
-            this->column = this->lines_length.top();
-            this->lines_length.pop();
-        }
-        if (this->line)
-            this->line--;
-    }
-}
-
-
-

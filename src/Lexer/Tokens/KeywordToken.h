@@ -65,11 +65,11 @@ protected:
      */
     KEYWORDS keywordType;
 public:
-    explicit KeywordToken(KEYWORDS type, string payload = "", int line = 0, int column = 0);
+    explicit KeywordToken(KEYWORDS type, std::string payload = "", int line = 0, int column = 0);
 
     KeywordToken(const KeywordToken &reference);
 
-    virtual shared_ptr<Token> clone() const;
+    virtual std::shared_ptr<Token> clone() const;
 
 public:
     /**

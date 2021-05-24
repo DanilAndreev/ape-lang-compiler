@@ -37,7 +37,7 @@ protected:
     /// payload - integer literal payload.
     long long payload;
 public:
-    explicit IntegerNode(long long payload);
+    explicit IntegerNode(int line, int column, long long payload);
     IntegerNode(IntegerNode& reference);
     ~IntegerNode() override;
 public:
@@ -47,7 +47,7 @@ public:
      */
     virtual long long getPayload() const;
 public:
-    ostream& printNode(ostream& stream) const override;
+    std::ostream& printNode(std::ostream& stream) const override;
 };
 
 

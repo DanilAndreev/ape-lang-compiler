@@ -35,9 +35,9 @@ SOFTWARE.
 class StringNode: public LiteralNode {
 protected:
     /// Literal payload
-    string payload;
+    std::string payload;
 public:
-    explicit StringNode(string payload);
+    explicit StringNode(int line, int column, std::string payload);
     StringNode(const StringNode& reference);
     ~StringNode() override;
 public:
@@ -45,9 +45,9 @@ public:
      * getPayload - getter for literal node payload.
      * @author Danil Andreev
      */
-    virtual string getPayload() const;
+    virtual std::string getPayload() const;
 public:
-    ostream& printNode(ostream& stream) const override;
+    std::ostream& printNode(std::ostream& stream) const override;
 };
 
 
