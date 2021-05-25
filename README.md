@@ -23,7 +23,7 @@ DoBlock1 = DoBlock
 DoBlock2 = DoBlock
 ForStatement = for ‘(’ IndExpr ‘;’ BoolExpr ‘;’ IndExpr ‘)’ DoBlock
 WhileStatement = while ‘(’ BoolExpr ‘)’ DoBlock
-WhileStatement = do DoBlock while ‘(’ BoolExpr ‘)’
+DoWhileStatement = do DoBlock while ‘(’ BoolExpr ‘)’
 IndExpr = Type Ident ’=’ BoolExpression
 ArithmExpression1 = BoolExpr
 ArithmExpression2 = BoolExpr
