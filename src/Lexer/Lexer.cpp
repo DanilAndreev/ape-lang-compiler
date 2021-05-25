@@ -84,7 +84,7 @@ set<pair<string, KEYWORDS>> Lexer::Keywords = set<pair<string, KEYWORDS>>{
         pair<string, KEYWORDS>("int", KEYWORDS::INT),
         pair<string, KEYWORDS>("float", KEYWORDS::FLOAT),
         pair<string, KEYWORDS>("string", KEYWORDS::STRING),
-        pair<string, KEYWORDS>("boolean", KEYWORDS::BOOLEAN)
+        pair<string, KEYWORDS>("bool", KEYWORDS::BOOLEAN)
 };
 
 Lexer::Lexer(istream &input_stream) : stream(input_stream) {

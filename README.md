@@ -13,9 +13,103 @@
     </div>   
 </a>
 
-### Ape Lang
+## Ape Lang
 
+### Overview
+
+### Operators
+
+
+### Examples
+
+1. ##### Variables declaration:
+    ```c++
+    {
+        int a;
+        int b = 10;
+        float c = 10.0;
+        bool d = true;
+    }
+    ```
+2. ##### Print command.
+   ```c++
+   {
+       print(true);
+       print(2 + 2);
+       print(1 < 2);
+   }
+   ```
+3. ##### If statement:
+    ```c++
+    {
+        if (1 < 2) {
+            print(true);
+        }
+    
+        if (1 < 2) {
+            print(true);
+        } else {
+            print(false);
+        }
+    }
+    ```
+4. ##### While loop:
+    ```c++
+    {
+        while (true) {
+            print(true);
+        }
+    }
+    ```
+5. ##### Do while loop:
+    ```c++
+    {
+        do {
+            print(true);
+        } while (true);
+    }
+    ```
+6. ##### For loop:
+   ```c++
+   {
+       for (int i = 0; i < 10; i = i + 1) {
+           print(i);
+       }
+   }
+   ```
+7. ##### Automatic data type conversion:
+   ```c++
+   {
+       int a = true;
+       print(a);
+   
+       float b = a;
+       print(b);
+   
+       bool c = 10;
+       print(c);
+   }
+   ```
+   Output:
+   ```
+   1
+   1.0
+   True
+   ```
+8. ##### Right-associative operations (power):
+   ```c++
+   {
+       print(2 ^ 2 ^ 3);
+       print((2 ^ 2) ^ 3);
+   }
+   ```
+   Output:
+   ```
+   256
+   64
+   ```
 ### Language grammar
+
 ```
 ProgBody = ’{’ StatementList ’}’
 IfStatement = if ‘(‘ BoolExpr ‘)’ DoBlock1 [else DoBlock2]
@@ -82,3 +176,7 @@ WhiteSpace = ’ ’ | ’\t’
 EndOfLine = ’\n’ | ’\r’ | ’\r\n’ | ’\n\r’
 EndOfFile = \0
 ```
+
+## Author
+
+Danil Andreev | danssg08@gmail.com
