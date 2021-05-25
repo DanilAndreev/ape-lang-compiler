@@ -36,13 +36,13 @@ public:
      * @return next token.
      * @author Danil Andreev
      */
-    virtual std::shared_ptr <Token> nextToken() = 0;
+    virtual std::shared_ptr<Token> nextToken() = 0;
 
     /**
      * getCurrentToken - getter for Lexer current token.
      * @author Danil Andreev
      */
-    virtual std::shared_ptr <Token> getCurrentToken() const = 0;
+    virtual std::shared_ptr<Token> getCurrentToken() const = 0;
 
     /**
      * isEof - returns true if eof flag has been set.

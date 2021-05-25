@@ -29,18 +29,40 @@ SOFTWARE.
 #include "Node.h"
 #include "VariableNode.h"
 
+/**
+ * ConvertNode - AST node for data type conversion.
+ * @class
+ * @author Danil Andreev
+ */
 class ConvertNode : public Node {
 protected:
+    /// dataType - target data type after conversion.
     VariableNode::DATA_TYPE dataType;
 public:
-    explicit ConvertNode(int line, int column, const VariableNode::DATA_TYPE dateType, std::shared_ptr<Node> operand1 = nullptr);
-    ConvertNode(const ConvertNode& reference);
+    explicit ConvertNode(int line, int column, const VariableNode::DATA_TYPE dateType,
+                         std::shared_ptr<Node> operand1 = nullptr);
+
+    ConvertNode(const ConvertNode &reference);
+
     ~ConvertNode() override;
+
 public:
+    /**
+     * getDataType - getter for target data type.
+     * @return Data type after conversion.
+     * @author Danil Andreev
+     */
     VariableNode::DATA_TYPE getDataType() const;
-    ConvertNode* setDataType(const VariableNode::DATA_TYPE type);
+
+    /**
+     * setDataType - sets target data type.
+     * @param type - Conversion data type.
+     * @author Danil Andreev
+     */
+    ConvertNode *setDataType(const VariableNode::DATA_TYPE type);
+
 public:
-    std::ostream& printNode(std::ostream& stream) const override;
+    std::ostream &printNode(std::ostream &stream) const override;
 };
 
 

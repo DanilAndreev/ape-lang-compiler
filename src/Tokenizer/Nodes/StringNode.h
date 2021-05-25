@@ -29,25 +29,30 @@ SOFTWARE.
 #include "LiteralNode.h"
 
 /**
- * StringNode - class for string literal node storage.
+ * ConvertNode - AST node for storing string literal.
+ * @class
  * @author Danil Andreev
  */
-class StringNode: public LiteralNode {
+class StringNode : public LiteralNode {
 protected:
-    /// Literal payload
+    /// payload - literal payload.
     std::string payload;
 public:
     explicit StringNode(int line, int column, std::string payload);
-    StringNode(const StringNode& reference);
+
+    StringNode(const StringNode &reference);
+
     ~StringNode() override;
+
 public:
     /**
      * getPayload - getter for literal node payload.
      * @author Danil Andreev
      */
     virtual std::string getPayload() const;
+
 public:
-    std::ostream& printNode(std::ostream& stream) const override;
+    std::ostream &printNode(std::ostream &stream) const override;
 };
 
 

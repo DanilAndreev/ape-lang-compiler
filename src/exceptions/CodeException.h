@@ -29,12 +29,21 @@ SOFTWARE.
 #include "ApeCompilerException.h"
 #include "../interfaces/Positionable.h"
 
-class CodeException: public ApeCompilerException, public Positionable {
+/**
+ * CodeException - exception class for errors in code. Contains error localization.
+ * @class
+ * @author Danil Andreev
+ */
+class CodeException : public ApeCompilerException, public Positionable {
 public:
     CodeException(int line, int column, std::string message);
+
     CodeException(std::shared_ptr<Positionable> target, std::string message);
-    CodeException(const CodeException& reference);
+
+    CodeException(const CodeException &reference);
+
     ~CodeException() override;
+
 public:
     std::string getMessage() const noexcept override;
 };

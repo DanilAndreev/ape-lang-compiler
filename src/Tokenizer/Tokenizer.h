@@ -34,6 +34,11 @@ SOFTWARE.
 #include "Nodes/VariableNode.h"
 #include "../exceptions/ApeCompilerException.h"
 
+/**
+ * RPN - enumeration for RPN interpreter.
+ * @enum
+ * @author Danil Andreev
+ */
 enum RPN {
     RPN_START,
     RPN_END,
@@ -55,14 +60,35 @@ enum RPN {
     RPN_OPERAND,
 };
 
+/**
+ * Tokenizer - class for building Abstract Syntax Tree from lexemes.
+ * @class
+ * @author Danil Andreev
+ */
 class Tokenizer {
 protected:
-    Lexerable *lexer;
+    /// Priorities - RPN operators priorities.
     static std::map<RPN, unsigned short> Priorities;
 protected:
-    typedef std::pair<const std::string, std::shared_ptr<VariableNode>> ScopeItem;
+    /// lexer - pointer to lexer.
+    Lexerable *lexer;
+protected:
+    /// Data type for tree validation variables scope storage.
     typedef std::map<const std::string, std::shared_ptr<VariableNode>> Scope;
+    /// Data type for tree validation variables scope item storage.
+    typedef std::pair<const std::string, std::shared_ptr<VariableNode>> ScopeItem;
 public:
+    /**
+     * validateTree - method for Abstract Syntax Tree validation.
+     * Creates conversion nodes and checks variables scopes.
+     * @note Uses recursion.
+     * @param input - Input root tree node.
+     * @param scope - Current variables scope.
+     * @param outerScope - Merged outer variables scopes.
+     * @param errors - Pointer to errors array.
+     * @return Tree, errors, tree data type.
+     * @author Danil Andreev
+     */
     static std::tuple<
             std::shared_ptr<Node>,
             std::shared_ptr<std::vector<std::shared_ptr<ApeCompilerException>>>,
@@ -84,27 +110,62 @@ public:
     ~Tokenizer();
 
 public:
+    /**
+     * parse - parses lexemes got from lexer and creates Abstract Syntax Tree.
+     * @note Uses recursive descent method.
+     * @return Pointer to AST root node.
+     * @author Danil Andreev
+     */
     std::shared_ptr<Node> parse();
 
 protected:
+    /**
+     * statement - parses statement.
+     * @author Danil Andreev
+     */
     std::shared_ptr<Node> statement() const;
 
+    /**
+     * parenExpr - parses expression in round braces.
+     * @author Danil Andreev
+     */
     std::shared_ptr<Node> parenExpr() const;
 
+    /**
+     * argumentsDeclaration - parses function arguments declaration.
+     * @author Danil Andreev
+     */
     std::shared_ptr<Node> argumentsDeclaration() const;
 
+    /**
+     * arguments - parses function arguments.
+     * @author Danil Andreev
+     */
     std::shared_ptr<Node> arguments() const;
 
+    /**
+     * arguments - parses expression.
+     * @author Danil Andreev
+     */
     std::shared_ptr<Node> expression() const;
 
+    /**
+     * arguments - parses variable declaration.
+     * @author Danil Andreev
+     */
     std::shared_ptr<VariableNode> declaration(bool initialization = true, bool semicolon = true) const;
 
     /**
      * rpn_math - parses arithmetical and logical expression.
+     * @note Uses Shunting-yard algorithm by Edsger W. Dijkstra.
      * @author Danil Andreev
      */
     std::shared_ptr<Node> rpn_math() const;
 
+    /**
+     * arguments - parses RPN term in expression.
+     * @author Danil Andreev
+     */
     std::pair<RPN, std::shared_ptr<Node>> rpn_term() const;
 };
 

@@ -29,7 +29,7 @@ Positionable::Positionable(int line, int column) noexcept {
     this->column = column;
 }
 
-Positionable::Positionable(const Positionable& reference) noexcept {
+Positionable::Positionable(const Positionable &reference) noexcept {
     this->line = reference.line;
     this->column = reference.column;
 }

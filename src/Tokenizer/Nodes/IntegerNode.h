@@ -29,25 +29,30 @@ SOFTWARE.
 #include "LiteralNode.h"
 
 /**
- * IntegerNode - class for storage integer literal node.
+ * ConvertNode - AST node for storing integer literal.
+ * @class
  * @author Danil Andreev
  */
-class IntegerNode: public LiteralNode {
+class IntegerNode : public LiteralNode {
 protected:
     /// payload - integer literal payload.
     long long payload;
 public:
     explicit IntegerNode(int line, int column, long long payload);
-    IntegerNode(IntegerNode& reference);
+
+    IntegerNode(IntegerNode &reference);
+
     ~IntegerNode() override;
+
 public:
     /**
      * getPayload - getter for integer literal payload.
      * @author Danil Andreev
      */
     virtual long long getPayload() const;
+
 public:
-    std::ostream& printNode(std::ostream& stream) const override;
+    std::ostream &printNode(std::ostream &stream) const override;
 };
 
 

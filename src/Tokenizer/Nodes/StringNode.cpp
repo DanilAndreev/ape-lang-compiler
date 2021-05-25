@@ -26,11 +26,11 @@ SOFTWARE.
 
 using namespace std;
 
-StringNode::StringNode(const int line, const int column, string payload): LiteralNode(line, column, Node::CONST) {
+StringNode::StringNode(const int line, const int column, string payload) : LiteralNode(line, column, Node::CONST) {
     this->payload = payload;
 }
 
-StringNode::StringNode(const StringNode &reference): LiteralNode(reference) {
+StringNode::StringNode(const StringNode &reference) : LiteralNode(reference) {
     this->payload = reference.payload;
 }
 
@@ -40,6 +40,6 @@ string StringNode::getPayload() const {
     return this->payload;
 }
 
-ostream &StringNode::printNode(ostream& stream) const {
+ostream &StringNode::printNode(ostream &stream) const {
     return stream << "StringNode | \"" << this->payload << "\"";
 }

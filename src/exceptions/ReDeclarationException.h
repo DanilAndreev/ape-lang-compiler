@@ -29,6 +29,11 @@ SOFTWARE.
 #include "CodeException.h"
 #include "../Tokenizer/Nodes/VariableNode.h"
 
+/**
+ * CodeException - exception class for variable re-declaration errors.
+ * @class
+ * @author Danil Andreev
+ */
 class ReDeclarationException : public CodeException {
 public:
     ReDeclarationException(std::shared_ptr<VariableNode> problem, std::shared_ptr<Positionable> declaration);

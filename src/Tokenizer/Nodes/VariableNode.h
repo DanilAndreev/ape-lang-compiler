@@ -30,13 +30,19 @@ SOFTWARE.
 #include "Node.h"
 
 /**
- * VariableNode - class for storing variable nodes.
+ * ConvertNode - AST node for storing variable information.
+ * @class
  * @author Danil Andreev
  */
 class VariableNode : public Node {
 protected:
     static unsigned int index_counter;
 public:
+    /**
+     * DATA_TYPE - enumeration for variable data types.
+     * @enum
+     * @author Danil Andreev
+     */
     enum DATA_TYPE {
         INT,
         FLOAT,
@@ -46,19 +52,37 @@ public:
     };
 
 public:
+    /**
+     * nextIndex - method for generating next available unique variable id.
+     * @return Next available unique id.
+     * @author Danil Andreev.
+     */
     static unsigned int nextIndex();
+
+    /**
+     * getDataTypeStr - converts enum value of data type to string representing it for printing.
+     * @param input - input data type.
+     * @return String for printing.
+     * @author Danil Andreev
+     */
     static std::string getDataTypeStr(DATA_TYPE input);
+
 protected:
     /// identifier - variable identifier string
     std::string identifier;
     /// isFunc - if true, this variable refers to function.
     bool isFunc;
+    /// dataType - variable data type.
     DATA_TYPE dataType;
+    /// dataType - variable constant state. If true - variable is a constant.
     bool constant;
+    /// dataType - variable declaration state. If true - node represents a variable declaration.
     bool declaration;
+    /// dataType - variable global index.
     unsigned int index;
 public:
-    explicit VariableNode(int line, int column, std::string &identifier, bool isFunc = false, std::shared_ptr<Node> operand1 = nullptr);
+    explicit VariableNode(int line, int column, std::string &identifier, bool isFunc = false,
+                          std::shared_ptr<Node> operand1 = nullptr);
 
     explicit VariableNode(int line, int column, std::string &identifier, std::shared_ptr<Node> operand1 = nullptr);
 
@@ -73,6 +97,11 @@ public:
      */
     std::string getIdentifier() const;
 
+    /**
+     * getIndex - getter for global variable index.
+     * @return Variable index.
+     * @author Danil Andreev
+     */
     unsigned int getIndex() const;
 
     /**
@@ -99,14 +128,34 @@ public:
      */
     DATA_TYPE getBasicType() const;
 
+    /**
+     * setConstant - sets constant state to variable.
+     * @author Danil Andreev
+     */
     VariableNode *setConstant(bool value = true);
 
+    /**
+     * setConstant - sets declaration state to variable.
+     * @author Danil Andreev
+     */
     VariableNode *setDeclaration(bool value = true);
 
+    /**
+     * setConstant - sets variable type.
+     * @author Danil Andreev
+     */
     VariableNode *setBasicType(DATA_TYPE value);
 
+    /**
+     * setConstant - sets variable global index.
+     * @author Danil Andreev
+     */
     VariableNode *setIndex(unsigned int index);
 
+    /**
+     * setConstant - sets next free global variable index.
+     * @author Danil Andreev
+     */
     VariableNode *setIndex();
 
 public:

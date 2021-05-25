@@ -30,7 +30,7 @@ SOFTWARE.
 #include <memory>
 
 /**
- * Node - class for storing Syntax tree node.
+ * Node - class for storing AST node.
  * @see https://en.wikipedia.org/wiki/Abstract_syntax_tree
  * @author Danil Andreev
  */
@@ -179,6 +179,11 @@ public:
      */
     std::ostream &print(std::ostream &stream = std::cout, int shift = 0, std::string message = "") const;
 
+    /**
+     * printNode - this method will be called in "<<" operator for output.
+     * @param stream - Target stream.
+     * @author Danil Andreev
+     */
     virtual std::ostream &printNode(std::ostream &stream) const;
 
 public:

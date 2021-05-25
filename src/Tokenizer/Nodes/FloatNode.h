@@ -29,25 +29,30 @@ SOFTWARE.
 #include "LiteralNode.h"
 
 /**
- * FloatNode - class for storing floating point number literal nodes.
+ * ConvertNode - AST node for storing floating point number literal.
+ * @class
  * @author Danil Andreev
  */
-class FloatNode: public LiteralNode {
+class FloatNode : public LiteralNode {
 protected:
-    /// payload of floating point number literal.
+    /// payload - payload of floating point number literal.
     long double payload;
 public:
     explicit FloatNode(int line, int column, long double payload);
-    FloatNode(const FloatNode& reference);
+
+    FloatNode(const FloatNode &reference);
+
     ~FloatNode() override;
+
 public:
     /**
      * getPayload - getter for floating point literal payload.
      * @author Danil Andreev
      */
     long double getPayload() const;
+
 public:
-    std::ostream& printNode(std::ostream& stream) const override;
+    std::ostream &printNode(std::ostream &stream) const override;
 };
 
 

@@ -49,8 +49,10 @@ protected:
     /// Keywords - set of lang keywords.
     static std::set<std::pair<std::string, KEYWORDS>> Keywords;
     /// symbols - set of lang symbols and operators, ordered by length DESC.
-    std::set<std::pair<std::string, OPERATORS>, bool (*)(const std::pair<std::string, OPERATORS> &,
-                                               const std::pair<std::string, OPERATORS> &)> *symbols;
+    std::set<
+            std::pair<std::string, OPERATORS>,
+            bool (*)(const std::pair<std::string, OPERATORS> &, const std::pair<std::string, OPERATORS> &)
+    > *symbols;
     /// symbolsStartCharacters - a set of first characters from symbols set for lexer.
     std::set<char> *symbolsStartCharacters;
     /// currentCharacter - last character got from the input stream.

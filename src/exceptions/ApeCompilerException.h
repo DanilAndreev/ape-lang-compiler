@@ -41,17 +41,22 @@ protected:
     std::string message;
 public:
     explicit ApeCompilerException(std::string message = "", bool fatal = false);
-    ApeCompilerException(const ApeCompilerException& reference);
+
+    ApeCompilerException(const ApeCompilerException &reference);
+
     ~ApeCompilerException() override;
+
 public:
     /**
      * getMessage - getter for exception message.
      * @author Danil Andreev
      */
     virtual std::string getMessage() const noexcept;
-    const char* what() const noexcept override;
+
+    const char *what() const noexcept override;
+
 public:
-    friend std::ostream& operator<< (std::ostream& stream, ApeCompilerException& exception);
+    friend std::ostream &operator<<(std::ostream &stream, ApeCompilerException &exception);
 };
 
 

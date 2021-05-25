@@ -27,6 +27,11 @@ SOFTWARE.
 
 #include "Node.h"
 
+/**
+ * ConvertNode - AST node for storing literal value.
+ * @class
+ * @author Danil Andreev
+ */
 class LiteralNode : public Node {
 public:
     explicit LiteralNode(int line, int column, const TYPE type);

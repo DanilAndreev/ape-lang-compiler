@@ -31,12 +31,12 @@ std::string ApeCompilerException::getMessage() const noexcept {
     return this->message;
 }
 
-ApeCompilerException::ApeCompilerException(const ApeCompilerException &reference): std::exception(reference) {
+ApeCompilerException::ApeCompilerException(const ApeCompilerException &reference) : std::exception(reference) {
     this->fatal = reference.fatal;
     this->message = reference.message;
 }
 
-ApeCompilerException::ApeCompilerException(std::string message, bool fatal): std::exception() {
+ApeCompilerException::ApeCompilerException(std::string message, bool fatal) : std::exception() {
     this->message = message;
     this->fatal = fatal;
 }

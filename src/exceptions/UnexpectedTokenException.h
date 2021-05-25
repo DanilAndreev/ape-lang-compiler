@@ -29,10 +29,17 @@ SOFTWARE.
 #include "CodeException.h"
 #include "../Lexer/Tokens/Token.h"
 
+/**
+ * CodeException - exception class for tokenizer unexpected lexemes.
+ * @class
+ * @author Danil Andreev
+ */
 class UnexpectedTokenException : public CodeException {
 public:
     UnexpectedTokenException(std::shared_ptr<Token> got, std::string expected);
-    UnexpectedTokenException(const UnexpectedTokenException& reference);
+
+    UnexpectedTokenException(const UnexpectedTokenException &reference);
+
     ~UnexpectedTokenException() override;
 };
 

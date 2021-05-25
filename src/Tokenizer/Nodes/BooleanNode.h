@@ -29,12 +29,13 @@ SOFTWARE.
 #include "LiteralNode.h"
 
 /**
- * BoolNode - class for storing boolean literal nodes.
+ * ConvertNode - AST node for boolean literal storing.
+ * @class
  * @author Danil Andreev
  */
 class BooleanNode : public LiteralNode {
 protected:
-    /// payload of boolean literal.
+    /// payload - payload of boolean literal.
     bool payload;
 public:
     explicit BooleanNode(int line, int column, bool payload);
