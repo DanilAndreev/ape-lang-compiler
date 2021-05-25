@@ -414,7 +414,11 @@ shared_ptr<Node> Tokenizer::rpn_math() const {
             if (inputItem.first == RPN::RPN_ROUND_BRACE_OPEN) {
                 stc.push(inputItem);
                 inputTokens.erase(inputTokens.begin());
-            } else if (Priorities[stackItem.first] < Priorities[inputItem.first] || inputItem.first == RPN::RPN_POWER) {
+            } else if (Priorities[stackItem.first] == Priorities[inputItem.first] ||
+                       inputItem.first == RPN::RPN_POWER) {
+                stc.push(inputItem);
+                inputTokens.erase(inputTokens.begin());
+            } else if (Priorities[stackItem.first] < Priorities[inputItem.first]) {
                 stc.push(inputItem);
                 inputTokens.erase(inputTokens.begin());
             } else {
@@ -668,7 +672,8 @@ tuple<
                     variable->setIndex(outerDeclaration->second->getIndex());
                     variable->setConstant(outerDeclaration->second->isConstant());
                 } else {
-                    errors->push_back(make_shared<ApeCompilerException>("Undeclared variable " + variable->getIdentifier()));
+                    errors->push_back(
+                            make_shared<ApeCompilerException>("Undeclared variable " + variable->getIdentifier()));
                 }
             }
         }
@@ -679,7 +684,8 @@ tuple<
             shared_ptr<VariableNode> variable = dynamic_pointer_cast<VariableNode>(input->getOperand1());
             if (variable->isConstant()) {
                 errors->push_back(
-                        make_shared<ApeCompilerException>("Assigning to constant variable " + variable->getIdentifier()));
+                        make_shared<ApeCompilerException>(
+                                "Assigning to constant variable " + variable->getIdentifier()));
             }
             if (variable->getBasicType() != valueDataType) {
                 input->setOperand2(
