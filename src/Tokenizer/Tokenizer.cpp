@@ -414,7 +414,7 @@ shared_ptr<Node> Tokenizer::rpn_math() const {
             if (inputItem.first == RPN::RPN_ROUND_BRACE_OPEN) {
                 stc.push(inputItem);
                 inputTokens.erase(inputTokens.begin());
-            } else if (Priorities[stackItem.first] < Priorities[inputItem.first]) {
+            } else if (Priorities[stackItem.first] < Priorities[inputItem.first] || inputItem.first == RPN::RPN_POWER) {
                 stc.push(inputItem);
                 inputTokens.erase(inputTokens.begin());
             } else {
