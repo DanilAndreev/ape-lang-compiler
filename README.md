@@ -22,6 +22,8 @@ IfStatement = if ‘(‘ BoolExpr ‘)’ DoBlock1 [else DoBlock2]
 DoBlock1 = DoBlock
 DoBlock2 = DoBlock
 ForStatement = for ‘(’ IndExpr ‘;’ BoolExpr ‘;’ IndExpr ‘)’ DoBlock
+WhileStatement = while ‘(’ BoolExpr ‘)’ DoBlock
+WhileStatement = do DoBlock while ‘(’ BoolExpr ‘)’
 IndExpr = Type Ident ’=’ BoolExpression
 ArithmExpression1 = BoolExpr
 ArithmExpression2 = BoolExpr
