@@ -187,7 +187,7 @@ std::shared_ptr<Token> Lexer::getNextToken() {
         this->get(character);
     }
 
-    if (stream.eof()) return make_shared<Token>(Token::TYPE::EOFILE);
+    if (stream.eof() || character == EOF) return make_shared<Token>(Token::TYPE::EOFILE);
 
     // Determining token type
     if (isdigit(character)) {

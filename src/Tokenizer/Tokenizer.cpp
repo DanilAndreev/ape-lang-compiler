@@ -72,7 +72,7 @@ Tokenizer::~Tokenizer() {}
 shared_ptr<Node> Tokenizer::parse() {
     shared_ptr<Token> token = this->lexer->nextToken();
     shared_ptr<Node> node = make_shared<Node>(token->getLine(), token->getColumn(), Node::PROGRAM, this->statement());
-    if (!this->lexer->isEof())
+    if (this->lexer->getCurrentToken()->getType() != Token::EOFILE)
         throw ApeCompilerException("Missing end of file");
     return node;
 }
