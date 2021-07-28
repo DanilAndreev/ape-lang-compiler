@@ -1,0 +1,16 @@
+//
+// Created by danil on 28.07.21.
+//
+
+#ifndef APE_LANG_COMPILER_ENCODING_H
+#define APE_LANG_COMPILER_ENCODING_H
+
+enum class ENCODING_TYPES {
+    COMMAND,
+    INTEGER,
+    FLOAT,
+    STRING,
+    BOOLEAN,
+};
+
+#endif //APE_LANG_COMPILER_ENCODING_H
